@@ -1,0 +1,33 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+
+namespace InternetDataMine.Controllers
+{
+    public class XXFBController : Controller
+    {
+        //
+        // GET: /XXFB/
+
+        public ActionResult Index()
+        {
+            return View();
+        }
+
+
+        public ActionResult DMLED()
+        {
+            return View();
+        }
+        public ActionResult XZQY()
+        {
+            return View();
+        }
+        public ActionResult ZFJJK()
+        {
+            return View();
+        }
+    }
+}

@@ -1,0 +1,38 @@
+﻿<Window x:Class="SHH_TF_SubSystem.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SHH_TF_SubSystem"
+        xmlns:BLL ="clr-namespace:SHH.TF.BLL"
+        mc:Ignorable="d"
+        Title="全矿井通风系统中间件" Height="600" Width="1000">
+    <Grid ShowGridLines="True">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="7*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="65"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TreeView x:Name="tree" Grid.Column="0" Grid.Row="1" Style="{StaticResource TreeViewStyle}" ItemsSource="{x:Static BLL:OPCManager.ServerList}"
+                   MouseDown="tree_MouseDown">
+
+        </TreeView>
+
+        <ListView Grid.Row="1" Grid.Column="1" ItemsSource="{x:Static BLL:OPCManager.ItemList}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="测点名" DisplayMemberBinding="{Binding Path=PointName}" Width="100"/>
+                    <GridViewColumn Header="地点" DisplayMemberBinding="{Binding Path=PointPlace}" Width="100"/>
+                    <GridViewColumn Header="OPC地址" DisplayMemberBinding="{Binding Path=OPCItemID}" Width="200"/>
+                    <GridViewColumn Header="设备类型" DisplayMemberBinding="{Binding Path=Equipment}" Width="120"/>
+                    <GridViewColumn Header="数值" DisplayMemberBinding="{Binding Path=PointValue}" Width="100"/>
+                    <!--<GridViewColumn Header="状态" DisplayMemberBinding="{Binding Path=PointValue}" Width="100"/>-->
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+</Window>

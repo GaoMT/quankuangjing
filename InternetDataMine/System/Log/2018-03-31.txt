@@ -1,0 +1,184 @@
+-----------------------------------------------------------
+Time:
+2018/3/31 9:51:05
+Message:
+开始处理
+
+-----------------------------------------------------------
+Time:
+2018/3/31 9:51:05
+Message:
+结束处理
+
+-----------------------------------------------------------
+Time:
+2018/3/31 9:51:05
+Message:
+开始处理
+
+-----------------------------------------------------------
+Time:
+2018/3/31 9:51:05
+Message:
+结束处理
+
+-----------------------------------------------------------
+Time:
+2018/3/31 9:51:06
+Message:
+开始处理
+
+-----------------------------------------------------------
+Time:
+2018/3/31 9:51:06
+Message:
+结束处理
+
+-----------------------------------------------------------
+Time:
+2018/3/31 9:51:06
+Message:
+开始处理
+
+-----------------------------------------------------------
+Time:
+2018/3/31 9:51:06
+Message:
+结束处理
+
+-----------------------------------------------------------
+Time:
+2018/3/31 9:51:06
+Message:
+开始处理
+
+-----------------------------------------------------------
+Time:
+2018/3/31 9:51:06
+Message:
+结束处理
+
+-----------------------------------------------------------
+Time:
+2018/3/31 9:51:07
+Message:
+开始处理
+
+-----------------------------------------------------------
+Time:
+2018/3/31 9:51:07
+Message:
+结束处理
+
+-----------------------------------------------------------
+Time:
+2018/3/31 9:51:10
+Message:
+开始处理
+
+-----------------------------------------------------------
+Time:
+2018/3/31 9:51:10
+Message:
+结束处理
+
+-----------------------------------------------------------
+Time:
+2018/3/31 9:51:10
+Message:
+开始处理
+
+-----------------------------------------------------------
+Time:
+2018/3/31 9:51:10
+Message:
+结束处理
+
+-----------------------------------------------------------
+Time:
+2018/3/31 9:51:10
+Message:
+开始处理
+
+-----------------------------------------------------------
+Time:
+2018/3/31 9:51:10
+Message:
+结束处理
+
+-----------------------------------------------------------
+Time:
+2018/3/31 9:51:11
+Message:
+开始处理
+
+-----------------------------------------------------------
+Time:
+2018/3/31 9:51:11
+Message:
+结束处理
+
+-----------------------------------------------------------
+Time:
+2018/3/31 9:51:14
+Message:
+开始处理
+
+-----------------------------------------------------------
+Time:
+2018/3/31 9:51:14
+Message:
+结束处理
+
+-----------------------------------------------------------
+Time:
+2018/3/31 9:51:14
+Message:
+开始处理
+
+-----------------------------------------------------------
+Time:
+2018/3/31 9:51:14
+Message:
+结束处理
+
+-----------------------------------------------------------
+Time:
+2018/3/31 9:51:14
+Message:
+开始处理
+
+-----------------------------------------------------------
+Time:
+2018/3/31 9:51:14
+Message:
+结束处理
+
+-----------------------------------------------------------
+Time:
+2018/3/31 9:51:14
+Message:
+开始处理
+
+-----------------------------------------------------------
+Time:
+2018/3/31 9:51:14
+Message:
+结束处理
+
+-----------------------------------------------------------
+Time:
+2018/3/31 9:51:23
+Message:
+“un”附近有语法错误。
+对象名 'ShineView_His.dbo.SP_HistorySimulateValues_2018_03_22' 无效。
+select * from ( select * from (select *,row_number() over(order by TmpID) r from (select row_number() over (order by PointID) TmpID,PointName,EquipName ,EquipPlace,Time,VarValue,ValueState, Unit from(  select PointID,  PointName,EquipName ,EquipPlace,Time,VarValue, Unit ,  case  Status when 0 then  '正常' when 1 then '故障'  when 2 then 'OPC断线' end ValueState    from ShineView_His.dbo.SP_HistorySimulateValues_2018_03_22 where  1=1  and  [Time]>'2018-03-22 00:00:00' and [Time]<'2018-03-22 23:59:59' union all   select PointID,  PointName,EquipName ,EquipPlace,Time,VarValue, Unit ,  case  Status when 0 then  '正常' when 1 then '故障'  when 2 then 'OPC断线' end ValueState    from ShineView_His.dbo.SP_HistorySimulateValues_2018_03_23 where  1=1  and  [Time]>'2018-03-23 00:00:00' and [Time]<'2018-03-23 23:59:59' union all   select PointID,  PointName,EquipName ,EquipPlace,Time,VarValue, Unit ,  case  Status when 0 then  '正常' when 1 then '故障'  when 2 then 'OPC断线' end ValueState    from ShineView_His.dbo.SP_HistorySimulateValues_2018_03_24 where  1=1  and  [Time]>'2018-03-24 00:00:00' and [Time]<'2018-03-24 23:59:59' union all   select PointID,  PointName,EquipName ,EquipPlace,Time,VarValue, Unit ,  case  Status when 0 then  '正常' when 1 then '故障'  when 2 then 'OPC断线' end ValueState    from ShineView_His.dbo.SP_HistorySimulateValues_2018_03_25 where  1=1  and  [Time]>'2018-03-25 00:00:00' and [Time]<'2018-03-25 23:59:59' union all   select PointID,  PointName,EquipName ,EquipPlace,Time,VarValue, Unit ,  case  Status when 0 then  '正常' when 1 then '故障'  when 2 then 'OPC断线' end ValueState    from ShineView_His.dbo.SP_HistorySimulateValues_2018_03_26 where  1=1  and  [Time]>'2018-03-26 00:00:00' and [Time]<'2018-03-26 23:59:59' union all   select PointID,  PointName,EquipName ,EquipPlace,Time,VarValue, Unit ,  case  Status when 0 then  '正常' when 1 then '故障'  when 2 then 'OPC断线' end ValueState    from ShineView_His.dbo.SP_HistorySimulateValues_2018_03_27 where  1=1  and  [Time]>'2018-03-27 00:00:00' and [Time]<'2018-03-27 23:59:59' union all   select PointID,  PointName,EquipName ,EquipPlace,Time,VarValue, Unit ,  case  Status when 0 then  '正常' when 1 then '故障'  when 2 then 'OPC断线' end ValueState    from ShineView_His.dbo.SP_HistorySimulateValues_2018_03_28 where  1=1  and  [Time]>'2018-03-28 00:00:00' and [Time]<'2018-03-28 23:59:59' union all   select PointID,  PointName,EquipName ,EquipPlace,Time,VarValue, Unit ,  case  Status when 0 then  '正常' when 1 then '故障'  when 2 then 'OPC断线' end ValueState    from ShineView_His.dbo.SP_HistorySimulateValues_2018_03_29 where  1=1  and  [Time]>'2018-03-29 00:00:00' and [Time]<'2018-03-29 23:59:59' union all   select PointID,  PointName,EquipName ,EquipPlace,Time,VarValue, Unit ,  case  Status when 0 then  '正常' when 1 then '故障'  when 2 then 'OPC断线' end ValueState    from ShineView_His.dbo.SP_HistorySimulateValues_2018_03_30 where  1=1  and  [Time]>'2018-03-30 00:00:00' and [Time]<'2018-03-30 23:59:59' union all   select PointID,  PointName,EquipName ,EquipPlace,Time,VarValue, Unit ,  case  Status when 0 then  '正常' when 1 then '故障'  when 2 then 'OPC断线' end ValueState    from ShineView_His.dbo.SP_HistorySimulateValues_2018_03_31 where  1=1  and  [Time]>'2018-03-31 00:00:00' and [Time]<'2018-03-31 23:59:59') as a) t ) c where r between  1 and  12 ) d
+
+-----------------------------------------------------------
+Time:
+2018/3/31 9:51:28
+Message:
+对象名 'ShineView_His.dbo.SP_HistorySimulateValues_2018_03_31' 无效。
+对象名 'ShineView_His.dbo.SP_HistorySimulateValues_2018_03_31' 无效。
+select * from ( select * from (select *,row_number() over(order by TmpID) r from (select row_number() over (order by PointID) TmpID,PointName,EquipName ,EquipPlace,Time,VarValue,ValueState, Unit from(  select PointID,  PointName,EquipName ,EquipPlace,Time,VarValue, Unit ,  case  Status when 0 then  '正常' when 1 then '故障'  when 2 then 'OPC断线' end ValueState    from ShineView_His.dbo.SP_HistorySimulateValues_2018_03_31 where  1=1  and  [Time]>'2018-03-31 00:00:00' and [Time]<'2018-03-31 23:59:59') as a) t ) c where r between  1 and  12 ) d
+

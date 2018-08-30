@@ -1,0 +1,279 @@
+﻿@{
+    ViewBag.Title = "ShowUserAQSS";
+    Layout = "~/Views/Shared/_LayoutEditer.cshtml";
+}
+
+<!doctype html>
+
+<body>
+    <div id="toolbar" style="margin:0 0 0 20px">
+        <table >
+            <tr>
+                <td>
+                    测点编号：
+                </td>
+                <td>
+
+                    <div id="SenserList" style="width: 370px"></div>
+                    <a id="Query" class="easyui-linkbutton" style="width:100px; " onclick="Query()">查询</a>
+                </td>
+
+            </tr>
+        </table>
+    </div>
+
+   
+    <div style="width:450px;position:absolute;left:20px;top:30px">
+        <table id="TLeft" class="table">
+
+            <tr>
+                <td>
+                    测点编号
+                </td>
+
+                <td>
+                    安装位置
+                </td>
+                <td>
+                    测点值
+                </td>
+            </tr>
+        </table>
+    </div>
+              
+    <div style="width:450px;position:absolute;left:480px;top:30px">
+        <table id="TRight" class="table">
+
+            <tr>
+                <td>
+                    测点编号
+                </td>
+
+                <td>
+                    安装位置
+                </td>
+                <td>
+                    测点值
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+
+<style>
+    .table {
+        border: 2px solid skyblue;
+        border-collapse: collapse;
+        width:100%
+    }
+
+        .table td {
+            border: 1px solid skyblue;
+        }
+        .tableHead  {
+            border: 1px solid skyblue;
+            height:25px;
+            font-weight:bold;
+        }
+
+
+</style>
+
+
+
+    <script type="text/javascript">
+        window.onload = function () {
+            //绑定事件
+            var addEvent = document.addEventListener ? function (el, type, callback) {
+                el.addEventListener(type, callback, !1);
+            } : function (el, type, callback) {
+                el.attachEvent("on" + type, callback);
+            }
+            //移除事件
+            var removeEvent = document.removeEventListener ? function (el, type, callback) {
+                el.removeEventListener(type, callback);
+            } : function (el, type, callback) {
+                el.detachEvent("on" + type, callback);
+            }
+            //精确获取样式
+            var getStyle = document.defaultView ? function (el, style) {
+                return document.defaultView.getComputedStyle(el, null).getPropertyValue(style)
+            } : function (el, style) {
+                style = style.replace(/\-(\w)/g, function ($, $1) {
+                    return $1.toUpperCase();
+                });
+                return el.currentStyle[style];
+            }
+            var dragManager = {
+                clientY: 0,
+                draging: function (e) {//mousemove时拖动行
+                    var dragObj = dragManager.dragObj;
+                    if (dragObj) {
+                        e = e || event;
+                        var tr = document.elementFromPoint(e.clientX, e.clientY);
+                        var rows = document.getElementById(tr.parentNode.parentNode.parentNode.id).rows.length;
+                        if (rows == 2) {
+                            removeEvent(document, "mousemove", dragManager.draging);
+                            removeEvent(document, "mouseup", dragManager.dragEnd);
+                            alert("1");
+                            return false;
+                          
+                        }
+                        if (window.getSelection) {//w3c
+                            window.getSelection().removeAllRanges();
+                        } else if (document.selection) {
+                            document.selection.empty();//IE
+                        }
+                        var y = e.clientY;
+                        var down = y > dragManager.clientY;//是否向下移动
+                   
+                    
+
+                        if (tr && tr.nodeName == "TD" && tr.className != "tableHead") {
+                            tr = tr.parentNode
+                            dragManager.clientY = y;
+                            if (dragObj !== tr) {
+                                //if(tr.)
+                                tr.parentNode.insertBefore(dragObj, (down ? tr.nextSibling : tr));
+                            }
+                            //tr.parentNode.insertBefore(dragObj, (true ? tr.nextSibling : tr));
+                        };
+                    }
+                },
+                dragStart: function (e) {
+                    e = e || event;
+                    var target = e.target || e.srcElement;
+                 
+                    //console.log(target.nextSibling + target)
+                    if (target.nodeName === "TD" && target.className != "tableHead") {
+                        target = target.parentNode;
+                        dragManager.dragObj = target;
+                        if (!target.getAttribute("data-background")) {
+                            var background = getStyle(target, "background-color");
+                            target.setAttribute("data-background", background)
+                        }
+                        //显示为可移动的状态
+                        target.style.backgroundColor = "#ccc";
+                        target.style.cursor = "move";
+                        dragManager.clientY = e.clientY;
+                        addEvent(document, "mousemove", dragManager.draging);
+                        addEvent(document, "mouseup", dragManager.dragEnd);
+                    }
+                },
+                dragEnd: function (e) {
+                    var dragObj = dragManager.dragObj
+                    if (dragObj) {
+                        e = e || event;
+                        var target = e.target || e.srcElement;
+                        if (target.nodeName === "TD" && target.className!="tableHead") {
+                            target = target.parentNode;
+                            dragObj.style.backgroundColor = dragObj.getAttribute("data-background");
+                            dragObj.style.cursor = "default";
+                            dragManager.dragObj = null;
+                            removeEvent(document, "mousemove", dragManager.draging);
+                            removeEvent(document, "mouseup", dragManager.dragEnd);
+                        }
+                    }
+                },
+                main: function (el) {
+                    addEvent(el, "mousedown", dragManager.dragStart);
+                }
+            }
+            dragManager.main( document.getElementById("TRight"));
+            dragManager.main(document.getElementById("TLeft"));
+
+        }
+
+    </script>
+
+
+<script type="text/javascript">
+    var t;
+    var SensorNum = "";
+    var Count = 0;
+    LoadSensor(SensorNum);
+    LoadComboSensor();
+    function LoadSensor(SensorNum)
+    {
+        $.ajax({
+            url: '../UserAQSS/LoadSensor?SensorList=' + SensorNum + getUrlStafix(),
+            dataype: 'json',
+            type: 'post',
+            success: function (data)
+            {
+                createShowingTable(data.data, Count);
+                t = setTimeout("LoadSensor(SensorNum)", 10000);
+            }, error: function (data)
+            {
+                t = setTimeout("LoadSensor(SensorNum )", 10000);
+            }
+        });
+    }
+    
+    function createShowingTable(data, count) {
+        //获取后台传过来的jsonData,并进行解析  
+        //alert("------->进入当前的数据展现");  
+        var dataArray = $.parseJSON(data);  
+        //此处需要让其动态的生成一个table并填充数据  
+        var TLeft = "<table>";  
+        TLeft += "<thead><td class='tableHead'>测点编号</td><td class='tableHead'>安装位置</td><td class='tableHead'>测点值</td></thead>";
+        var TRight = TLeft;
+        var len = dataArray.length;  
+        
+        for (var i = 0 ; i < len ; i = i + 2) {
+            
+            if ($("#" + dataArray[i].SensorNum + "").length > 0 && count>0) {
+                document.getElementById(dataArray[i].SensorNum).innerHTML = dataArray[i].ShowValue;
+                if (i + 1 != len) {
+                    document.getElementById(dataArray[i+1].SensorNum).innerHTML = dataArray[i+1].ShowValue;
+                }
+            }
+            else {
+                TLeft += "<tr><td>" + dataArray[i].SensorNum + "</td>" + "<td>" + dataArray[i].Place + "</td>" + "<td id='" + dataArray[i].SensorNum + "'>" + dataArray[i].ShowValue + "</td>" + "</tr>";
+                if (i + 1 != len) {
+                    TRight += "<tr><td>" + dataArray[i + 1].SensorNum + "</td>" + "<td>" + dataArray[i + 1].Place + "</td>" + "<td id='" + dataArray[i+1].SensorNum + "'>" + dataArray[i + 1].ShowValue + "</td>" + "</tr>";;
+                }
+                TLeft += "</table>";
+                TRight += "</table>";
+                //将动态生成的table添加的事先隐藏的div中.  
+                $("#TLeft").html(TLeft);
+                $("#TRight").html(TRight);
+            }
+        }
+        Count++;
+    }        
+   
+    function LoadComboSensor()
+    {
+        $("#SenserList").combogrid({
+            url: '../UserAQSS/LoadComboAQSS?test=test' + getUrlStafix(),
+            panelWidth: 370,
+            idField: 'SensorNum',
+            textField: 'SensorNum',
+            multiple: true,
+            method: 'get',
+            columns: [[
+            { field: 'SensorNum', title: '测点编号', width: 70 },
+            { field: 'TypeName', title: '设备类型', width: 90 },
+            { field: 'Place', title: '安装位置', width: 200 },
+            ]], fitColumns: true,
+
+        });
+
+    }
+
+
+    function getUrlStafix() {
+        var myDate = new Date();
+        return "&myDate=" + myDate.getFullYear() + myDate.getMonth() + myDate.getDate() + myDate.getHours() + myDate.getMinutes() + myDate.getSeconds();
+    }
+
+    function Query()
+    {
+        clearTimeout(t);
+        SensorNum = $("#SenserList").combogrid("getValues");
+        Count = 0;
+        LoadSensor(SensorNum);
+
+    }
+</script>

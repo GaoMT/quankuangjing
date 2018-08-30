@@ -1,0 +1,520 @@
+﻿@{
+    ViewBag.Title = "导航";
+}
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/easyui")
+@Styles.Render("~/Content/icon")
+<link rel="stylesheet" type="text/css" href="../Content/themes/metro-orange/easyui.css" title="orange">
+<link rel="stylesheet" type="text/css" href="../Content/themes/metro-red/easyui.css" title="pink">
+<link rel="stylesheet" type="text/css" href="../Content/themes/ui-cupertino/easyui.css" title="blue">
+<link rel="stylesheet" type="text/css" href="../Content/themes/metro-gray/easyui.css" title="gray">
+<link rel="stylesheet" type="text/css" href="../Content/themes/metro-green/easyui.css" title="green">
+<script src="~/Scripts/CompanyInfo.js" type="text/javascript"></script>
+<script src="~/Scripts/ratete.js"></script>
+@Scripts.Render("~/bundles/common")
+<style type="text/css">
+   
+
+</style>
+
+
+        @*底图*@
+    <div style="min-width:1400px; min-height:600px;position:absolute;top:0px;left:0px;width:100%;height:100%;" id="OuterMain">
+    <div style="width:1400px; height:600px;position:absolute;top:0px;left:0px;" id="OuterMai2n">
+        <div style="width: 100%; height: 100%; z-index: 100; ">
+            <img src="" id="GroundPic" style="width: 100%; height: 100%; " />
+        </div>
+        @*配置图片层*@
+        <div style="width: 100%; height: 100%;position: absolute; top: 0px; left: 0px; " id="divMain"> </div>
+        @*配置按钮*@
+        <a href="javascript:void(0)" style="position: absolute; right: 10px; top: 10px; color: white; cursor:pointer" onclick="EditGif()">配置</a>
+        @*子系统*@
+        <div id="SysList" style="width:600px;height:80px;text-align:right;position:absolute;bottom:40px;right:40px;">
+        </div>
+        </div>
+    </div>
+
+
+    @*  关联测点 列表*@
+    <div style="width: 325px; height:0px;display:none ">
+        <table id="dgGif" style="width: 100% ;height: 100%; " class="easyui-datagrid"></table>
+    </div>
+    @*弹出框*@
+    <div id="MessageBox" class="easyui-dialog" title="提示" data-options="modal:true,closed:true" style="height:180px;width:300px;text-align:center;vertical-align:middle;">
+        <br />
+        <br />
+        <label id="Message" style="padding-top:50px; vertical-align:middle;">操作失败</label>
+        <div>
+            <a id="CloseThis" href="javascript:void(0)" class="easyui-linkbutton" data-options="onClick:function(){    $('#MessageBox').window('close');  }" style="width: 100px;top:130px;left:100px;position:absolute">
+                确定
+            </a>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var changeList = [];
+        var ori_width = "";
+        var ori_height = "";
+        drag = "dd";
+        move = 0;
+        function getUrlStafix() {
+            var myDate = new Date();
+            return "&myDate=" + myDate.getFullYear() + myDate.getMonth() + myDate.getDate() + myDate.getHours() + myDate.getMinutes() + myDate.getSeconds();
+        }
+        function LoadGraph(SysCode) {
+
+
+            //document.getElementById("GroundPic").src = '../DH/LoadGraph?SysCode=' + SysCode + getUrlStafix();;
+            $.ajax({
+                url: '../DH/LoadGraph?SysCode=' + SysCode + getUrlStafix(),
+               
+                datatype: 'json',
+                type: 'post',
+                success: function (data) {
+                    document.getElementById("GroundPic").src = data.data;
+               
+                 
+                },
+                error: function (e) {
+                    document.getElementById("Message").innerText = "加载底图失败,请检查网络!";
+                    $("#MessageBox").window("open");
+                }
+
+            });
+
+        }
+        function LoadSysList() {
+            $.ajax({
+                url: '../DH/LoadChildSysConfig',
+                datatype: 'json',
+                type: 'post',
+                success: function (data) {
+                    var json = $.parseJSON(data).rows;
+
+                    var div = document.getElementById("SysList");
+                    for (var i = 0; i < json.length; i++) {
+                        var dd = document.createElement("div");
+                        dd.style.width = "100px";
+                        dd.style.height = "80px";
+                        var img = document.createElement("img");
+                        img.style.width = "40px";
+                        img.style.height = "40px";
+
+                        var sp = document.createElement("div");
+                        sp.innerHTML = json[i].ChildSysName;
+                        dd.style.textAlign = "center";
+                        dd.style.cursor = "pointer";
+                        dd.style.position = "absolute";
+                        dd.style.right = (i) * 100 + "px";
+                        dd.setAttribute("onClick", "ShowDetail('" + json[i].ChildSysUrl + "')");
+                        switch (json[i].ChildSysCode) {
+                            case "WSCF": img.src = "../Content/themes/Image/瓦斯.png";
+                                //img.style.transform = "rotate(90deg)";
+                                //alert(img.style.rotate);
+                                //img.style.transform.substring(7, img.style.transform.indexOf("d"))
+                                break;
+                            case "TFST": img.src = "../Content/themes/Image/通风.png"; break;
+                            case "SPST": img.src = "../Content/themes/Image/排水.png"; break;
+                            case "YFST": img.src = "../Content/themes/Image/压风.png"; break;
+                            case "PDYS": img.src = "../Content/themes/Image/运输.png"; break;
+                            case "GDST": img.src = "../Content/themes/Image/供电.png"; break;
+
+                        }
+                        dd.appendChild(img);
+                        dd.appendChild(sp);
+                        div.appendChild(dd);
+                    }
+                },
+                error: function (data) {
+                    document.getElementById("Message").innerText = "加载子系统,请检查网络!";
+                    $("#MessageBox").window("open");
+                }
+
+            });
+
+        }
+        function ShowDetail(obj) {
+            window.open(obj);
+        }
+        $(document).ready(function () {
+            // Gif 停止与开始
+            if ('getContext' in document.createElement('canvas')) {
+                HTMLImageElement.prototype.play = function () {
+                    if (this.storeCanvas) {
+                        // 移除存储的canvas
+                        this.storeCanvas.parentElement.removeChild(this.storeCanvas);
+                        this.storeCanvas = null;
+                        // 透明度还原
+                        image.style.opacity = '';
+                    }
+                    if (this.storeUrl) {
+                        this.src = this.storeUrl;
+                    }
+                };
+                HTMLImageElement.prototype.stop = function () {
+                    var canvas = document.createElement('canvas');
+                    // 尺寸
+                    var width = this.width, height = this.height;
+                    if (width && height) {
+                        // 存储之前的地址
+                        if (!this.storeUrl) {
+                            this.storeUrl = this.src;
+                        }
+                        // canvas大小
+                        canvas.width = width;
+                        canvas.height = height;
+                        // 绘制图片帧（第一帧）
+                        canvas.getContext('2d').drawImage(this, 0, 0, width, height);
+                        // 重置当前图片
+                        try {
+                            this.src = canvas.toDataURL("image/gif");
+                        } catch (e) {
+                            // 跨域
+                            this.removeAttribute('src');
+                            // 载入canvas元素
+                            canvas.style.position = 'absolute';
+                            // 前面插入图片
+                            this.parentElement.insertBefore(canvas, this);
+                            // 隐藏原图
+                            this.style.opacity = '0';
+                            // 存储canvas
+                            this.storeCanvas = canvas;
+                        }
+                    }
+                };
+                // Gif 停止与开始 end
+            }
+            ChangeLocation();
+            LoadSysList();
+            LoadData();
+         
+             window.onresize = function () {
+
+                 ChangeLocation();
+             }
+
+        });
+
+        function EditGif() {
+            window.open("../DH/DHConfig?SysCode=DH");
+        }
+        function ChangeLocation() {
+          
+            var width = document.getElementById("OuterMain").clientWidth;
+            var height = document.getElementById("OuterMain").clientHeight;
+         
+                if (width <= 1400 && height <= 600) {
+                }
+                else {
+                    var out1 = document.getElementById("OuterMain");
+                    var outer = document.getElementById("OuterMai2n");
+                    var rw = width / 1400;
+                    var wh = height / 600;
+                    //debugger;
+                    if (rw < wh) {
+                        out1.style.overflowX = "visible";
+                        out1.style.overflowY = "hidden";
+                        outer.style.zoom = wh;
+                    }
+                    else {
+                        out1.style.overflowX = "hidden";
+                        out1.style.overflowY = "visible";
+                        outer.style.zoom = rw;
+                    }
+                }
+                LoadGraph("DH");
+                //alert("1");
+                LoadGif();
+            
+           
+        }
+
+
+        function Show(obj) {
+            switch (obj) {
+                case "WS": window.open("http://172.16.18.198"); break;
+                case "TF": window.open("http://172.16.18.50"); break;
+            }
+        }
+
+        function LoadData() {
+
+            $("#dgGif").datagrid({
+                url: '../DH/ShowGifTable?SysCode=DH' + getUrlStafix(),
+
+                columns: [[
+
+                    { field: 'SensorNum', title: '测点', width: 120 },
+                     { field: 'Unit', title: '单位', width: 120 },
+                    { field: 'CurrentValue', title: '当前值', width: 100 },
+                     { field: 'ShowValue', title: '当前值', width: 100 },
+                     { field: 'StateCode', title: '系统状态', width: 80 },
+                       { field: 'TypeName', title: '设备名', width: 80 },
+                      { field: 'Type', title: '类型', width: 100, formatter: ControlFZ },
+                         { field: 'ID', title: 'ID', width: 100 },
+                               { field: 'imagesrc', title: '图片路径', width: 100 },
+                                { field: 'Tag', title: '类型', width: 100 },
+                                  { field: 'Value', title: '勾选值', width: 100 },
+                                  { field: 'ValueState', title: '系统状态', width: 100 },
+                                  { field: 'Place', title: '系统状态', width: 100 },
+                                   { field: 'Angle', title: '角度', width: 100 }
+                ]],
+                singleSelect: true
+
+            });
+
+            //loadPerson();
+            setTimeout("LoadData()", 10000);
+        }
+
+        function ControlFZ(val, obj) {
+
+            if (obj.ID != null && $("#div" + obj.ID).length > 0) {
+
+                if (obj.Tag.toString() == "3") {
+
+
+                }
+                else if (obj.Tag.toString() == "4") {
+
+
+                    var sp = document.getElementById("spdiv" + obj.ID);
+
+                    var listValue = obj.Value.toString().split("|");
+                    var text = "";
+                    var list = [];
+                    list.push(obj.Type + "/");
+                    list.push(obj.TypeName + "/");
+                    list.push(obj.SensorNum + "/");
+                    list.push(obj.Place + "/");
+                    list.push(obj.Unit);
+                    var StateName = obj.ShowValue;
+                    var color = "black";
+                    for (var j = 0; j < listValue.length - 1; j++) {
+
+                        if (listValue[j] == 1) {
+                            text += list[j];
+                        }
+                        if (j == 3) {
+
+                            if (obj.StateCode == 0) {
+                                //text += obj.ShowValue + " ";
+                                switch (obj.ValueState) {
+                                    case 1: color = "red"; text += "<span style='color:" + color + ";'>" + obj.ShowValue + "</span>" + " "; break;
+                                    case 4: color = "magenta"; text += "<span style='color:" + color + ";'>" + "断电" + "</span>" + " "; StateName = "断电"; break;
+                                    case 8: color = "darkorange"; text += "<span style='color:" + color + ";'>" + "故障" + "</span>" + " "; StateName = "故障"; break;
+                                    case 16: color = "maroon"; text += "<span style='color:" + color + ";'>" + "馈电异常" + "</span>" + " "; StateName = "馈电异常"; break;
+                                    case 32: color = "orange"; text += "<span style='color:" + color + ";'>" + "工作异常" + "</span>" + " "; StateName = "工作异常"; break;
+                                }
+                              
+                            }
+                            else {
+
+                                switch (obj.StateCode) {
+                                    case 1: StateName = "网络中断"; color = "orange"; break;
+                                    case 2: StateName = "传输异常"; color = "darkorange"; break;
+                                    case 3: StateName = "通讯中断"; color = "red"; break;
+                                    case 4: StateName = "网络故障"; color = "magenta"; break;
+                                    case 5: StateName = "数据延时"; color = "maroon"; break;
+                                }
+                                text += "<span style='color:" + color + ";'>" + StateName + "</span>" + " ";
+                                //text += StateName + " ";
+
+                            }
+
+                        }
+
+                    }
+                    sp.style.fontStyle.fontcolor = color;
+                    sp.innerHTML = text;
+                    sp.title = "显示类型：数据文本 \n设备类型：" + obj.Type + "\n测点编号：" + obj.SensorNum + "/" + obj.Place + "/" + obj.TypeName + "\n测点值：" + StateName + obj.Unit;
+
+                }
+                else {
+                    var imgid = "imgdiv" + obj.ID;
+                    var imagee = document.getElementById(imgid);
+                    var StateName = "";
+                    //if (obj.Angle.toString() != "0")
+                    //{
+                    //    imagee.style.transform = "rotate(" + obj.Angle + "deg)"
+
+                    //}
+                    if (obj.StateCode == 0) {
+                        imagee.textContent = "设备类型：" + obj.Type + "\n设备编号：" + obj.SensorNum + "/" + obj.Place + "/" + obj.TypeName + "\n测点值：" + obj.ShowValue + " " + obj.Unit;
+
+                    }
+                    else {
+
+
+                        switch (obj.StateCode) {
+                            case 1: StateName = "故障"; break;
+                            case 2: StateName = "传输异常"; break;
+                            case 3: StateName = "通讯中断"; break;
+                            case 4: StateName = "网络故障"; break;
+                            case 5: StateName = "数据延时"; break;
+                        }
+                        imagee.textContent = "设备类型：" + obj.Type + "\n设备编号：" + obj.SensorNum + "/" + obj.Place + "/" + obj.TypeName + "\n测点值：" + StateName;
+                    }
+
+                    if (obj.Type == "开关量") {
+                        if (obj.CurrentValue == 2) {
+                            imagee.play();
+                        }
+                        else {
+                            imagee.stop();
+                        }
+                    }
+                }
+
+
+            }
+            return val;
+
+        }
+
+        var DivCount = 0;
+        var counts = [];
+        function LoadGif() {
+            changeList = [];
+            $.ajax({
+                url: '../DH/LoadGif?SysCode=DH' + getUrlStafix(),
+                datatype: 'json',
+                type: 'post',
+                success: function (data) {
+
+                    var par = document.getElementById("divMain");
+                    var json = $.parseJSON(data.data);
+                    par.innerHTML = "";
+                    if (json.length > 0) {
+                        DivCount = json.length;
+                        var width = document.getElementById("OuterMain").clientWidth;
+                        var height = document.getElementById("OuterMain").clientHeight;
+
+
+
+
+               
+
+
+                        for (var i = 0; i < json.length; i++) {
+                            counts.push(0);
+                            var divID = "div" + json[i].DivID;
+                            //<div id="div1" onmousemove="mousemove()" onmousedown="mousedown()" onmouseup="mouseup()" ondragstart="mouseStop()"  onmouseover="dragimages = div1; drag = 'div1';" style="height:50px;left:10px;top:10px ;position:absolute;width:50px">
+                            var div = document.createElement("div");
+                            div.setAttribute("id", divID);
+                            div.style.width = json[i].RateW + "px";
+                            div.style.height = json[i].RateH + "px";
+                            div.style.position = "absolute";
+                                div.style.top = json[i].RateT / 604 * 600 + "px";
+                                div.style.left = json[i].RateL / 1242 * (1400) + "px";
+                                div.style.zIndex = json[i].Index;
+                            if (json[i].Tag.toString() == "3") {
+                                div.style.width = json[i].RateW;
+                                var con = document.createElement("span");
+                                con.setAttribute("id", "sp" + divID);
+                                con.innerHTML = json[i].SensorNum;
+                                div.appendChild(con);
+
+                                con.title = "显示类型：输出文本 \n值：" + json[i].SensorNum;
+
+
+                            }
+                            else if (json[i].Tag.toString() == "4") {
+                                div.style.width = "500px";
+                                var con = document.createElement("span");
+                                con.setAttribute("id", "sp" + divID);
+                                var listValue = json[i].setValue.toString().split("|");
+                                var text = "";
+                                var list = [];
+                                list.push(json[i].Type + "/");
+                                list.push(json[i].TypeName + "/");
+                                list.push(json[i].SensorNum + "/");
+                                list.push(json[i].Place + "/");
+                                list.push(json[i].Unit);
+                                var StateName = json[i].ShowValue;
+                                for (var j = 0; j < listValue.length - 1; j++) {
+
+                                    if (listValue[j] == 1) {
+                                        text += list[j];
+                                    }
+                                    if (j == 3) {
+                                        if (json[i].StateCode == 0) {
+
+                                            text += json[i].ShowValue + " ";
+                                        }
+                                        else {
+
+                                            switch (json[i].StateCode) {
+                                                case 1: StateName = "网络中断"; break;
+                                                case 2: StateName = "传输异常"; break;
+                                                case 3: StateName = "通讯中断"; break;
+                                                case 4: StateName = "网络故障"; break;
+                                                case 5: StateName = "数据延时"; break;
+                                            }
+                                            text += StateName + " ";
+                                        }
+                                    }
+                                }
+                                con.innerHTML = text;
+                                con.title = "显示类型：数据文本 \n设备类型：" + json[i].Type + "\n测点编号：" + json[i].SensorNum + "/" + json[i].Place + "/" + json[i].TypeName + "\n测点值：" + StateName + json[i].Unit;
+
+
+                                var temp = document.createElement("span");
+                                temp.innerHTML = text;
+                                par.appendChild(temp);
+                                div.style.width = temp.offsetWidth + 20 + "px";
+                                document.getElementById("divMain").removeChild(temp);
+                                div.appendChild(con);
+                            }
+                            else {
+                                var img = document.createElement("img");
+                                img.setAttribute("id", "img" + divID);
+
+                                if (json[i].SensorNum != null && json[i].SensorNum != "") {
+                                    if (json[i].StateCode == 0) {
+                                        img.textContent = "设备类型：" + json[i].Type + "\n设备编号：" + json[i].SensorNum + "/" + json[i].Place + "/" + json[i].TypeName + "\n测点值：" + json[i].ShowValue;
+
+                                    }
+                                    else {
+                                        var StateName = "";
+                                        switch (json[i].StateCode) {
+                                            case 1: StateName = "网络中断"; break;
+                                            case 2: StateName = "传输异常"; break;
+                                            case 3: StateName = "通讯中断"; break;
+                                            case 4: StateName = "网络故障"; break;
+                                            case 5: StateName = "数据延时"; break;
+                                        }
+                                        img.textContent = "设备类型：" + json[i].Type + "\n设备编号：" + json[i].SensorNum + "/" + json[i].Place + "/" + json[i].TypeName + "\n测点值：" + StateName;
+                                    }
+                                }
+                                //img.stop();
+
+                                img.addEventListener("mouseover", function () {
+                                    var tValue = this.textContent;
+                                    this.setAttribute("title", tValue);
+                                }, false);
+                                //img.style.cursor = "pointer";
+                                img.style.width = json[i].RateW + "px";
+                                img.style.height = json[i].RateH + "px";
+                                img.src = json[i].ImageSrc;
+                                div.style.transform = "rotate(" + json[i].Angle + "deg)"
+                                div.appendChild(img);
+
+                            }
+
+
+
+                            par.appendChild(div);
+
+                        }
+                        LoadData();
+                    }
+                },
+                error: function (e) {
+                    alert("加载动画失败,请检查网络!");
+                }
+            });
+
+        }
+    </script>
+

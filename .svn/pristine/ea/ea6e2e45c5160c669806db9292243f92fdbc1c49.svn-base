@@ -1,0 +1,211 @@
+﻿@{
+    ViewBag.Title = "SetDT";
+    Layout = "~/Views/Shared/_LayoutEditer.cshtml";
+}
+<script type="text/javascript">
+    var TestOK = 0;
+    $(document).ready(function(){
+   
+        LoadData();
+    });
+
+
+    function Save(obj)
+    {
+        var IP = $("#IP").textbox("getText");
+        var PWD = $("#PWD").textbox("getText");
+        var UID = $("#UID").textbox("getText");
+        var DB = $("#DB").textbox("getText");
+        if (IP == "")
+        {
+            document.getElementById("Message").innerText = "请填写数据库IP！";
+            $("#MessageBox").window("open");
+            return false;
+        }
+        if (PWD == "") {
+            document.getElementById("Message").innerText = "请填写数据库密码！";
+            $("#MessageBox").window("open");
+            return false;
+        }
+        if (UID == "") {
+            document.getElementById("Message").innerText = "请填写数据库用户名！";
+            $("#MessageBox").window("open");
+            return false;
+        }
+        if (DB == "") {
+            document.getElementById("Message").innerText = "请填写数据库名！";
+            $("#MessageBox").window("open");
+            return false;
+        }
+        if (DB.toUpperCase() != "KJ128N") {
+            document.getElementById("Message").innerText = "目前数据库仅支持KJ128N！";
+            $("#MessageBox").window("open");
+            return false;
+        }
+        if (obj == 1) {
+            if (TestOK == 0) {
+                $.messager.confirm('提示', '尚未进行数据库测试，是否确定保存？', function (result) {
+                    if (!result) {
+                        return false;
+                    } else {
+                        SaveThis(IP, UID, PWD, DB, obj);
+                    }
+
+                });
+            }
+            else if (TestOK == -1) {
+                $.messager.confirm('提示', '数据库未连接成功，是否确定保存？', function (result) {
+                    if (!result) {
+                        return false;
+                    }
+                    else {
+                        SaveThis(IP, UID, PWD, DB, obj);
+                    }
+                });
+            }
+            else if (TestOK == 1) {
+                SaveThis(IP, UID, PWD, DB, obj);
+            }
+
+        }
+        else {
+            SaveThis(IP, UID, PWD, DB, obj);
+        }
+            
+
+    }
+
+    function  SaveThis(IP, UID, PWD, DB, obj)
+    {
+        $.messager.progress();	// 显示进度条
+        $.ajax({
+            datatype: 'json',
+            type: 'post',
+            url: '../GrapSystem/SaveDB',
+            data: { "IP": IP, "UID": UID, "PWD": PWD, "DB": DB, "IsSave": obj },
+            success: function (data) {
+                $.messager.progress('close');
+                if (data.State == 1) {
+                    TestOK = 1;
+                }
+                else {
+                    TestOK = -1;
+                }
+                document.getElementById("Message").innerText = data.data;
+                $("#MessageBox").window("open");
+            },
+            error: function (data) {
+                $.messager.progress('close');
+                document.getElementById("Message").innerText = "测试失败，请检查数据库连接！";
+                $("#MessageBox").window("open");
+
+            }
+
+        });
+    }
+
+    function LoadData()
+    {
+        $.ajax({
+            type: 'post',
+            datatype: 'json',
+            url: '../GrapSystem/Init128',
+            success: function (data) {
+                if (data != "" || data != null) {
+                    var json = $.parseJSON(data);
+                    if (json.length == 4) {
+                        $("#IP").textbox("setText", json[0]);
+                        $("#DB").textbox("setText", json[3]);
+                        $("#UID").textbox("setText", json[1]);
+                        $("#PWD").textbox("setText", json[2]);
+                    }
+                    else {
+                        document.getElementById("Message").innerText = "获取128数据库信息不完整，请检查配置信息！";
+                        $("#MessageBox").window("open");
+                    }
+
+                }
+                else {
+                    document.getElementById("Message").innerText = "获取128数据库信息失败！";
+                    $("#MessageBox").window("open");
+
+                }
+            },
+            error: function (data) {
+                document.getElementById("Message").innerText = "error:获取128数据库信息失败！";
+                $("#MessageBox").window("open");
+            },
+
+
+        });
+    }
+</script>
+<style type="text/css">
+    td.left {
+        font-size: 14px;
+        border: 1px solid silver;
+        text-align: right;
+        width: 20%;
+    }
+
+    td.right {
+        font-size: 14px;
+        text-align: left;
+        border: 1px solid silver;
+        width: 30%;
+    }
+</style>
+<body>
+    <div  >
+        <br>
+        <table  style="text-align: center; width: 100%; height: 100%; border-width: 1px; border-collapse: collapse;">
+            <tr >
+                <td class="left">
+                    <div>数据库地址 :   </div>
+                </td>
+                <td class="right">
+                    <input type="text" id="IP" class="easyui-textbox" />
+                </td>
+            </tr>
+            <tr >
+                <td class="left">
+                    <div>数据库名 :   </div>
+                </td>
+                <td class="right">
+                    <input type="text" id="DB" class="easyui-textbox" />
+                </td>
+            </tr>
+            <tr >
+                <td  class="left">
+                    <div>用户名 :   </div>
+                </td>
+                <td class="right">
+                    <input type="text" id="UID" class="easyui-textbox" />
+                </td>
+            </tr>
+            <tr >
+                <td  class="left">
+                    <div>密码 :   </div>
+                </td>
+                <td class="right">
+                    <input type="text" id="PWD" class="easyui-textbox" />
+                </td>
+            </tr>
+        </table>
+        <br>
+        <a href="javascript:void(0)" id="Save" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" onclick="Save('1')" style="width:80px">保存</a>
+        &nbsp; &nbsp;  <a href="javascript:void(0)" id="Save" class="easyui-linkbutton" data-options="iconCls:'icon-tip'" onclick="Save('0')" style="width:80px">测试</a>
+         &nbsp; &nbsp; <a href="javascript:void(0)" id="Cancel" class="easyui-linkbutton" data-options="iconCls:'icon-undo'" onclick="LoadData()" style="width:80px">还原</a>
+    </div>
+  
+    <div id="MessageBox" class="easyui-dialog" title="提示" data-options="modal:true,closed:true" style="height:180px;width:300px;text-align:center;vertical-align:middle;">
+        <br />
+        <br />
+        <label id="Message" style="padding-top:50px; vertical-align:middle;">操作失败</label>
+        <div>
+            <a id="CloseThis" href="javascript:void(0)" class="easyui-linkbutton" data-options="onClick:function(){    $('#MessageBox').window('close');  }" style="width: 100px;top:130px;left:100px;position:absolute">
+                确定
+            </a>
+        </div>
+    </div>
+</body>

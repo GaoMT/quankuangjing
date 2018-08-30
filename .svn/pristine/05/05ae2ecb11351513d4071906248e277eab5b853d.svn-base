@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Config>
+  <Server>172.16.19.57\ADMINISTATOR</Server>
+  <UserName>sa</UserName>
+  <PassWord>sa</PassWord>
+  <DataBase>ShineView_Data</DataBase>
+</Config>

@@ -1,0 +1,456 @@
+Time:    2017-11-09 13:43:19
+Message: 行数：1
+-----------------------------------------------------------
+
+
+Time:    2017-11-09 13:43:20
+Message: byte[]长度2979
+-----------------------------------------------------------
+
+
+Time:    2017-11-09 13:43:20
+Message: 行数：1
+-----------------------------------------------------------
+
+
+Time:    2017-11-09 13:43:20
+Message: byte[]长度2979
+-----------------------------------------------------------
+
+
+Time:    2017-11-09 13:44:20
+Message: 行数：1
+-----------------------------------------------------------
+
+
+Time:    2017-11-09 13:44:20
+Message: ConfigXmlSystem.Xml.XmlDocument
+-----------------------------------------------------------
+
+
+Time:    2017-11-09 13:46:26
+Message: 行数：1
+-----------------------------------------------------------
+
+
+Time:    2017-11-09 13:46:26
+Message: byte[]长度2979
+-----------------------------------------------------------
+
+
+Time:    2017-11-09 13:46:26
+Message: ConfigXml<?xml version="1.0" encoding="GBK" standalone="yes"?><!DOCTYPE root[<!ELEMENT Station ANY><!ATTLIST Station SSN ID #REQUIRED>]><MapConfig><Divs><Div key="" MinWidth="500" MaxWidth="20000">新建图形</Div></Divs><Statics /><Stations><Station SSN="主竖井井口">新建图层|新建图形|</Station><Station SSN="主竖井-220M">新建图层|新建图形|</Station><Station SSN="主竖井-220平巷车场">新建图层|新建图形|</Station><Station SSN="主竖井-340M">新建图层|新建图形|</Station><Station SSN="主竖井-340北巷西沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-340北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-340延脉点">新建图层|新建图形|</Station><Station SSN="主竖井-340大风机">新建图层|新建图形|</Station><Station SSN="主竖井-365M">新建图层|新建图形|</Station><Station SSN="主竖井-550M">新建图层|新建图形|</Station><Station SSN="主竖井-550北巷西沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-550北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-650M">新建图层|新建图形|</Station><Station SSN="主竖井-650北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-650北巷西沿脉">新建图层|新建图形|</Station><Station SSN="650避难硐室">新建图层|新建图形|</Station><Station SSN="主竖井-675M">新建图层|新建图形|</Station><Station SSN="106井井口">新建图层|新建图形|</Station><Station SSN="106井-100M炸药库">新建图层|新建图形|</Station><Station SSN="106井-100米">新建图层|新建图形|</Station><Station SSN="130大风机">新建图层|新建图形|</Station><Station SSN="106井-130M">新建图层|新建图形|</Station><Station SSN="106井-160M">新建图层|新建图形|</Station><Station SSN="106井-220M">新建图层|新建图形|</Station><Station SSN="斜井口">新建图层|</Station><Station SSN="-10M">新建图层|新建图形|</Station><Station SSN="-40M">新建图层|新建图形|</Station><Station SSN="-70M">新建图层|新建图形|</Station><Station SSN="-91M">新建图层|新建图形|</Station><Station SSN="-130M三分层">新建图层|新建图形|</Station><Station SSN="-130M一分层">新建图层|新建图形|</Station><Station SSN="-160M三分层">新建图层|新建图形|</Station><Station SSN="-160M一分层">新建图层|新建图形|</Station><Station SSN="-160M">新建图层|新建图形|</Station><Station SSN="-190M">新建图层|新建图形|</Station><Station SSN="-220M">新建图层|新建图形|</Station><Station SSN="70大风机">新建图层|新建图形|</Station><Station SSN="-550米西沿脉">新建图层|新建图形|</Station><Station SSN="-600米东沿脉">新建图层|新建图形|</Station><Station SSN="-650西沿脉">新建图层|新建图形|</Station><Station SSN="-650盲竖井码头门">新建图层|新建图形|</Station><Station SSN="-650斜井井口">新建图层|新建图形|</Station><Station SSN="斜井井口">新建图形|</Station></Stations><Words /><Map MinWidth="500" MaxWidth="20000">-1574213074</Map></MapConfig>
+-----------------------------------------------------------
+
+
+Time:    2017-11-09 13:46:26
+Message: 行数：1
+-----------------------------------------------------------
+
+
+Time:    2017-11-09 13:46:26
+Message: byte[]长度2979
+-----------------------------------------------------------
+
+
+Time:    2017-11-09 13:46:26
+Message: OverGraph:1
+-----------------------------------------------------------
+
+
+Time:    2017-11-09 13:46:26
+Message: ConfigXml<?xml version="1.0" encoding="GBK" standalone="yes"?><!DOCTYPE root[<!ELEMENT Station ANY><!ATTLIST Station SSN ID #REQUIRED>]><MapConfig><Divs><Div key="" MinWidth="500" MaxWidth="20000">新建图形</Div></Divs><Statics /><Stations><Station SSN="主竖井井口">新建图层|新建图形|</Station><Station SSN="主竖井-220M">新建图层|新建图形|</Station><Station SSN="主竖井-220平巷车场">新建图层|新建图形|</Station><Station SSN="主竖井-340M">新建图层|新建图形|</Station><Station SSN="主竖井-340北巷西沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-340北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-340延脉点">新建图层|新建图形|</Station><Station SSN="主竖井-340大风机">新建图层|新建图形|</Station><Station SSN="主竖井-365M">新建图层|新建图形|</Station><Station SSN="主竖井-550M">新建图层|新建图形|</Station><Station SSN="主竖井-550北巷西沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-550北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-650M">新建图层|新建图形|</Station><Station SSN="主竖井-650北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-650北巷西沿脉">新建图层|新建图形|</Station><Station SSN="650避难硐室">新建图层|新建图形|</Station><Station SSN="主竖井-675M">新建图层|新建图形|</Station><Station SSN="106井井口">新建图层|新建图形|</Station><Station SSN="106井-100M炸药库">新建图层|新建图形|</Station><Station SSN="106井-100米">新建图层|新建图形|</Station><Station SSN="130大风机">新建图层|新建图形|</Station><Station SSN="106井-130M">新建图层|新建图形|</Station><Station SSN="106井-160M">新建图层|新建图形|</Station><Station SSN="106井-220M">新建图层|新建图形|</Station><Station SSN="斜井口">新建图层|</Station><Station SSN="-10M">新建图层|新建图形|</Station><Station SSN="-40M">新建图层|新建图形|</Station><Station SSN="-70M">新建图层|新建图形|</Station><Station SSN="-91M">新建图层|新建图形|</Station><Station SSN="-130M三分层">新建图层|新建图形|</Station><Station SSN="-130M一分层">新建图层|新建图形|</Station><Station SSN="-160M三分层">新建图层|新建图形|</Station><Station SSN="-160M一分层">新建图层|新建图形|</Station><Station SSN="-160M">新建图层|新建图形|</Station><Station SSN="-190M">新建图层|新建图形|</Station><Station SSN="-220M">新建图层|新建图形|</Station><Station SSN="70大风机">新建图层|新建图形|</Station><Station SSN="-550米西沿脉">新建图层|新建图形|</Station><Station SSN="-600米东沿脉">新建图层|新建图形|</Station><Station SSN="-650西沿脉">新建图层|新建图形|</Station><Station SSN="-650盲竖井码头门">新建图层|新建图形|</Station><Station SSN="-650斜井井口">新建图层|新建图形|</Station><Station SSN="斜井井口">新建图形|</Station></Stations><Words /><Map MinWidth="500" MaxWidth="20000">-1574213074</Map></MapConfig>
+-----------------------------------------------------------
+
+
+Time:    2017-11-09 13:46:26
+Message: 行数：1
+-----------------------------------------------------------
+
+
+Time:    2017-11-09 13:46:26
+Message: byte[]长度2979
+-----------------------------------------------------------
+
+
+Time:    2017-11-09 13:46:26
+Message: ConfigXml<?xml version="1.0" encoding="GBK" standalone="yes"?><!DOCTYPE root[<!ELEMENT Station ANY><!ATTLIST Station SSN ID #REQUIRED>]><MapConfig><Divs><Div key="" MinWidth="500" MaxWidth="20000">新建图形</Div></Divs><Statics /><Stations><Station SSN="主竖井井口">新建图层|新建图形|</Station><Station SSN="主竖井-220M">新建图层|新建图形|</Station><Station SSN="主竖井-220平巷车场">新建图层|新建图形|</Station><Station SSN="主竖井-340M">新建图层|新建图形|</Station><Station SSN="主竖井-340北巷西沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-340北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-340延脉点">新建图层|新建图形|</Station><Station SSN="主竖井-340大风机">新建图层|新建图形|</Station><Station SSN="主竖井-365M">新建图层|新建图形|</Station><Station SSN="主竖井-550M">新建图层|新建图形|</Station><Station SSN="主竖井-550北巷西沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-550北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-650M">新建图层|新建图形|</Station><Station SSN="主竖井-650北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-650北巷西沿脉">新建图层|新建图形|</Station><Station SSN="650避难硐室">新建图层|新建图形|</Station><Station SSN="主竖井-675M">新建图层|新建图形|</Station><Station SSN="106井井口">新建图层|新建图形|</Station><Station SSN="106井-100M炸药库">新建图层|新建图形|</Station><Station SSN="106井-100米">新建图层|新建图形|</Station><Station SSN="130大风机">新建图层|新建图形|</Station><Station SSN="106井-130M">新建图层|新建图形|</Station><Station SSN="106井-160M">新建图层|新建图形|</Station><Station SSN="106井-220M">新建图层|新建图形|</Station><Station SSN="斜井口">新建图层|</Station><Station SSN="-10M">新建图层|新建图形|</Station><Station SSN="-40M">新建图层|新建图形|</Station><Station SSN="-70M">新建图层|新建图形|</Station><Station SSN="-91M">新建图层|新建图形|</Station><Station SSN="-130M三分层">新建图层|新建图形|</Station><Station SSN="-130M一分层">新建图层|新建图形|</Station><Station SSN="-160M三分层">新建图层|新建图形|</Station><Station SSN="-160M一分层">新建图层|新建图形|</Station><Station SSN="-160M">新建图层|新建图形|</Station><Station SSN="-190M">新建图层|新建图形|</Station><Station SSN="-220M">新建图层|新建图形|</Station><Station SSN="70大风机">新建图层|新建图形|</Station><Station SSN="-550米西沿脉">新建图层|新建图形|</Station><Station SSN="-600米东沿脉">新建图层|新建图形|</Station><Station SSN="-650西沿脉">新建图层|新建图形|</Station><Station SSN="-650盲竖井码头门">新建图层|新建图形|</Station><Station SSN="-650斜井井口">新建图层|新建图形|</Station><Station SSN="斜井井口">新建图形|</Station></Stations><Words /><Map MinWidth="500" MaxWidth="20000">-1574213074</Map></MapConfig>
+-----------------------------------------------------------
+
+
+Time:    2017-11-09 13:46:26
+Message: OverGraph:1
+-----------------------------------------------------------
+
+
+Time:    2017-11-09 13:46:26
+Message: OverGraph:1
+-----------------------------------------------------------
+
+
+-----------------------------------------------------------
+Time:
+2017-11-09 13:48:44
+Message:
+行数：1
+
+-----------------------------------------------------------
+Time:
+2017-11-09 13:48:44
+Message:
+byte[]长度2979
+
+-----------------------------------------------------------
+Time:
+2017-11-09 13:48:44
+Message:
+行数：1
+
+-----------------------------------------------------------
+Time:
+2017-11-09 13:48:44
+Message:
+byte[]长度2979
+
+-----------------------------------------------------------
+Time:
+2017-11-09 13:48:44
+Message:
+Exception:文件“E:\联网\3shine\InternetDataMine\InternetDataMine\System\Log\2017-11-09.txt”正由另一进程使用，因此该进程无法访问此文件。
+
+-----------------------------------------------------------
+Time:
+2017-11-09 13:48:44
+Message:
+ConfigXml<?xml version="1.0" encoding="GBK" standalone="yes"?><!DOCTYPE root[<!ELEMENT Station ANY><!ATTLIST Station SSN ID #REQUIRED>]><MapConfig><Divs><Div key="" MinWidth="500" MaxWidth="20000">新建图形</Div></Divs><Statics /><Stations><Station SSN="主竖井井口">新建图层|新建图形|</Station><Station SSN="主竖井-220M">新建图层|新建图形|</Station><Station SSN="主竖井-220平巷车场">新建图层|新建图形|</Station><Station SSN="主竖井-340M">新建图层|新建图形|</Station><Station SSN="主竖井-340北巷西沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-340北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-340延脉点">新建图层|新建图形|</Station><Station SSN="主竖井-340大风机">新建图层|新建图形|</Station><Station SSN="主竖井-365M">新建图层|新建图形|</Station><Station SSN="主竖井-550M">新建图层|新建图形|</Station><Station SSN="主竖井-550北巷西沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-550北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-650M">新建图层|新建图形|</Station><Station SSN="主竖井-650北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-650北巷西沿脉">新建图层|新建图形|</Station><Station SSN="650避难硐室">新建图层|新建图形|</Station><Station SSN="主竖井-675M">新建图层|新建图形|</Station><Station SSN="106井井口">新建图层|新建图形|</Station><Station SSN="106井-100M炸药库">新建图层|新建图形|</Station><Station SSN="106井-100米">新建图层|新建图形|</Station><Station SSN="130大风机">新建图层|新建图形|</Station><Station SSN="106井-130M">新建图层|新建图形|</Station><Station SSN="106井-160M">新建图层|新建图形|</Station><Station SSN="106井-220M">新建图层|新建图形|</Station><Station SSN="斜井口">新建图层|</Station><Station SSN="-10M">新建图层|新建图形|</Station><Station SSN="-40M">新建图层|新建图形|</Station><Station SSN="-70M">新建图层|新建图形|</Station><Station SSN="-91M">新建图层|新建图形|</Station><Station SSN="-130M三分层">新建图层|新建图形|</Station><Station SSN="-130M一分层">新建图层|新建图形|</Station><Station SSN="-160M三分层">新建图层|新建图形|</Station><Station SSN="-160M一分层">新建图层|新建图形|</Station><Station SSN="-160M">新建图层|新建图形|</Station><Station SSN="-190M">新建图层|新建图形|</Station><Station SSN="-220M">新建图层|新建图形|</Station><Station SSN="70大风机">新建图层|新建图形|</Station><Station SSN="-550米西沿脉">新建图层|新建图形|</Station><Station SSN="-600米东沿脉">新建图层|新建图形|</Station><Station SSN="-650西沿脉">新建图层|新建图形|</Station><Station SSN="-650盲竖井码头门">新建图层|新建图形|</Station><Station SSN="-650斜井井口">新建图层|新建图形|</Station><Station SSN="斜井井口">新建图形|</Station></Stations><Words /><Map MinWidth="500" MaxWidth="20000">-1574213074</Map></MapConfig>
+
+-----------------------------------------------------------
+Time:
+2017-11-09 13:48:44
+Message:
+Exception:文件“E:\联网\3shine\InternetDataMine\InternetDataMine\MapGis\MapConfigFiles\Buffer.shz”正由另一进程使用，因此该进程无法访问此文件。
+
+-----------------------------------------------------------
+Time:
+2017-11-09 13:48:44
+Message:
+OverGraph:1
+
+-----------------------------------------------------------
+Time:
+2017-11-09 13:49:13
+Message:
+行数：1
+
+-----------------------------------------------------------
+Time:
+2017-11-09 13:49:13
+Message:
+byte[]长度2979
+
+-----------------------------------------------------------
+Time:
+2017-11-09 13:49:13
+Message:
+ConfigXml<?xml version="1.0" encoding="GBK" standalone="yes"?><!DOCTYPE root[<!ELEMENT Station ANY><!ATTLIST Station SSN ID #REQUIRED>]><MapConfig><Divs><Div key="" MinWidth="500" MaxWidth="20000">新建图形</Div></Divs><Statics /><Stations><Station SSN="主竖井井口">新建图层|新建图形|</Station><Station SSN="主竖井-220M">新建图层|新建图形|</Station><Station SSN="主竖井-220平巷车场">新建图层|新建图形|</Station><Station SSN="主竖井-340M">新建图层|新建图形|</Station><Station SSN="主竖井-340北巷西沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-340北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-340延脉点">新建图层|新建图形|</Station><Station SSN="主竖井-340大风机">新建图层|新建图形|</Station><Station SSN="主竖井-365M">新建图层|新建图形|</Station><Station SSN="主竖井-550M">新建图层|新建图形|</Station><Station SSN="主竖井-550北巷西沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-550北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-650M">新建图层|新建图形|</Station><Station SSN="主竖井-650北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-650北巷西沿脉">新建图层|新建图形|</Station><Station SSN="650避难硐室">新建图层|新建图形|</Station><Station SSN="主竖井-675M">新建图层|新建图形|</Station><Station SSN="106井井口">新建图层|新建图形|</Station><Station SSN="106井-100M炸药库">新建图层|新建图形|</Station><Station SSN="106井-100米">新建图层|新建图形|</Station><Station SSN="130大风机">新建图层|新建图形|</Station><Station SSN="106井-130M">新建图层|新建图形|</Station><Station SSN="106井-160M">新建图层|新建图形|</Station><Station SSN="106井-220M">新建图层|新建图形|</Station><Station SSN="斜井口">新建图层|</Station><Station SSN="-10M">新建图层|新建图形|</Station><Station SSN="-40M">新建图层|新建图形|</Station><Station SSN="-70M">新建图层|新建图形|</Station><Station SSN="-91M">新建图层|新建图形|</Station><Station SSN="-130M三分层">新建图层|新建图形|</Station><Station SSN="-130M一分层">新建图层|新建图形|</Station><Station SSN="-160M三分层">新建图层|新建图形|</Station><Station SSN="-160M一分层">新建图层|新建图形|</Station><Station SSN="-160M">新建图层|新建图形|</Station><Station SSN="-190M">新建图层|新建图形|</Station><Station SSN="-220M">新建图层|新建图形|</Station><Station SSN="70大风机">新建图层|新建图形|</Station><Station SSN="-550米西沿脉">新建图层|新建图形|</Station><Station SSN="-600米东沿脉">新建图层|新建图形|</Station><Station SSN="-650西沿脉">新建图层|新建图形|</Station><Station SSN="-650盲竖井码头门">新建图层|新建图形|</Station><Station SSN="-650斜井井口">新建图层|新建图形|</Station><Station SSN="斜井井口">新建图形|</Station></Stations><Words /><Map MinWidth="500" MaxWidth="20000">-1574213074</Map></MapConfig>
+
+-----------------------------------------------------------
+Time:
+2017-11-09 13:49:13
+Message:
+OverGraph:1
+
+-----------------------------------------------------------
+Time:
+2017-11-09 13:49:13
+Message:
+行数：1
+
+-----------------------------------------------------------
+Time:
+2017-11-09 13:49:13
+Message:
+Exception:文件“E:\联网\3shine\InternetDataMine\InternetDataMine\System\Log\2017-11-09.txt”正由另一进程使用，因此该进程无法访问此文件。
+
+-----------------------------------------------------------
+Time:
+2017-11-09 13:49:13
+Message:
+byte[]长度2979
+
+-----------------------------------------------------------
+Time:
+2017-11-09 13:49:13
+Message:
+ConfigXml<?xml version="1.0" encoding="GBK" standalone="yes"?><!DOCTYPE root[<!ELEMENT Station ANY><!ATTLIST Station SSN ID #REQUIRED>]><MapConfig><Divs><Div key="" MinWidth="500" MaxWidth="20000">新建图形</Div></Divs><Statics /><Stations><Station SSN="主竖井井口">新建图层|新建图形|</Station><Station SSN="主竖井-220M">新建图层|新建图形|</Station><Station SSN="主竖井-220平巷车场">新建图层|新建图形|</Station><Station SSN="主竖井-340M">新建图层|新建图形|</Station><Station SSN="主竖井-340北巷西沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-340北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-340延脉点">新建图层|新建图形|</Station><Station SSN="主竖井-340大风机">新建图层|新建图形|</Station><Station SSN="主竖井-365M">新建图层|新建图形|</Station><Station SSN="主竖井-550M">新建图层|新建图形|</Station><Station SSN="主竖井-550北巷西沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-550北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-650M">新建图层|新建图形|</Station><Station SSN="主竖井-650北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-650北巷西沿脉">新建图层|新建图形|</Station><Station SSN="650避难硐室">新建图层|新建图形|</Station><Station SSN="主竖井-675M">新建图层|新建图形|</Station><Station SSN="106井井口">新建图层|新建图形|</Station><Station SSN="106井-100M炸药库">新建图层|新建图形|</Station><Station SSN="106井-100米">新建图层|新建图形|</Station><Station SSN="130大风机">新建图层|新建图形|</Station><Station SSN="106井-130M">新建图层|新建图形|</Station><Station SSN="106井-160M">新建图层|新建图形|</Station><Station SSN="106井-220M">新建图层|新建图形|</Station><Station SSN="斜井口">新建图层|</Station><Station SSN="-10M">新建图层|新建图形|</Station><Station SSN="-40M">新建图层|新建图形|</Station><Station SSN="-70M">新建图层|新建图形|</Station><Station SSN="-91M">新建图层|新建图形|</Station><Station SSN="-130M三分层">新建图层|新建图形|</Station><Station SSN="-130M一分层">新建图层|新建图形|</Station><Station SSN="-160M三分层">新建图层|新建图形|</Station><Station SSN="-160M一分层">新建图层|新建图形|</Station><Station SSN="-160M">新建图层|新建图形|</Station><Station SSN="-190M">新建图层|新建图形|</Station><Station SSN="-220M">新建图层|新建图形|</Station><Station SSN="70大风机">新建图层|新建图形|</Station><Station SSN="-550米西沿脉">新建图层|新建图形|</Station><Station SSN="-600米东沿脉">新建图层|新建图形|</Station><Station SSN="-650西沿脉">新建图层|新建图形|</Station><Station SSN="-650盲竖井码头门">新建图层|新建图形|</Station><Station SSN="-650斜井井口">新建图层|新建图形|</Station><Station SSN="斜井井口">新建图形|</Station></Stations><Words /><Map MinWidth="500" MaxWidth="20000">-1574213074</Map></MapConfig>
+
+-----------------------------------------------------------
+Time:
+2017-11-09 13:49:13
+Message:
+OverGraph:1
+
+-----------------------------------------------------------
+Time:
+2017-11-09 13:55:52
+Message:
+行数：1
+
+-----------------------------------------------------------
+Time:
+2017-11-09 13:55:52
+Message:
+byte[]长度2979
+
+-----------------------------------------------------------
+Time:
+2017-11-09 13:56:23
+Message:
+行数：1
+
+-----------------------------------------------------------
+Time:
+2017-11-09 13:56:23
+Message:
+byte[]长度2979
+
+-----------------------------------------------------------
+Time:
+2017-11-09 13:56:23
+Message:
+行数：1
+
+-----------------------------------------------------------
+Time:
+2017-11-09 13:56:23
+Message:
+byte[]长度2979
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:07:33
+Message:
+行数：1
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:07:33
+Message:
+byte[]长度2979
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:07:33
+Message:
+行数：1
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:07:33
+Message:
+byte[]长度2979
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:07:36
+Message:
+BytesToXml-fs:E:\联网\3shine\InternetDataMine\InternetDataMine\MapGis\MapConfigFiles\Buffer.shz
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:07:36
+Message:
+行数：1
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:07:36
+Message:
+byte[]长度2979
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:07:36
+Message:
+BytesToXml-fs:E:\联网\3shine\InternetDataMine\InternetDataMine\MapGis\MapConfigFiles\Buffer.shz
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:07:36
+Message:
+ConfigXml<?xml version="1.0" encoding="GBK" standalone="yes"?><!DOCTYPE root[<!ELEMENT Station ANY><!ATTLIST Station SSN ID #REQUIRED>]><MapConfig><Divs><Div key="" MinWidth="500" MaxWidth="20000">新建图形</Div></Divs><Statics /><Stations><Station SSN="主竖井井口">新建图层|新建图形|</Station><Station SSN="主竖井-220M">新建图层|新建图形|</Station><Station SSN="主竖井-220平巷车场">新建图层|新建图形|</Station><Station SSN="主竖井-340M">新建图层|新建图形|</Station><Station SSN="主竖井-340北巷西沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-340北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-340延脉点">新建图层|新建图形|</Station><Station SSN="主竖井-340大风机">新建图层|新建图形|</Station><Station SSN="主竖井-365M">新建图层|新建图形|</Station><Station SSN="主竖井-550M">新建图层|新建图形|</Station><Station SSN="主竖井-550北巷西沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-550北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-650M">新建图层|新建图形|</Station><Station SSN="主竖井-650北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-650北巷西沿脉">新建图层|新建图形|</Station><Station SSN="650避难硐室">新建图层|新建图形|</Station><Station SSN="主竖井-675M">新建图层|新建图形|</Station><Station SSN="106井井口">新建图层|新建图形|</Station><Station SSN="106井-100M炸药库">新建图层|新建图形|</Station><Station SSN="106井-100米">新建图层|新建图形|</Station><Station SSN="130大风机">新建图层|新建图形|</Station><Station SSN="106井-130M">新建图层|新建图形|</Station><Station SSN="106井-160M">新建图层|新建图形|</Station><Station SSN="106井-220M">新建图层|新建图形|</Station><Station SSN="斜井口">新建图层|</Station><Station SSN="-10M">新建图层|新建图形|</Station><Station SSN="-40M">新建图层|新建图形|</Station><Station SSN="-70M">新建图层|新建图形|</Station><Station SSN="-91M">新建图层|新建图形|</Station><Station SSN="-130M三分层">新建图层|新建图形|</Station><Station SSN="-130M一分层">新建图层|新建图形|</Station><Station SSN="-160M三分层">新建图层|新建图形|</Station><Station SSN="-160M一分层">新建图层|新建图形|</Station><Station SSN="-160M">新建图层|新建图形|</Station><Station SSN="-190M">新建图层|新建图形|</Station><Station SSN="-220M">新建图层|新建图形|</Station><Station SSN="70大风机">新建图层|新建图形|</Station><Station SSN="-550米西沿脉">新建图层|新建图形|</Station><Station SSN="-600米东沿脉">新建图层|新建图形|</Station><Station SSN="-650西沿脉">新建图层|新建图形|</Station><Station SSN="-650盲竖井码头门">新建图层|新建图形|</Station><Station SSN="-650斜井井口">新建图层|新建图形|</Station><Station SSN="斜井井口">新建图形|</Station></Stations><Words /><Map MinWidth="500" MaxWidth="20000">-1574213074</Map></MapConfig>
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:07:36
+Message:
+Exception:文件“E:\联网\3shine\InternetDataMine\InternetDataMine\System\Log\2017-11-09.txt”正由另一进程使用，因此该进程无法访问此文件。
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:07:36
+Message:
+Exception:文件“E:\联网\3shine\InternetDataMine\InternetDataMine\MapGis\MapConfigFiles\Buffer.shz”正由另一进程使用，因此该进程无法访问此文件。
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:07:36
+Message:
+OverGraph:1
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:07:40
+Message:
+行数：1
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:07:40
+Message:
+byte[]长度2979
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:07:40
+Message:
+BytesToXml-fs:E:\联网\3shine\InternetDataMine\InternetDataMine\MapGis\MapConfigFiles\Buffer.shz
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:07:40
+Message:
+ConfigXml<?xml version="1.0" encoding="GBK" standalone="yes"?><!DOCTYPE root[<!ELEMENT Station ANY><!ATTLIST Station SSN ID #REQUIRED>]><MapConfig><Divs><Div key="" MinWidth="500" MaxWidth="20000">新建图形</Div></Divs><Statics /><Stations><Station SSN="主竖井井口">新建图层|新建图形|</Station><Station SSN="主竖井-220M">新建图层|新建图形|</Station><Station SSN="主竖井-220平巷车场">新建图层|新建图形|</Station><Station SSN="主竖井-340M">新建图层|新建图形|</Station><Station SSN="主竖井-340北巷西沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-340北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-340延脉点">新建图层|新建图形|</Station><Station SSN="主竖井-340大风机">新建图层|新建图形|</Station><Station SSN="主竖井-365M">新建图层|新建图形|</Station><Station SSN="主竖井-550M">新建图层|新建图形|</Station><Station SSN="主竖井-550北巷西沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-550北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-650M">新建图层|新建图形|</Station><Station SSN="主竖井-650北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-650北巷西沿脉">新建图层|新建图形|</Station><Station SSN="650避难硐室">新建图层|新建图形|</Station><Station SSN="主竖井-675M">新建图层|新建图形|</Station><Station SSN="106井井口">新建图层|新建图形|</Station><Station SSN="106井-100M炸药库">新建图层|新建图形|</Station><Station SSN="106井-100米">新建图层|新建图形|</Station><Station SSN="130大风机">新建图层|新建图形|</Station><Station SSN="106井-130M">新建图层|新建图形|</Station><Station SSN="106井-160M">新建图层|新建图形|</Station><Station SSN="106井-220M">新建图层|新建图形|</Station><Station SSN="斜井口">新建图层|</Station><Station SSN="-10M">新建图层|新建图形|</Station><Station SSN="-40M">新建图层|新建图形|</Station><Station SSN="-70M">新建图层|新建图形|</Station><Station SSN="-91M">新建图层|新建图形|</Station><Station SSN="-130M三分层">新建图层|新建图形|</Station><Station SSN="-130M一分层">新建图层|新建图形|</Station><Station SSN="-160M三分层">新建图层|新建图形|</Station><Station SSN="-160M一分层">新建图层|新建图形|</Station><Station SSN="-160M">新建图层|新建图形|</Station><Station SSN="-190M">新建图层|新建图形|</Station><Station SSN="-220M">新建图层|新建图形|</Station><Station SSN="70大风机">新建图层|新建图形|</Station><Station SSN="-550米西沿脉">新建图层|新建图形|</Station><Station SSN="-600米东沿脉">新建图层|新建图形|</Station><Station SSN="-650西沿脉">新建图层|新建图形|</Station><Station SSN="-650盲竖井码头门">新建图层|新建图形|</Station><Station SSN="-650斜井井口">新建图层|新建图形|</Station><Station SSN="斜井井口">新建图形|</Station></Stations><Words /><Map MinWidth="500" MaxWidth="20000">-1574213074</Map></MapConfig>
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:07:40
+Message:
+OverGraph:1
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:07:40
+Message:
+行数：1
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:07:40
+Message:
+byte[]长度2979
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:07:40
+Message:
+BytesToXml-fs:E:\联网\3shine\InternetDataMine\InternetDataMine\MapGis\MapConfigFiles\Buffer.shz
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:07:40
+Message:
+Exception:文件“E:\联网\3shine\InternetDataMine\InternetDataMine\System\Log\2017-11-09.txt”正由另一进程使用，因此该进程无法访问此文件。
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:07:40
+Message:
+ConfigXml<?xml version="1.0" encoding="GBK" standalone="yes"?><!DOCTYPE root[<!ELEMENT Station ANY><!ATTLIST Station SSN ID #REQUIRED>]><MapConfig><Divs><Div key="" MinWidth="500" MaxWidth="20000">新建图形</Div></Divs><Statics /><Stations><Station SSN="主竖井井口">新建图层|新建图形|</Station><Station SSN="主竖井-220M">新建图层|新建图形|</Station><Station SSN="主竖井-220平巷车场">新建图层|新建图形|</Station><Station SSN="主竖井-340M">新建图层|新建图形|</Station><Station SSN="主竖井-340北巷西沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-340北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-340延脉点">新建图层|新建图形|</Station><Station SSN="主竖井-340大风机">新建图层|新建图形|</Station><Station SSN="主竖井-365M">新建图层|新建图形|</Station><Station SSN="主竖井-550M">新建图层|新建图形|</Station><Station SSN="主竖井-550北巷西沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-550北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-650M">新建图层|新建图形|</Station><Station SSN="主竖井-650北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-650北巷西沿脉">新建图层|新建图形|</Station><Station SSN="650避难硐室">新建图层|新建图形|</Station><Station SSN="主竖井-675M">新建图层|新建图形|</Station><Station SSN="106井井口">新建图层|新建图形|</Station><Station SSN="106井-100M炸药库">新建图层|新建图形|</Station><Station SSN="106井-100米">新建图层|新建图形|</Station><Station SSN="130大风机">新建图层|新建图形|</Station><Station SSN="106井-130M">新建图层|新建图形|</Station><Station SSN="106井-160M">新建图层|新建图形|</Station><Station SSN="106井-220M">新建图层|新建图形|</Station><Station SSN="斜井口">新建图层|</Station><Station SSN="-10M">新建图层|新建图形|</Station><Station SSN="-40M">新建图层|新建图形|</Station><Station SSN="-70M">新建图层|新建图形|</Station><Station SSN="-91M">新建图层|新建图形|</Station><Station SSN="-130M三分层">新建图层|新建图形|</Station><Station SSN="-130M一分层">新建图层|新建图形|</Station><Station SSN="-160M三分层">新建图层|新建图形|</Station><Station SSN="-160M一分层">新建图层|新建图形|</Station><Station SSN="-160M">新建图层|新建图形|</Station><Station SSN="-190M">新建图层|新建图形|</Station><Station SSN="-220M">新建图层|新建图形|</Station><Station SSN="70大风机">新建图层|新建图形|</Station><Station SSN="-550米西沿脉">新建图层|新建图形|</Station><Station SSN="-600米东沿脉">新建图层|新建图形|</Station><Station SSN="-650西沿脉">新建图层|新建图形|</Station><Station SSN="-650盲竖井码头门">新建图层|新建图形|</Station><Station SSN="-650斜井井口">新建图层|新建图形|</Station><Station SSN="斜井井口">新建图形|</Station></Stations><Words /><Map MinWidth="500" MaxWidth="20000">-1574213074</Map></MapConfig>
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:07:40
+Message:
+OverGraph:1
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:08:19
+Message:
+行数：1
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:08:19
+Message:
+byte[]长度2979
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:08:19
+Message:
+BytesToXml-fs:E:\联网\3shine\InternetDataMine\InternetDataMine\MapGis\MapConfigFiles\Buffer.shz
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:08:19
+Message:
+ConfigXml<?xml version="1.0" encoding="GBK" standalone="yes"?><!DOCTYPE root[<!ELEMENT Station ANY><!ATTLIST Station SSN ID #REQUIRED>]><MapConfig><Divs><Div key="" MinWidth="500" MaxWidth="20000">新建图形</Div></Divs><Statics /><Stations><Station SSN="主竖井井口">新建图层|新建图形|</Station><Station SSN="主竖井-220M">新建图层|新建图形|</Station><Station SSN="主竖井-220平巷车场">新建图层|新建图形|</Station><Station SSN="主竖井-340M">新建图层|新建图形|</Station><Station SSN="主竖井-340北巷西沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-340北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-340延脉点">新建图层|新建图形|</Station><Station SSN="主竖井-340大风机">新建图层|新建图形|</Station><Station SSN="主竖井-365M">新建图层|新建图形|</Station><Station SSN="主竖井-550M">新建图层|新建图形|</Station><Station SSN="主竖井-550北巷西沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-550北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-650M">新建图层|新建图形|</Station><Station SSN="主竖井-650北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-650北巷西沿脉">新建图层|新建图形|</Station><Station SSN="650避难硐室">新建图层|新建图形|</Station><Station SSN="主竖井-675M">新建图层|新建图形|</Station><Station SSN="106井井口">新建图层|新建图形|</Station><Station SSN="106井-100M炸药库">新建图层|新建图形|</Station><Station SSN="106井-100米">新建图层|新建图形|</Station><Station SSN="130大风机">新建图层|新建图形|</Station><Station SSN="106井-130M">新建图层|新建图形|</Station><Station SSN="106井-160M">新建图层|新建图形|</Station><Station SSN="106井-220M">新建图层|新建图形|</Station><Station SSN="斜井口">新建图层|</Station><Station SSN="-10M">新建图层|新建图形|</Station><Station SSN="-40M">新建图层|新建图形|</Station><Station SSN="-70M">新建图层|新建图形|</Station><Station SSN="-91M">新建图层|新建图形|</Station><Station SSN="-130M三分层">新建图层|新建图形|</Station><Station SSN="-130M一分层">新建图层|新建图形|</Station><Station SSN="-160M三分层">新建图层|新建图形|</Station><Station SSN="-160M一分层">新建图层|新建图形|</Station><Station SSN="-160M">新建图层|新建图形|</Station><Station SSN="-190M">新建图层|新建图形|</Station><Station SSN="-220M">新建图层|新建图形|</Station><Station SSN="70大风机">新建图层|新建图形|</Station><Station SSN="-550米西沿脉">新建图层|新建图形|</Station><Station SSN="-600米东沿脉">新建图层|新建图形|</Station><Station SSN="-650西沿脉">新建图层|新建图形|</Station><Station SSN="-650盲竖井码头门">新建图层|新建图形|</Station><Station SSN="-650斜井井口">新建图层|新建图形|</Station><Station SSN="斜井井口">新建图形|</Station></Stations><Words /><Map MinWidth="500" MaxWidth="20000">-1574213074</Map></MapConfig>
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:08:19
+Message:
+OverGraph:1
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:08:19
+Message:
+行数：1
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:08:19
+Message:
+byte[]长度2979
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:08:19
+Message:
+BytesToXml-fs:E:\联网\3shine\InternetDataMine\InternetDataMine\MapGis\MapConfigFiles\Buffer.shz
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:08:19
+Message:
+ConfigXml<?xml version="1.0" encoding="GBK" standalone="yes"?><!DOCTYPE root[<!ELEMENT Station ANY><!ATTLIST Station SSN ID #REQUIRED>]><MapConfig><Divs><Div key="" MinWidth="500" MaxWidth="20000">新建图形</Div></Divs><Statics /><Stations><Station SSN="主竖井井口">新建图层|新建图形|</Station><Station SSN="主竖井-220M">新建图层|新建图形|</Station><Station SSN="主竖井-220平巷车场">新建图层|新建图形|</Station><Station SSN="主竖井-340M">新建图层|新建图形|</Station><Station SSN="主竖井-340北巷西沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-340北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-340延脉点">新建图层|新建图形|</Station><Station SSN="主竖井-340大风机">新建图层|新建图形|</Station><Station SSN="主竖井-365M">新建图层|新建图形|</Station><Station SSN="主竖井-550M">新建图层|新建图形|</Station><Station SSN="主竖井-550北巷西沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-550北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-650M">新建图层|新建图形|</Station><Station SSN="主竖井-650北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-650北巷西沿脉">新建图层|新建图形|</Station><Station SSN="650避难硐室">新建图层|新建图形|</Station><Station SSN="主竖井-675M">新建图层|新建图形|</Station><Station SSN="106井井口">新建图层|新建图形|</Station><Station SSN="106井-100M炸药库">新建图层|新建图形|</Station><Station SSN="106井-100米">新建图层|新建图形|</Station><Station SSN="130大风机">新建图层|新建图形|</Station><Station SSN="106井-130M">新建图层|新建图形|</Station><Station SSN="106井-160M">新建图层|新建图形|</Station><Station SSN="106井-220M">新建图层|新建图形|</Station><Station SSN="斜井口">新建图层|</Station><Station SSN="-10M">新建图层|新建图形|</Station><Station SSN="-40M">新建图层|新建图形|</Station><Station SSN="-70M">新建图层|新建图形|</Station><Station SSN="-91M">新建图层|新建图形|</Station><Station SSN="-130M三分层">新建图层|新建图形|</Station><Station SSN="-130M一分层">新建图层|新建图形|</Station><Station SSN="-160M三分层">新建图层|新建图形|</Station><Station SSN="-160M一分层">新建图层|新建图形|</Station><Station SSN="-160M">新建图层|新建图形|</Station><Station SSN="-190M">新建图层|新建图形|</Station><Station SSN="-220M">新建图层|新建图形|</Station><Station SSN="70大风机">新建图层|新建图形|</Station><Station SSN="-550米西沿脉">新建图层|新建图形|</Station><Station SSN="-600米东沿脉">新建图层|新建图形|</Station><Station SSN="-650西沿脉">新建图层|新建图形|</Station><Station SSN="-650盲竖井码头门">新建图层|新建图形|</Station><Station SSN="-650斜井井口">新建图层|新建图形|</Station><Station SSN="斜井井口">新建图形|</Station></Stations><Words /><Map MinWidth="500" MaxWidth="20000">-1574213074</Map></MapConfig>
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:08:19
+Message:
+OverGraph:1
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:08:19
+Message:
+行数：1
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:08:19
+Message:
+byte[]长度2979
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:08:19
+Message:
+BytesToXml-fs:E:\联网\3shine\InternetDataMine\InternetDataMine\MapGis\MapConfigFiles\Buffer.shz
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:08:19
+Message:
+ConfigXml<?xml version="1.0" encoding="GBK" standalone="yes"?><!DOCTYPE root[<!ELEMENT Station ANY><!ATTLIST Station SSN ID #REQUIRED>]><MapConfig><Divs><Div key="" MinWidth="500" MaxWidth="20000">新建图形</Div></Divs><Statics /><Stations><Station SSN="主竖井井口">新建图层|新建图形|</Station><Station SSN="主竖井-220M">新建图层|新建图形|</Station><Station SSN="主竖井-220平巷车场">新建图层|新建图形|</Station><Station SSN="主竖井-340M">新建图层|新建图形|</Station><Station SSN="主竖井-340北巷西沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-340北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-340延脉点">新建图层|新建图形|</Station><Station SSN="主竖井-340大风机">新建图层|新建图形|</Station><Station SSN="主竖井-365M">新建图层|新建图形|</Station><Station SSN="主竖井-550M">新建图层|新建图形|</Station><Station SSN="主竖井-550北巷西沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-550北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-650M">新建图层|新建图形|</Station><Station SSN="主竖井-650北巷东沿脉">新建图层|新建图形|</Station><Station SSN="主竖井-650北巷西沿脉">新建图层|新建图形|</Station><Station SSN="650避难硐室">新建图层|新建图形|</Station><Station SSN="主竖井-675M">新建图层|新建图形|</Station><Station SSN="106井井口">新建图层|新建图形|</Station><Station SSN="106井-100M炸药库">新建图层|新建图形|</Station><Station SSN="106井-100米">新建图层|新建图形|</Station><Station SSN="130大风机">新建图层|新建图形|</Station><Station SSN="106井-130M">新建图层|新建图形|</Station><Station SSN="106井-160M">新建图层|新建图形|</Station><Station SSN="106井-220M">新建图层|新建图形|</Station><Station SSN="斜井口">新建图层|</Station><Station SSN="-10M">新建图层|新建图形|</Station><Station SSN="-40M">新建图层|新建图形|</Station><Station SSN="-70M">新建图层|新建图形|</Station><Station SSN="-91M">新建图层|新建图形|</Station><Station SSN="-130M三分层">新建图层|新建图形|</Station><Station SSN="-130M一分层">新建图层|新建图形|</Station><Station SSN="-160M三分层">新建图层|新建图形|</Station><Station SSN="-160M一分层">新建图层|新建图形|</Station><Station SSN="-160M">新建图层|新建图形|</Station><Station SSN="-190M">新建图层|新建图形|</Station><Station SSN="-220M">新建图层|新建图形|</Station><Station SSN="70大风机">新建图层|新建图形|</Station><Station SSN="-550米西沿脉">新建图层|新建图形|</Station><Station SSN="-600米东沿脉">新建图层|新建图形|</Station><Station SSN="-650西沿脉">新建图层|新建图形|</Station><Station SSN="-650盲竖井码头门">新建图层|新建图形|</Station><Station SSN="-650斜井井口">新建图层|新建图形|</Station><Station SSN="斜井井口">新建图形|</Station></Stations><Words /><Map MinWidth="500" MaxWidth="20000">-1574213074</Map></MapConfig>
+
+-----------------------------------------------------------
+Time:
+2017-11-09 14:08:19
+Message:
+OverGraph:1
+

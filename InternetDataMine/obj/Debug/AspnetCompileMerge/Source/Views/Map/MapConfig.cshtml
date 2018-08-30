@@ -1,0 +1,340 @@
+﻿@{
+    ViewBag.Title = "地图标注点配置";
+}
+<style type="text/css">
+    #allmap {
+        width: 100%;
+        height: 100%;
+    }
+</style>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=MlKbPPmiepC4tGe1KybdK1Kj1ZBGGXjW"></script>
+@*<script type="text/javascript" src="http://api.map.baidu.com/library/TextIconOverlay/1.2/src/TextIconOverlay_min.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/library/MarkerClusterer/1.2/src/MarkerClusterer_min.js"></script>*@
+
+<script src="~/Scripts/jquery-1.11.1.min.js"></script>
+<link rel="stylesheet" type="text/css" href="../Content/themes/metro-orange/easyui.css" title="orange">
+<link rel="stylesheet" type="text/css" href="../Content/themes/metro-red/easyui.css" title="pink">
+<link rel="stylesheet" type="text/css" href="../Content/themes/ui-cupertino/easyui.css" title="blue">
+<link rel="stylesheet" type="text/css" href="../Content/themes/metro-gray/easyui.css" title="gray">
+<link rel="stylesheet" type="text/css" href="../Content/themes/metro-green/easyui.css" title="green">
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/easyui")
+@Styles.Render("~/Content/icon")
+
+<body>
+    <div class="easyui-panel" data-options="fit:false" style="width:100%;">
+        <a class="easyui-linkbutton" onclick="addMarker(true);" data-options="plain:true,iconCls:'icon-add'">添加标注点</a>
+        <a>|</a>
+        <a class="easyui-linkbutton" onclick="SaveMarkers();" data-options="plain:true,iconCls:'icon-save'">保存标注点</a>
+        <a>|</a>
+        <a class="easyui-linkbutton" onclick="MarkerDisableDragging();" data-options="plain:true,iconCls:'icon-lock'">标注点加锁</a>
+        <a>|</a>
+        <a class="easyui-linkbutton" onclick="MarkerEnableDragging();" data-options="plain:true,iconCls:'icon-unlock'">标注点解锁</a>
+        <a>|</a>
+        <a class="easyui-linkbutton" onclick="LoadMineBaseInfo();" data-options="plain:true,iconCls:'icon-reload'">加载标注点</a>
+        @*<a>|</a>
+            <input type="checkbox" id="chkshowLabel" checked="true">显示标签
+            <input type="checkbox" id="chkshowChart" checked="false">显示图表
+            <div id="divMessageShow"></div>*@
+    </div>
+
+    <div id="allmap"></div>
+
+</body>
+
+
+<script type="text/javascript" defer="defer">
+    var map = new BMap.Map("allmap");
+
+    $(document).ready(function () {
+        LoadMap();
+    });
+
+    var array = new Array(); // 标注点扩展对象集合
+    var markersList = []; // 标注点集合
+    var markerPoint = [];   // 标注点 点集合
+    var MineData;//煤矿数据
+
+    // 初始化
+    function LoadMap() {
+        var top_right_control = new BMap.MapTypeControl();
+        var top_left_control = new BMap.ScaleControl({ anchor: BMAP_ANCHOR_TOP_LEFT });// 左上角，添加比例尺
+        var top_left_navigation = new BMap.NavigationControl();  //左上角，添加默认缩放平移控件
+        map.addControl(top_left_control);
+        map.addControl(top_left_navigation);
+        //map.addControl(top_right_control);
+
+        var overView = new BMap.OverviewMapControl();
+        var overViewOpen = new BMap.OverviewMapControl({ isOpen: true, anchor: BMAP_ANCHOR_TOP_RIGHT });//BMAP_ANCHOR_BOTTOM_RIGHT
+        map.addControl(overView);          //添加默认缩略地图控件
+        map.addControl(overViewOpen);      //右下角，打开
+
+        //// 添加城市搜索条
+        //map.addControl(new BMap.CityListControl({
+        //    anchor: BMAP_ANCHOR_TOP_LEFT,
+        //    offset: new BMap.Size(200, 20)
+        //}));
+
+        ////2定位
+        ////重定位定位地图中心以当前用户所在的城市
+        //function relocation(result) {
+        //    var cityName = result.name;
+        //    map.setCenter(cityName);
+        //}
+        ////定位用户当前城市
+        //var myCity = new BMap.LocalCity();
+        //myCity.get(relocation);
+
+        LoadMineBaseInfo();
+
+        map.enableScrollWheelZoom(true);   //启用滚轮放大缩小，默认禁用
+        map.enableContinuousZoom();    //启用地图惯性拖拽，默认禁用
+    }
+
+    // 键入式放大
+    function Zoom(point) {
+        var zoom = 2;
+        var timer = setInterval(function () {
+            map.centerAndZoom(point, zoom);
+            //alert(zoom);
+            zoom += 2;
+            if (zoom > 20)
+                clearInterval(timer);//关闭
+        }, 1500);
+    }
+
+    // 创建标记点，位置，标题，是否跳动
+    function CreateMarker(point, title, isDragging) {
+        var marker = new BMap.Marker(point);  // 创建标注
+        map.addOverlay(marker);              // 将标注添加到地图中
+
+        // 判断标注点是否要跳动
+        if (isDragging) {
+            marker.setAnimation(BMAP_ANIMATION_BOUNCE);
+            marker.enableDragging(true);
+        }
+
+        var label = getLable(title[1]);
+        marker.setLabel(label); //为标注添加一个标签
+
+        var markerID = title[0];
+
+        bindMarkInfoWindow(markerID, marker, title[1]);// 单击事件
+        removeMarker(markerID, marker, title[1]);
+
+        //创建扩展标注点
+        var extendmarker = new ExtendMarker(markerID, marker, title[1]);
+        //添加到缓冲区
+        array.push(extendmarker);
+        markersList.push(marker);
+        markerPoint.push(marker.point);
+    }
+
+    //构造标注点扩展对象
+    function ExtendMarker(markerID, marker, markerName) {
+        this.markerID = markerID;
+        this.marker = marker;
+        this.markerName = markerName;
+    }
+
+    function ExtendMarkerSave(markerID, markerName, x, y) {
+        this.markerID = markerID;
+        this.markerName = markerName;
+        this.x = x;
+        this.y = y;
+    }
+
+    // 创建标签
+    function getLable(title) {
+        // 增加标签
+        var label = new BMap.Label(title, {
+            offset: new BMap.Size(-50, -30)
+        });
+        label.setStyle({
+            width: "120px",
+            color: '#fff',
+            background: '#ff8355',
+            border: '1px solid "#ff8355"',
+            borderRadius: "5px",
+            textAlign: "center",
+            height: "26px",
+            lineHeight: "26px"
+        });
+
+        return label;
+    }
+
+    var extendmarker;
+    // 添加标注点
+    function addMarker(isDragging) {
+        for (var index = 0, extendmarker; extendmarker = array[index]; index++) {
+            var marker = extendmarker.marker;
+            marker.setAnimation(null);
+            marker.disableDragging();
+        }
+        var title = GetTitle();
+        if (title == "") {
+            alert("所有煤矿已添加");
+            return;
+        }
+        CreateMarker(map.getCenter(), title, true);
+    }
+
+    // 获取要添加的煤矿名称
+    function GetTitle() {
+        for (var i = 0; i < MineData.length; i++) {
+            if (IsSame(MineData[i].simplename)) {
+                var names = new Array(MineData[i].id, MineData[i].simplename);
+                return names;
+            }
+        }
+        return "";
+    }
+
+    // 判断这个煤矿名称是否被添加过
+    function IsSame(simplename) {
+        for (var j = 0; j < array.length; j++) {
+            if (simplename == array[j].markerName) return false;
+        }
+        return true;
+    }
+
+    //向标注点绑定窗口信息
+    function bindMarkInfoWindow(markerID, marker, MarkerName) {
+        var src = "PointContentEditor?MineName=" + escape(MarkerName) + "&x=" + marker.point.lng + "&y=" + marker.point.lat + "&MineID=" + escape(markerID);
+        var sContent = "<div style='width:300px;height:200px;overflow:no;'><iframe id='frmEdit' src='" + src + "' FRAMEBORDER='no' style='width:300px;height:200px;overflow:no;'></iframe></div>";
+        var infoWindow = new BMap.InfoWindow(sContent);  // 创建信息窗口对象
+        infoWindow.addEventListener("close", function () {  // 窗体关闭触发
+            //刷新点加载
+            LoadMap();
+        });
+        marker.addEventListener("click", function () {  // 单击标注点
+            this.openInfoWindow(infoWindow);
+            marker.setAnimation(null);
+            marker.disableDragging();
+        });
+    }
+
+    //删除标注点
+    function removeMarker(markerID, marker, MarkerName) {
+        var removeMarker = function (e, ee, marker) {
+            var msg = "确定要删除" + MarkerName + "吗?";
+            $.messager.confirm("确认", msg, function (r) {
+                if (r) {
+                    RemoveArray(markerID);
+                    markersList.splice(marker, 1);
+                    markerPoint.splice(marker.point, 1);
+                    map.removeOverlay(marker);
+                    return true;
+                }
+            });
+        }
+        //创建右键菜单
+        var markerMenu = new BMap.ContextMenu();
+        markerMenu.addItem(new BMap.MenuItem('删除', removeMarker.bind(marker)));
+        marker.addContextMenu(markerMenu);
+    }
+
+    //删除
+    function RemoveArray(markerID) {
+        for (var index = array.length - 1; index >= 0; index--) {
+            var extendmarker = array[index];
+            if (extendmarker.markerID == markerID) {
+                array.splice(index, 1);
+                // 到数据库清空
+                var data = { mineID: markerID };
+                $.ajax({
+                    dataType: "json",
+                    type: "post",
+                    data: data,
+                    url: "../Map/DeleteMarker",
+                    success: function (data) {
+                        alert(data.Msg);
+                    }
+                });
+                return;
+            }
+        }
+    }
+
+
+    // 保存所有标注点
+    function SaveMarkers() {
+        var markers = new Array();
+        for (var index = 0, extendmarker; extendmarker = array[index]; index++) {
+            var marker = extendmarker.marker;
+            var markerSave = new ExtendMarkerSave(extendmarker.markerID, extendmarker.markerName, marker.point.lng, marker.point.lat);
+            markers.push(markerSave);
+        }
+
+        $.ajax({
+            dataType: "json",
+            type: "post",
+            data: JSON.stringify(markers),
+            url: "../Map/SaveMarkers",
+            success: function (data) {
+                //alert(data.Msg);
+                if (data.Result == "Successed") {//保存成功后锁定点
+                    MarkerDisableDragging();
+                }
+            }
+        });
+    }
+
+    // 加载煤矿列表
+    function LoadMineBaseInfo() {
+        map.clearOverlays();
+        $.ajax({
+            dataType: "json",
+            type: "post",
+            url: "../CompanyInfoManager/QueryJBXX",
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i].x == null || data[i].y == null) continue;
+                    var point = new BMap.Point(data[i].x, data[i].y);
+                    var title = new Array(data[i].id, data[i].simplename);
+                    CreateMarker(point, title, false);
+                }
+
+                MineData = data;
+                if (markerPoint.length > 0) {
+                    // 地图中显示所有标注点
+                    var points = markerPoint;
+                    var view = map.getViewport(eval(points));
+                    var mapZoom = view.zoom;
+                    var centerPoint = view.center;
+                    map.centerAndZoom(centerPoint, mapZoom);
+                } else {
+                    //2定位
+                    //重定位定位地图中心以当前用户所在的城市
+                    function relocation(result) {
+                        var cityName = result.name;
+                        map.centerAndZoom(cityName, 15);
+                    }
+                    //定位用户当前城市
+                    var myCity = new BMap.LocalCity();
+                    myCity.get(relocation);
+                }
+            }
+        });
+    }
+
+    // 标注点解锁
+    function MarkerEnableDragging() {
+        for (var index = 0, extendmarker; extendmarker = array[index]; index++) {
+            var marker = extendmarker.marker;
+            marker.setAnimation(BMAP_ANIMATION_BOUNCE);
+            marker.enableDragging(true);
+        }
+    }
+
+    // 标注点加锁
+    function MarkerDisableDragging() {
+        for (var index = 0, extendmarker; extendmarker = array[index]; index++) {
+            var marker = extendmarker.marker;
+            marker.setAnimation(null);
+            marker.disableDragging();
+        }
+    }
+
+</script>

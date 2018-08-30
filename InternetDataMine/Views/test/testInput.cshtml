@@ -1,0 +1,27 @@
+﻿@{
+    ViewBag.Title = "testInput";
+}
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/easyui")
+@Styles.Render("~/Content/icon")
+<link rel="stylesheet" type="text/css" href="../Content/themes/metro-orange/easyui.css" title="orange">
+@Scripts.Render("~/bundles/common")
+
+
+<h2>testInput</h2>
+
+<div class="easyui-textbox" id="ContentText"></div>
+<div class="easyui-textbox" id="ContentText1"></div>
+<div class="easyui-textbox" id="ContentText2"></div>
+<div class="easyui-textbox" id="ContentText3"></div>
+<input type="button"  title="点击"  onclick="test()"/>
+<script type="text/javascript">
+    function test()
+    {
+
+        var content = $("#ContentText").textbox("getText");
+        var content2 = $("#ContentText1").textbox("getText");
+        var content3 = $("#ContentText2").textbox("getText");
+        alert(content + "," + content2 + "," + content3);
+    }
+</script>

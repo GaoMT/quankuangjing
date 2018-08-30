@@ -1,0 +1,143 @@
+﻿@{
+    ViewBag.Title = "光纤测温实时数据";
+    Layout = "~/Views/Shared/_Charts.cshtml";
+}
+
+
+<style type="text/css">
+    .title {
+        float: left;
+        margin: 5px 0 0 5px;
+        width: auto;
+    }
+
+    .input {
+        width: 50%;
+    }
+</style>
+<div id="MessageBox" class="easyui-dialog" title="提示" data-options="modal:true,closed:true" style="height:160px;width:200px;text-align:center;vertical-align:middle;">
+    <br />
+    <br />
+    <label id="Message" style="padding-top:50px; vertical-align:middle;">操作失败</label>
+    <br />
+    <br />
+    <br />
+    <div>
+        <a id="CloseThis" href="javascript:void(0)" class="easyui-linkbutton" data-options="onClick:function(){    $('#MessageBox').window('close');  }" style="width: 100px;">
+            确定
+        </a>
+    </div>
+</div>
+
+<div class="easyui-layout" data-options="fit:true">
+    <div data-options="region:'north',title:'实时温度曲线',split:false,collapsible:false,border:0" style="height:70px;">
+        <form id="myform" class="easyui-form" method="post" data-options="novalidate:true">
+           
+            <div class="title"><div class="easyui-combobox" id="DeviceID" data-options="prompt:'设备ID',required:true" style="width:150px;height:35px;"></div></div>
+            <div class="title"><div class="easyui-combobox" id="ChannelID" data-options="prompt:'通道号',required:true" style="width:300px;height:35px;"></div></div>
+            @*<div class="title"><div class="easyui-datebox" id="ddlBeginTime" data-options="prompt:'查询日期',required:true" style="height:35px;"></div></div>*@
+            @*<div id="divEndtime" class="title"><div class="easyui-datebox" id="ddlEndTime" data-options="prompt:'结束时间',required:true"></div></div>*@
+            <div id="divQuery" class="title"><div class="easyui-linkbutton" data-options="iconCls:'icon-search'" style="height:35px;text-align:center" onclick="Query()">查询</div></div>
+            &nbsp; <div id="PrintArea" class="title"><div class="easyui-linkbutton" data-options="iconCls:'icon-print'" style="height:35px;" onclick="Exproter()">打印</div></div>
+            <div style="display:none" id="legend"></div>
+        </form>
+    </div>
+    <div id="mydiv" data-options="region:'center',fit:true,split:false,border:false" style="overflow-y:visible">
+        <div id="main" style="width:99%; height:530px; border:0px solid #ccc;margin:10px 0 0 10px;"></div>
+    </div>
+</div>
+<div id="myDialog"></div>
+
+<script type="text/javascript">
+
+    $(document).ready(function()
+    {
+        LoadDeviceID();
+    });
+
+     function getUrlStafix() {
+        var myDate = new Date();
+        return "&myDate=" + myDate.getFullYear() + myDate.getMonth() + myDate.getDate() + myDate.getHours() + myDate.getMinutes() + myDate.getSeconds();
+    }
+    function LoadDeviceID()
+    {
+        $("#DeviceID").combobox(
+            {
+                url: '../DTS/LoadDeviceID?test=test' + getUrlStafix(),
+                valueField: 'DeviceID',
+                textField: 'DeviceID',
+
+                onSelect: function (RowData)
+                {
+                    LoadChannel(RowData.DeviceID);
+
+                },
+                
+            });
+
+    }
+    function LoadChannel(DeviceID)
+    {
+        $("#ChannelID").combobox({
+            url: '../DTS/LoadChannel?DeviceID=' + DeviceID + getUrlStafix(),
+            valueField: 'ChannelID',
+            textField: 'ChannelID',
+
+        })
+
+    }
+    function Query()
+    {
+        $.messager.progress();	// 显示进度条
+        var isValid = false;
+        $('#myform').form('submit',
+            {
+                onSubmit: function () {
+                    isValid = $(this).form('enableValidation').form('validate');
+                },
+                success: function () {
+                    if (isValid) {
+                        var DeviceID = $("#DeviceID").combogrid("getValue");
+                        var ChannelID = $("#ChannelID").combogrid("getValue");
+                        LoadData(DeviceID, ChannelID);
+                    }
+                    else {
+                        $.messager.progress('close');
+                        document.getElementById("Message").innerText = "所有选项必选！";
+                        $("#MessageBox").window("open");
+                    }
+                },
+                error: function ()
+                {
+                    $.messager.progress('close');
+                    document.getElementById("Message").innerText = "查询失败，请检查网络";
+                    $("#MessageBox").window("opne");
+                }
+            });
+    }
+
+
+    function LoadData(DeviceID, ChannelID)
+    {
+        $.ajax({
+            url: '../DTS/LoadRealData',
+            data: { "DeviceID": DeviceID, "ChannelID": ChannelID },
+            datatype: 'json',
+            type: 'post',
+            success:function(data)
+            {
+
+
+            },
+            error: function (data)
+            {
+                $.messager.progress('close');
+                document.getElementById("Message").innerText = "查询失败，请检查网络";
+                $("#MessageBox").window("opne");
+            }
+
+        });
+
+    }
+
+</script>

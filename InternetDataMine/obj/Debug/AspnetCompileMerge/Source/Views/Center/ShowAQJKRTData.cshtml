@@ -1,0 +1,197 @@
+﻿@{
+    ViewBag.Title = "安全生产监控系统";
+    Layout = "~/Views/Shared/_LayoutEditer.cshtml";
+}
+
+
+<script type="text/javascript">
+   
+    var minecode = "";
+    var node_minecode = "";
+    $("#treeMine").ready(function ()
+    {
+        minecode = readCookie("MineCode");
+        if (minecode == "null" | minecode == null) {
+            minecode = "";
+        }
+      
+        var url = "../Center/ReturnmMineTreeData?mineCode=" + minecode+getUrlStafix();
+        $('#treeMine').treegrid({
+            cache:false,
+            url: url,
+            idField: 'id',
+            treeField: 'text',
+            method: 'get',
+            lines: true,
+         
+            columns: [[
+                 { title: '煤矿编号', field: 'minecode', width: 120, hidden: true },
+                { title: '煤矿名称', field: 'text', width: 120 },
+
+                   {
+                       title: '状态', field: 'State', width: 60, styler: function (value, row, index) {
+                           switch (value) {
+                               case "正常": return 'color:green;'; break;
+                               case "通讯中断": return 'color:red'; break;
+                               case "传输异常": return 'color:darkorange'; break;
+                               case "网络中断": return 'color:orange'; break;
+                               case "网络故障": return 'color:magenta'; break;
+                               case "数据延时": return 'color:maroon'; break;
+                               default: return 'color:black;'; break;
+                           }
+                       }
+                   }
+            //{
+            //    title: '安全监控', field: 'AQJKState', width: 60, styler: function (value, row, index) {
+            //        if (value == "正常") {
+            //            return 'color:green;';
+            //        }
+            //        else if (value == "传输异常") {
+            //            return 'color:darkred;';
+            //        }
+            //        else
+            //        {
+            //            return 'color:red;';
+            //        }
+            //    }
+            //},
+            //{
+            //    title: '人员管理', field: 'RYGLState', width: 60, align: 'right', styler: function (value, row, index) {
+            //        if (value == "正常") {
+            //            return 'color:green;';
+            //        }
+            //        else if (value == "传输异常") {
+            //            return 'color:darkred;';
+            //        }
+            //        else {
+            //            return 'color:red;';
+            //        }
+            //    }
+            //}
+            ]],
+            onSelect: function (rowData) { ChangeView(rowData); },
+        });
+        //-------------------------------------测试时注释---------------------------------------------------------------------------
+        window.setTimeout("ReloadTreeGrid()", 5000);
+    });
+   
+    $(document).ready(function () {
+
+        minecode = readCookie("MineCode");
+        if (minecode == "null" | minecode == null)
+        {
+            minecode = "";
+        }
+        ChangeView("");
+
+    });
+
+
+    //获取URL参数值
+    function getParameterByName(name) {
+        var queryname = name.toLowerCase();
+        var match = RegExp('[?&]' + queryname + '=([^&]*)')
+            .exec(window.location.search.toLowerCase());
+        return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+    }
+
+    //加载树形菜单
+    function ReloadTreeGrid()
+    {
+        var url = "../Center/ReturnmMineTreeData?mineCode=" + minecode + getUrlStafix();
+        $('#treeMine').treegrid({
+            url: url
+        });
+      
+        window.setTimeout("ReloadTreeGrid()", 5000);
+    }
+
+    //调用周期函数
+    //window.setInterval("ReloadTreeGrid()", 40000);
+
+    //更改
+    function ChangeView(node) {
+
+        if (node.children != null && node.childen != "undefined") {
+            //判断是否为根节点，如果是根节点则选择父节点，如果不是根节点，则选择自身
+            node_minecode = node.minecode;
+        }
+        else {
+            node_minecode = node._parentId;
+        }
+        if (node == "")
+        {
+
+           
+        }
+        //var father = $("#treeMine").tree("getParent", node.target);
+
+        createCookie('Main_MineCode', node_minecode);
+        if (!(node_minecode == "" || node_minecode == "0" || node_minecode == null))
+        {
+            //alert(readCookie("MineCode"));
+            //document.cookie = "MineCode=" + minecode;
+            //alert(readCookie("Main_MineCode"));
+            if (node.text == "人员管理") {
+                $("#AQJKPanel").panel("collapse");
+            }
+            else {
+                $("#AQJKPanel").panel("expand");
+
+            }
+
+            $("#myIframeAQ")[0].src = "../Center/AQJKRTData?minecode=" + node_minecode;
+            $("#myIframeRY")[0].src = "../Person/RealTimePersonInMine?minecode=" + node_minecode;
+            //$("#myIframeKY")[0].src = "../Center/KSYLData?minecode=" + minecode;
+            //$("#myIframeHG")[0].src = "../Center/HZSGData?minecode=" + minecode;
+        }
+        else
+        {
+            if (node == "") {
+                $("#myIframeAQ")[0].src = "../Center/AQJKRTData";
+                $("#myIframeRY")[0].src = "../Person/RealTimePersonInMine";
+                //$("#myIframeKY")[0].src = "../Center/KSYLData";
+                //$("#myIframeHG")[0].src =  "../Center/HZSGData";
+            }
+            else {
+                if (node.minecode != 0) {
+                    $("#myIframeAQ")[0].src = "../Center/AQJKRTData?minecode=" + node.minecode;
+                    $("#myIframeRY")[0].src = "../Person/RealTimePersonInMine?minecode=" + node.minecode;
+                    //$("#myIframeKY")[0].src = "../Center/KSYLData?minecode=" + node.minecode;
+                    //$("#myIframeHG")[0].src =  "../Center/HZSGData?minecode=" + node.minecode;
+                } else {
+                    $("#myIframeAQ")[0].src = "../Center/AQJKRTData";
+                    $("#myIframeRY")[0].src = "../Person/RealTimePersonInMine";
+                    //$("#myIframeKY")[0].src = "../Center/KSYLData"; //"../Center/KSYLData";
+                    //$("#myIframeHG")[0].src= "../Center/HZSGData";
+                }
+            }
+        }
+
+        //  src = "../Center/KSYLData"  src="../Center/HZSGData"
+       
+    }
+</script>
+
+<div id="cc" class="easyui-layout" data-options="fit:true">
+    <div data-options="region:'west',title:'矿列表',split:true" style="width: 250px; height: 100%;">
+        <div id="treeMine" class="easyui-treegrid" data-options="fit:true"></div>
+    </div>
+    <div data-options="region:'center'" style="padding: 0px;">
+        <div class="easyui-panel" id="AQJKPanel" title="安全监控-实时数据" data-options="collapsed:false,collapsible:true,fit:true" >
+            <iframe id="myIframeAQ" frameborder="0" style="width: 100%; height: 99%; border: 0px;" src="../Center/AQJKRTData"></iframe>
+        </div>
+        <div class="easyui-panel" id="RYGLPanel" title='人员管理-实时数据' data-options="collapsed:false,collapsible:true,fit:true">
+            <iframe frameborder="0" id="myIframeRY" style="width: 100%; height: 99%; border: 0px;" src="../Person/RealTimePersonInMine"></iframe>
+        </div>
+        @*<div class="easyui-panel" title='矿山压力-实时数据' data-options="collapsed:false,collapsible:true,fit:true">
+            <iframe frameborder="0" id="myIframeKY" style="width: 100%; height: 99%; border: 0px;" src="../Center/KSYLData"></iframe>
+        </div>
+        <div class="easyui-panel" title='火灾束管-实时数据' data-options="collapsed:false,collapsible:true,fit:true">
+            <iframe frameborder="0" id="myIframeHG" style="width: 100%; height: 99%; border: 0px;" src="../Center/HZSGData"></iframe>
+        </div>*@
+        
+       
+    </div>
+    
+</div>

@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--create by hg 2014-11-21-->
+<TreeList>
+  <Properties dataURL="../../TransJson/TransJsonToTreeList?DataType=TypeKind" OriUrl="../../TransJson/TransJsonToTreeList?DataType=TypeKind">
+  </Properties>
+  <Cols>
+ 
+    <Col name="TypeName"  width="90" align="center">量程类型</Col>
+    <Col name="Type"  width="90" align="center">量程符号</Col>
+  </Cols>
+</TreeList>

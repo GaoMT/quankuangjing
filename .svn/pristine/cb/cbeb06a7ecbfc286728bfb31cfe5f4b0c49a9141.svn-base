@@ -1,0 +1,1615 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/common")
+    @Scripts.Render("~/bundles/easyui")
+    <link rel="stylesheet" type="text/css" href="../Content/themes/ui-cupertino/easyui.css" title="blue">
+    <link rel="stylesheet" type="text/css" href="../Content/themes/metro-gray/easyui.css" title="gray">
+    <link rel="stylesheet" type="text/css" href="../Content/themes/metro-green/easyui.css" title="green">
+    <link rel="stylesheet" type="text/css" href="../Content/themes/metro-orange/easyui.css" title="orange">
+    <link rel="stylesheet" type="text/css" href="../Content/themes/metro-red/easyui.css" title="pink">
+    <script src="~/Scripts/CompanyInfo.js" type="text/javascript"></script>
+
+    @Styles.Render("~/Content/icon")
+    <style type="text/css">
+        td.left {
+            text-align: right;
+            width: 30%;
+        }
+
+        td.right {
+            text-align: left;
+            width: 70%;
+        }
+
+        .panel-fit, .panel-fit body {
+            min-width: 1440px;
+            overflow:auto;
+        }
+
+    </style>
+
+    <style type="text/css">
+        ::-ms-reveal {
+            display: none;
+        }
+    </style>
+    <script>
+        var AlarmSoundPlayMode = 1;
+        var AlarmSetInfos;
+        var AlarmSoundPause = 0;
+        MineCode = "";
+        var IsAuto = 1;
+        function AlarmSoundPauseOrResume() {
+            var imgSound = document.getElementById("imgSound");
+            if (AlarmSoundPause == 1) {
+                imgSound.src = '../../Files/Icon/sound_blue.png';
+                AlarmSoundPause = 0;
+                AddProcessLogGlobal("设置了报警静音！");
+            } else {
+                imgSound.src = '../../Files/Icon/sound_red.png';
+                AlarmSoundPause = 1;
+                AddProcessLogGlobal("开启了报警声音！");
+            }
+        }
+
+
+        $(document).ready(function () {
+        
+            window.onunload = function () {
+                //createCookie('UserName', '', 365);
+                //createCookie('MineCode', '', 365);
+            }
+            UserName = readCookie('UserName');
+            MineCode = readCookie('MineCode');
+            UserID = readCookie("UserID");
+
+            if (UserName == "" || UserName == null)
+            {
+
+                UserName = "jgmk";
+                MineCode = '34060000001';
+            }
+            if (MineCode == "" || MineCode == null) {
+                // 加载矿列表
+                MineList("City");//2
+            } else {
+                $("#layoutMineList").layout('remove', 'west');
+                //无矿列表时
+                getMenu();//1
+            }
+            //加载报警信息
+            LoadAlarmInfo();
+            LoadXJRS();
+            // 自动弹出预警 下面两个取消注释以及最下面 自动弹出预警中加上 checked='checked'
+            //OpenPA();
+            //timeCount();
+            //加载密码保存按钮事件
+            $('#btnSave').bind('click', function () {
+                if (!$("#ff").form('enableValidation').form('validate')) {
+                    return;
+                }
+                var pwd=$("#txtPwdNew").textbox("getText");
+                if (pwd.indexOf(" ")>=0)
+                {
+                    $.messager.alert('提示', "密码中不要出现空格 "); return;
+                }
+                if (!(/^\w+$/.test(pwd)))
+                {
+                    $.messager.alert('提示', "密码仅限输入字母、数字、下划线"); return;
+                  
+                }
+
+                if ($("#txtPwdOrg").textbox("getText") !=  readCookie('PassWord')) { $.messager.alert('提示', "原始密码不正确, 请重新输入, 请检查. "); return; }
+                if ($("#txtPwdNew").textbox("getText") != $("#txtPwdAging").textbox("getText")) { $.messager.alert('提示', "新密码两次输入不一致, 请检查. "); return; }
+                var url = "../Editer/TransData_PwdSet?Id=" + readCookie("UserID") + "&Pwd=" + $("#txtPwdNew").textbox("getText");
+
+                createCookie('PassWord', $("#txtPwdNew").textbox("getText"), 365);
+
+                $.ajax({
+                    dataType: "text", method: "post", url: url,
+                    success: function (data) {
+                        AddProcessLogGlobal("执行了修改密码操作，修改了登录密码！");
+                        $.messager.progress('close');
+                        $.messager.alert('提示', data);
+                    }
+                });
+            });
+        });
+   
+        //单击密码修改、注销、退出的响应事件
+        function SysBtnClick(sender) { if (sender == 'PWDSET') { LoadPwdSetUI(); return; } if (sender == 'EXIT') { ExitApp(); return; } if (sender == 'LOGOUT') { LogoutApp(); return; } if (sender == 'Home') { HomeApp(); return; } }
+        function LoadPwdSetUI() {
+            $("iframe").hide("fast");
+            $("#txtAccount").textbox("setText", UserName);
+            $("#txtPwdOrg").textbox("setText", "");
+            $("#txtPwdNew").textbox("setText", "");
+            $("#txtPwdAging").textbox("setText", "");
+
+            $("#divPwdSet").window("setTitle", "密码修改");
+            $("#divPwdSet").window("open");
+        } // 加载密码设置界面
+        function ExitApp() {
+            $("iframe").hide("fast"); $.messager.confirm("提示", "你确定要退出吗？", function (r) {
+                if (r) {
+                    createCookie('UserName', '', 365);
+                    createCookie('MineCode', '', 365);
+                    AddProcessLogGlobal("执行了退出操作，退出了系统！"); window.parent.close();
+                } else { $("iframe").show("fast"); }
+            });
+        } // 退出应用程序
+        function LogoutApp() {
+            $("iframe").hide("fast"); $.messager.confirm("提示", "你确定要注销吗？", function (r) {
+                if (r) {
+                    createCookie('UserName', '', 365);
+                    createCookie('MineCode', '', 365);
+                    AddProcessLogGlobal("执行了注销操作，注销了系统！"); window.open("../center/index", "_self", null, true);
+                } else { $("iframe").show("fast"); }
+            });
+        } // 注销
+        function HomeApp() {
+            var mywidth = screen.width;
+            var myheight = screen.height;
+            window.open(encodeURI("../center/ShowAQJKRTData"), "_blank", "left=0,top=0,fullscreen = no, toolbar = no,width=" + mywidth + ",height=" + myheight, false);
+        } // 主页
+
+
+        ////刷新报警信息
+        //window.setInterval("LoadAlarmInfo()", 5000);
+
+        var myIndex = 0;
+        var alarmControl = null;
+        //加载实时报警提示信息
+        function LoadAlarmInfo() {
+            //获取报警信息显示的容器
+            alarmControl = $("#AlarmPrompt")[0];
+            // alert("Load alarm")
+            $.ajax({
+                url: '../RealData/GetAllAlarmCount?mineCode=' + MineCode + getUrlStafix(),
+                dataType: 'json',
+                type:'post',
+                success: function (data) {
+                    alarmControl.innerText = "";
+                    AlarmSetInfos = data;
+                    if (typeof (data) != "undefined" && data != null) {
+                        if (data.length > 0) {
+
+                            //alert(data);
+                            if (data[0].AlarmCount == 0) {
+                                alarmControl.style.color = "green";
+                                alarmControl.innerText = "当前无报警信息";
+
+                            } else {
+                                alarmControl.style.color = "red";
+                                alarmControl.innerText = "共有 " + data[0].AlarmCount + " 条报警信息";
+                            }
+
+                            showMsg(data, -1);
+                        }
+                    }
+                },
+                error: function (data) {
+                    //错误暂不处理
+                }
+            });
+        }
+
+
+        //加载下井人数
+        function LoadXJRS()
+        {
+            XJRS = $("#XJRS")[0];
+            $.ajax({
+                url: "../RealData/LoadXJRS",
+                data: { "MineCode": MineCode },
+                type: "post",
+                datatype: "json",
+                success: function (data) {
+                    XJRS.innerText = "当前下井人数：" + data.data;
+                },
+                error: function (data) {
+                    XJRS.innerText = "Error!";
+                }
+
+
+            });
+            setTimeout("LoadXJRS()", 10000);
+
+        }
+
+        // 报警设置
+        function AlarmSet() {
+            showAlarmWindow();
+            // 打开报警设置对话框
+            $("#divAlarmSet").window("open");
+            // 取传感器数据
+            $.ajax({
+                url: '../RealData/GetAlarmSetState?AccountId=' + readCookie("UserID") + getUrlStafix(),
+                dataType: 'json', type: "post",
+                success: function (data) {
+                    var senders = new Array(document.getElementById("divMines"), document.getElementById("divSystem"),
+                        document.getElementById("divCall"), document.getElementById("divSensor"));
+
+                    for (var s = 0; s < senders.length; s++)
+                        senders[s].innerHTML = "";
+
+                    for (var i = 0; i < data.length; i++) {
+                        if (data[i].AlarmGroup == "99") {
+                            var sctls = new Array(document.getElementById("soundA"), document.getElementById("soundB"), document.getElementById("soundC"));
+                            sctls[data[i].Disabled - 1].checked = true;
+                            AlarmSoundPlayMode = data[i].Disabled;
+
+                            for (var k = 0; k < sctls.length; k++) {
+                                sctls[k].tag = k + 1;
+                                sctls[k].onclick = function () {
+                                    AlarmSoundPlayMode = this.tag;
+                                    $.ajax({
+                                        url: '../RealData/SetAlarmSetItem?AccountId=' + readCookie("UserID") + '&AlarmGroup=99'
+                                            + '&Disabled=' + this.tag + '&LinkData=' + escape("声音报警方式") + getUrlStafix(),
+                                        dataType: 'text', type: 'post',
+                                        success: function (data) {
+                                            AddProcessLogGlobal("修改了声音报警方式！");
+                                            document.getElementById("btnAlarmSetTip").innerText = "声音报警方式设置成功.";
+                                            document.getElementById("btnAlarmSetTip").style.color = 'blue';
+                                        },
+                                        error: function (data) {
+                                            document.getElementById("btnAlarmSetTip").innerText = "更新失败, 可能是访问异常. ";
+                                            document.getElementById("btnAlarmSetTip").style.color = 'red';
+                                        }
+                                    });
+                                }
+                            }
+                        }//处理报警类型
+                        else {
+                            var divMines = document.createElement("div");
+                            divMines.style.width = "160px";
+                            divMines.style.display = "inline-block";
+
+                            var chkMines = document.createElement("input");
+                            chkMines.type = "checkbox";
+                            if (!data[i].Disabled) {
+                                chkMines.checked = true;
+                            }
+                            ////--------------特种人员、超员、限制区域人员、工作异常报警选项不可用-----------------------------------------------------------
+                            //if (i == 2 || i == 1 || i == 4 || i == 9) {
+                            //    chkMines.disabled = true;
+                            //}
+                            chkMines.value = data[i].AlarmType;
+                            chkMines.name = "Group" + data[i].AlarmGroup;
+                            chkMines.tag = data[i].AlarmGroup;
+                            chkMines.onclick = function () {
+
+
+                                $.ajax({
+
+                                    url: '../RealData/SetAlarmSetItem?AccountId=' + readCookie("UserID") + '&AlarmGroup=' + this.tag
+                                        + '&Disabled=' + !this.checked + '&LinkData=' + escape(this.value) + getUrlStafix(),
+                                    dataType: 'text', type: "post",
+                                    success: function (data) {
+                                        document.getElementById("btnAlarmSetTip").innerText = data;
+                                        document.getElementById("btnAlarmSetTip").style.color = 'blue';
+                                    },
+                                    error: function (data) {
+                                        document.getElementById("btnAlarmSetTip").innerText = "更新失败, 可能是访问异常. ";
+                                        document.getElementById("btnAlarmSetTip").style.color = 'red';
+                                    }
+                                });
+                                //alert(this.checked);
+                            }
+
+                            var lblMines = document.createElement("lable");
+                            lblMines.innerText = data[i].AlarmType;
+
+                            divMines.appendChild(chkMines);
+                            divMines.appendChild(lblMines);
+
+                            senders[data[i].AlarmGroup].appendChild(divMines);
+                        }
+                    };
+                },
+                error: function (data) {
+                    //错误暂不处理
+
+                }
+            });
+        }
+
+        var AlarmIndex = null;
+        var soundPath = "../../Files/Wma/";
+        var sound1 = "", sound2 = "", sound3 = "";
+        var isClose = "";
+
+        function OpenPA()
+        {
+            createCookie("NotFresh", "n");
+            if ($("#myiframepa")[0].src.indexOf("#") > 0)
+                $("#myiframepa").attr("src", "../Center/ShowData?PageName=PreAlarm&refresh=1&SystemType=1");
+
+            var iframeWidth = document.body.clientWidth;
+
+            var iframeHeight = document.body.clientHeight;
+
+            var windowWidth = $("#myDivePA").width();
+            var windowHeight = $("#myDivePA").height()
+            createCookie('windowWidth', windowWidth);
+            createCookie('windowHeight', windowHeight);
+            var setWidth = (iframeWidth - windowWidth) / 2;
+            var setHeight = (iframeHeight - windowHeight) / 2;
+            $("#myDivePA").window({/* 修正面板位置 */
+                left: setWidth,
+                top: setHeight,
+                onBeforeClose: function ()
+                {
+                    isClose = "y";
+                },
+                onOpen: function ()
+                {
+                    isClose = "n";
+                }
+
+            });
+            $("#myDivePA").window("open");
+
+
+        }
+        function timeCount() {
+            if (isClose == "n")
+            {
+                if ($("#myiframepa")[0].src.indexOf("#") > 0)
+                    $("#myiframepa").attr("src", "../Center/ShowData?PageName=PreAlarm&refresh=1&SystemType=1");
+
+            }
+            else
+            {
+
+                OpenPA();
+            }
+
+                t = setTimeout("timeCount()", 5000);
+
+
+        }
+
+        function ShowPre(obj) {
+            if (obj.checked) {
+                createCookie("NotFresh", "n");
+                timeCount();
+            }
+            else {
+                createCookie("NotFresh", "y");
+                //$("#IsAutoPre").html = "s";
+                clearTimeout(t);
+            }
+        }
+        function showMsg(data, i) {
+            if (i == -1) {
+                $.ajax({
+                    url: '../RealData/GetAlarmSetState?AccountId=' + readCookie("UserID") + getUrlStafix(),
+                    dataType: 'json', type: "post",
+                    success: function (dataAlarm) {
+                        for (AlarmIndex = 0; AlarmIndex < dataAlarm.length; AlarmIndex++) {
+                            if (dataAlarm[AlarmIndex].AlarmGroup == "99") {
+                                AlarmSoundPlayMode = dataAlarm[AlarmIndex].Disabled;
+                            }
+                        }
+                    }
+                });
+                $.ajax({
+                    url: '../RealData/GetAllAlarmInfo?MineCode=' + MineCode + "&AccountID=" + UserID + getUrlStafix(),
+                    dataType: 'json', type: "post",
+                    success: function (dataAlarm) {
+                        showMsg(dataAlarm, 0);
+                    }
+                });
+                return;
+            }
+
+            var item = data[i];
+            if (item == undefined) {
+                window.setTimeout("LoadAlarmInfo()", 10000);
+                return;
+            }
+
+
+
+            sound1 = soundPath + item.SimpleName + ".wma";
+            sound3 = soundPath + item.AlarmType + ".wma";
+            if (item.SensorName == '') {
+                sound2 = soundPath + item.AlarmTypeName + ".wma";
+            } else {
+                sound2 = soundPath + item.SensorName + ".wma";
+            }
+
+            i = i + 1;
+            palySound1(data, i, sound1, sound2, sound3);
+        }
+
+        function palySound1(data, i, sound1, sound2, sound3) {
+            Playing(sound1);
+            setTimeout(palySound2, 2800, data, i, sound1, sound2, sound3);
+        }
+
+        function palySound2(data, i, sound1, sound2, sound3) {
+            Playing(sound2);
+            setTimeout(palySound3, 2800, data, i, sound1, sound2, sound3);
+        }
+
+        function palySound3(data, i, sound1, sound2, sound3) {
+            Playing(sound3);
+            setTimeout(showMsg, 3800, data, i);
+        }
+
+
+
+        var embed;
+        function Playing(src) {
+            if (embed != undefined) {
+                try {
+                    document.getElementById("divPlays").removeChild(embed);
+                }
+                catch (ex) { }
+            }
+
+            if (AlarmSoundPause == 1) return;
+
+            switch (AlarmSoundPlayMode) {
+                case 1: return;
+                case 2: src = "../../Files/Wma/sound_alarm.wma";
+            }
+
+            embed = document.createElement("EMBED");
+            embed.src = src;
+            embed.display = "none";
+            document.getElementById("divPlays").appendChild(embed);
+        }
+
+        var tcell = null;
+        function CreatCell(width, color, value) {
+
+            tcell = document.createElement("td");
+            tcell.width = width;
+            tcell.style.color = color;
+            if (value != null) {
+                tcell.innerText = value;
+            }
+            else {
+                tcell.innerText = "---";
+            }
+            return tcell;
+
+        }
+
+        // 加载报警页面明细信息
+        function LoadAlarmPageDetail() {
+            // alert("LoadAlarmPageDetail ");
+            $("iframe").hide("fast");
+            $("#divAlarmPageDetail").window("open");
+            $.ajax({
+                url: '../RealData/GetAlarmPageData?mineCode=' + readCookie("MineCode"),
+                dataType: 'json', type: "post",
+                success: function (data) {
+                    //网络异常报警
+                    var danExp1 = document.getElementById("divAlarmNetExp1");
+                    danExp1.innerHTML = "";
+                    for (var i1 = 0; i1 < data.Table.length; i1++) {
+                        var dataItem1 = data.Table[i1];
+                        var divEx1 = document.createElement("div");
+                        divEx1.style.width = "300px";
+                        divEx1.style.display = "inline-block";
+                        var str1;
+                        var len1;
+                        len1 = dataItem1.SimpleName.length;
+                        if (len1 != 5) {
+                            str1 = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+                        }
+                        else {
+                            str1 = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+                        }
+                        var sysname = dataItem1.systemName;
+                        if (dataItem1.systemName == "矿山压力系统")
+                        {
+                            sysname = "广播系统";
+                        }
+                        divEx1.innerHTML = dataItem1.SimpleName + str1 + sysname + "&nbsp;&nbsp;&nbsp;&nbsp;" + " <span style='color:red'>" + dataItem1.communicationState + "</span><br/>";
+
+                        danExp1.appendChild(divEx1);
+                    }
+
+                    //安全监控系统报警
+                    function FillData(dan, data, type) {
+                        for (var i2 = 0; i2 < data.length; i2++) {
+                            var dataItem2 = data[i2];
+                            if (dataItem2.SystemType == type) {
+                                switch (dataItem2.AlarmType) {
+                                    case "超限报警":
+                                        {
+                                            trow = document.createElement("tr");
+                                            if (dataItem2.PoliceMaxValue == null) //没有最大值，显示 值 报警开始时间，持续时间；
+                                            {
+                                                trow.appendChild(CreatCell(80, "black", dataItem2.MineName));
+                                                trow.appendChild(CreatCell(80, "black", dataItem2.deviceName));
+                                                trow.appendChild(CreatCell(160, "black", dataItem2.Place));
+                                                trow.appendChild(CreatCell(80, "red", dataItem2.AlarmType));
+                                                trow.appendChild(CreatCell(80, "red", dataItem2.ShowValue));
+                                                trow.appendChild(CreatCell(160, "black", "---"));
+                                                trow.appendChild(CreatCell(160, "black", dataItem2.PoliceDateTime));
+                                                trow.appendChild(CreatCell(150, "black", dataItem2.PoliceContinuoustime));
+
+                                            }
+                                            else //有最大值，显示 最大值，最大值开始时间 ，报警开始时间，持续时间；
+                                            {
+                                                 trow.appendChild(CreatCell(80, "black", dataItem2.MineName));
+                                                trow.appendChild(CreatCell(80, "black", dataItem2.deviceName));
+                                                trow.appendChild(CreatCell(160, "black", dataItem2.Place));
+                                                trow.appendChild(CreatCell(80, "red", dataItem2.AlarmType));
+                                                trow.appendChild(CreatCell(80, "red", dataItem2.PoliceMaxValue));
+                                                trow.appendChild(CreatCell(160, "red", dataItem2.PoliceMaxDatetime));
+                                                trow.appendChild(CreatCell(160, "black", dataItem2.PoliceDateTime));
+                                                trow.appendChild(CreatCell(150, "black", dataItem2.PoliceContinuoustime));
+                                            }
+                                            break;
+                                        }
+
+                                    case "断电报警":
+                                        {
+                                            trow = document.createElement("tr");
+                                            trow.appendChild(CreatCell(80, "black", dataItem2.MineName));
+                                            trow.appendChild(CreatCell(80, "black", dataItem2.deviceName));
+                                            trow.appendChild(CreatCell(160, "black", dataItem2.Place));
+                                            trow.appendChild(CreatCell(80, "red", dataItem2.AlarmType));
+                                            trow.appendChild(CreatCell(80, "red", dataItem2.PowerMax));
+                                            trow.appendChild(CreatCell(160, "red", dataItem2.PowerMaxDatetime));
+                                            trow.appendChild(CreatCell(160, "black", dataItem2.PowerDateTime));
+                                            trow.appendChild(CreatCell(150, "black", dataItem2.PowerContinuoustime));
+                                            break;
+                                        }
+                                    case "报警":
+                                        {
+                                            trow = document.createElement("tr");
+                                            trow.appendChild(CreatCell(80, "black", dataItem2.MineName));
+                                            trow.appendChild(CreatCell(80, "black", dataItem2.deviceName));
+                                            trow.appendChild(CreatCell(160, "black", dataItem2.Place));
+                                            trow.appendChild(CreatCell(80, "red", dataItem2.AlarmType));
+                                            trow.appendChild(CreatCell(80, "red", dataItem2.ShowValue));
+                                            trow.appendChild(CreatCell(160, "red", dataItem2.PoliceMaxDatetime));
+                                            trow.appendChild(CreatCell(160, "black", dataItem2.PoliceDateTime));
+                                            trow.appendChild(CreatCell(150, "black", dataItem2.PoliceContinuoustime));
+                                            break;
+                                        }
+                                    case "故障报警":
+                                        {
+                                            trow = document.createElement("tr");
+                                             trow.appendChild(CreatCell(80, "black", dataItem2.MineName));
+                                            trow.appendChild(CreatCell(80, "black", dataItem2.deviceName));
+                                            trow.appendChild(CreatCell(160, "black", dataItem2.Place));
+                                            trow.appendChild(CreatCell(80, "red", dataItem2.AlarmType));
+                                            trow.appendChild(CreatCell(80, "black", "--"));
+                                            trow.appendChild(CreatCell(160, "black", "--"));
+                                            trow.appendChild(CreatCell(160, "black", dataItem2.PoliceDateTime));
+                                            trow.appendChild(CreatCell(150, "black", dataItem2.PoliceContinuoustime));
+                                            break;
+                                        }
+
+                                    case "馈电异常":
+                                        {
+                                            trow = document.createElement("tr");
+                                             trow.appendChild(CreatCell(80, "black", dataItem2.MineName));
+                                            trow.appendChild(CreatCell(80, "black", dataItem2.deviceName));
+                                            trow.appendChild(CreatCell(160, "black", dataItem2.Place));
+                                            trow.appendChild(CreatCell(80, "red", dataItem2.AlarmType));
+                                            trow.appendChild(CreatCell(80, "red", dataItem2.ShowValue));
+                                            trow.appendChild(CreatCell(160, "red", dataItem2.AbnormalDateTime));
+                                            trow.appendChild(CreatCell(160, "black", dataItem2.PowerDateTime));
+                                            trow.appendChild(CreatCell(150, "black", dataItem2.AbnormalContinuoustime));
+                                            break;
+                                        }
+
+                                    case "工作异常":
+                                        {
+                                            trow = document.createElement("tr");
+                                            trow.appendChild(CreatCell(80, "black", dataItem2.MineName));
+                                            trow.appendChild(CreatCell(80, "black", dataItem2.deviceName));
+                                            trow.appendChild(CreatCell(160, "black", dataItem2.Place));
+                                            trow.appendChild(CreatCell(80, "red", dataItem2.AlarmType));
+                                            trow.appendChild(CreatCell(80, "red", dataItem2.ShowValue));
+                                            trow.appendChild(CreatCell(160, "red", dataItem2.AbnormalDateTime));
+                                            trow.appendChild(CreatCell(160, "black", dataItem2.PowerDateTime));
+                                            trow.appendChild(CreatCell(150, "black", dataItem2.AbnormalContinuoustime));
+                                            break;
+                                        }
+                                }//SWITCH
+                                dan.appendChild(trow);
+                            }
+                        }//FOR
+                    }//function
+
+                    var AQJKcount = 0;
+                    var KSYLcount = 0;
+                    var HZSGcount = 0;
+                    //divEx2.appendChild(trow);
+                    for (var i2 = 0; i2 < data.Table1.length; i2++) {
+                        var dataItem2 = data.Table1[i2];
+                        if (dataItem2.SystemType == 1) {
+                            if (AQJKcount != 0)
+                                continue;
+                            AQJKcount++;
+                            var danAQJK = document.getElementById("divAlarmNetAQJK");
+                            danAQJK.innerHTML = "";
+                            var trow;
+                            trow = document.createElement("tr");
+                             trow.appendChild(CreatCell(80, "black", "煤矿名称"));
+                            trow.appendChild(CreatCell(80, "black", "设备名称"));
+                            trow.appendChild(CreatCell(160, "black", "安装位置"));
+                            trow.appendChild(CreatCell(80, "black", "状态描述"));
+                            trow.appendChild(CreatCell(80, "black", "值/最大值"));
+                            trow.appendChild(CreatCell(160, "black", "值/最大值时间"));
+                            trow.appendChild(CreatCell(160, "black", "状态开始时间"));
+                            trow.appendChild(CreatCell(150, "black", "状态持续时长"));
+                            danAQJK.appendChild(trow);
+                            FillData(danAQJK, data.Table1, 1);
+
+
+                        }//IF
+                        else if (dataItem2.SystemType == 5) {
+                            if (HZSGcount != 0)
+                                continue;
+                            HZSGcount++;
+                            var danKSYL = document.getElementById("divAlarmNetKSYL");
+                            danKSYL.innerHTML = "";
+                            var trow;
+                            trow = document.createElement("tr");
+                            // trow.appendChild(CreatCell(80, "black", "煤矿名称"));
+                            trow.appendChild(CreatCell(80, "black", "设备名称"));
+                            trow.appendChild(CreatCell(160, "black", "安装位置"));
+                            trow.appendChild(CreatCell(80, "black", "状态描述"));
+                            trow.appendChild(CreatCell(80, "black", "值/最大值"));
+                            trow.appendChild(CreatCell(160, "black", "值/最大值时间"));
+                            trow.appendChild(CreatCell(160, "black", "状态开始时间"));
+                            trow.appendChild(CreatCell(150, "black", "状态持续时长"));
+                            danKSYL.appendChild(trow);
+                            FillData(danKSYL, data.Table1, 5);
+
+
+                        }//IF
+                        else if (dataItem2.SystemType == 7) {
+                            if (HZSGcount != 0)
+                                continue;
+                            HZSGcount++;
+                            var danHZSG = document.getElementById("divAlarmNetHZSG");
+                            danHZSG.innerHTML = "";
+                            var trow;
+                            trow = document.createElement("tr");
+                            // trow.appendChild(CreatCell(80, "black", "煤矿名称"));
+                            trow.appendChild(CreatCell(80, "black", "设备名称"));
+                            trow.appendChild(CreatCell(160, "black", "安装位置"));
+                            trow.appendChild(CreatCell(80, "black", "状态描述"));
+                            trow.appendChild(CreatCell(80, "black", "值/最大值"));
+                            trow.appendChild(CreatCell(160, "black", "值/最大值时间"));
+                            trow.appendChild(CreatCell(160, "black", "状态开始时间"));
+                            trow.appendChild(CreatCell(150, "black", "状态持续时长"));
+                            danHZSG.appendChild(trow);
+                            FillData(danHZSG, data.Table1, 7);
+
+
+                        }//IF
+
+
+                    }//FOR
+
+
+
+                    //人员管理系统超时报警
+                    var danRYGL = document.getElementById("divAlarmNetRYGL");
+                    danRYGL.innerHTML = "";
+                    trow = document.createElement("tr");
+                    if (data.Table2.length > 0) {
+                        trow.appendChild(CreatCell(60, "black", "煤矿名称"));
+                        trow.appendChild(CreatCell(40, "black", "标识卡"));
+                        //JobCardCode
+                        trow.appendChild(CreatCell(60, "black", "姓名"));
+                        trow.appendChild(CreatCell(60, "black", "职务"));
+                        trow.appendChild(CreatCell(60, "black", "部门 "));
+                        trow.appendChild(CreatCell(160, "black", "下井时间 "));
+                        trow.appendChild(CreatCell(160, "black", "超时开始时间"));
+                        trow.appendChild(CreatCell(160, "black", "超时时长"));
+                    }
+                    //var divEx3 = document.createElement("div");
+                    //divEx3.style.width = "500px";
+                    //divEx3.style.display = "inline-block";
+                    danRYGL.appendChild(trow);
+                    for (var i3 = 0; i3 < data.Table2.length; i3++) {
+                        var dataItem3 = data.Table2[i3];
+                        //divEx3 = document.createElement("div");
+                        //divEx3.style.width = "700px";
+                        //divEx3.style.display = "inline-block";
+                        trow = document.createElement("tr");
+                        //SimpleName、JobCardCode、Name、Post、Dept、InMineTime、StartAlTime、OverTimeLength
+                        trow.appendChild(CreatCell(60, "black", dataItem3.SimpleName));
+                        trow.appendChild(CreatCell(40, "red", dataItem3.JobCardCode));
+                        trow.appendChild(CreatCell(60, "black", dataItem3.Name));
+                        trow.appendChild(CreatCell(60, "black", dataItem3.Post));
+                        trow.appendChild(CreatCell(60, "black", dataItem3.Dept));
+                        trow.appendChild(CreatCell(160, "black", dataItem3.InMineTime));
+                        trow.appendChild(CreatCell(160, "red", dataItem3.StartAlTime));
+                        // divEx3.innerHTML = dataItem3.SimpleName + dataItem3.Post;
+                        //
+                        trow.appendChild(CreatCell(160, "red", dataItem3.OverTimeLength));
+                        // divEx3.appendChild(trow);
+                        danRYGL.appendChild(trow);
+                    }
+
+                    //人员管理系统超员报警
+
+                    //for (var i4 = 0; i4 < data.Table3.length; i4++) {
+                    //    var dataItem4 = data.Table3[i4];
+                    //    var danRYGL = document.createElement("div");
+                    //    danRYGL.style.width = "500px";
+                    //    danRYGL.style.display = "inline-block";
+                    //    danRYGL.innerHTML = dataItem4.SimpleName + dataItem4.Post;
+                    //    danRYGL.appendChild(divEx4);
+                    //}
+                    cy = document.createElement("tr");
+                    if (data.Table3.length > 0) {
+                        cy.appendChild(CreatCell(60, "black", "煤矿名称"));
+                        cy.appendChild(CreatCell(40, "black", "标识卡"));
+                        //JobCardCode
+                        cy.appendChild(CreatCell(60, "black", "姓名"));
+                        cy.appendChild(CreatCell(60, "black", "职务"));
+                        cy.appendChild(CreatCell(60, "black", "部门 "));
+                        cy.appendChild(CreatCell(160, "black", "报警类型 "));
+                        cy.appendChild(CreatCell(160, "black", "开始时间"));
+                        cy.appendChild(CreatCell(160, "black", "持续时长"));
+                    }
+                    //var divEx3 = document.createElement("div");
+                    //divEx3.style.width = "500px";
+                    //divEx3.style.display = "inline-block";
+                    danRYGL.appendChild(cy);
+                    for (var i3 = 0; i3 < data.Table3.length; i3++) {
+                        var dataItem3 = data.Table3[i3];
+                        //divEx3 = document.createElement("div");
+                        //divEx3.style.width = "700px";
+                        //divEx3.style.display = "inline-block";
+                        cy = document.createElement("tr");
+                        //SimpleName、JobCardCode、Name、Post、Dept、InMineTime、StartAlTime、OverTimeLength
+                        cy.appendChild(CreatCell(60, "black", dataItem3.SimpleName));
+                        cy.appendChild(CreatCell(40, "red", dataItem3.JobCardCode));
+                        cy.appendChild(CreatCell(60, "black", dataItem3.Name));
+                        cy.appendChild(CreatCell(60, "black", dataItem3.Post));
+                        cy.appendChild(CreatCell(60, "black", dataItem3.Dept));
+                        cy.appendChild(CreatCell(160, "black", dataItem3.AlarmType));
+                        cy.appendChild(CreatCell(160, "red", dataItem3.StartAlTime));
+                        // divEx3.innerHTML = dataItem3.SimpleName + dataItem3.Post;
+                        //
+                        cy.appendChild(CreatCell(160, "red", dataItem3.OverTimeLength));
+                        // divEx3.appendChild(trow);
+                        danRYGL.appendChild(cy);
+                    }
+                    //人员管理系统工作异常报警
+
+                    for (var i5 = 0; i5 < data.Table4.length; i5++) {
+                        var dataItem5 = data.Table4[i5];
+                        var danRYGL = document.createElement("div");
+                        danRYGL.style.width = "500px";
+                        danRYGL.style.display = "inline-block";
+                        danRYGL.innerHTML = dataItem5.SimpleName + dataItem5.Post;
+                        danRYGL.appendChild(divEx5);
+                    }
+
+
+                    // 基站报警
+
+                    var jzbj = document.getElementById("divAlarmNetJZBJ");
+                    jzbj.innerHTML = "";
+                      jz = document.createElement("tr");
+                    if (data.Table5.length > 0) {
+                        jz.appendChild(CreatCell(60, "black", "煤矿名称"));
+                        jz.appendChild(CreatCell(80, "black", "分站号"));
+                        //JobCardCode
+                        jz.appendChild(CreatCell(100, "black", "分站名"));
+                        jz.appendChild(CreatCell(100, "black", "安装位置"));
+                        jz.appendChild(CreatCell(60, "black", "状态 "));
+                        jz.appendChild(CreatCell(170, "black", "开始时间"));
+                        jz.appendChild(CreatCell(160, "black", "持续时长"));
+                    }
+                    //var divEx3 = document.createElement("div");
+                    //divEx3.style.width = "500px";
+                    //divEx3.style.display = "inline-block";
+                    jzbj.appendChild(jz);
+                    for (var i6 = 0; i6 < data.Table5.length; i6++) {
+                        var dataItem6 = data.Table5[i6];
+                        //divEx3 = document.createElement("div");
+                        //divEx3.style.width = "700px";
+                        //divEx3.style.display = "inline-block";
+                        jz = document.createElement("tr");
+                        //SimpleName、JobCardCode、Name、Post、Dept、InMineTime、StartAlTime、OverTimeLength
+                        jz.appendChild(CreatCell(60, "black", dataItem6.SimpleName));
+                        jz.appendChild(CreatCell(80, "red", dataItem6.StationCode));
+                        jz.appendChild(CreatCell(100, "black", dataItem6.StationName));
+                        jz.appendChild(CreatCell(100, "black", dataItem6.Place));
+                        jz.appendChild(CreatCell(60, "red", dataItem6.State));
+                        jz.appendChild(CreatCell(170, "red", dataItem6.Time));
+                        jz.appendChild(CreatCell(160, "red", dataItem6.Continuous));
+                        // divEx3.appendChild(trow);
+                        jzbj.appendChild(jz);
+                    }
+
+
+
+                }//SUCCESS
+            });
+        }
+
+        function ChangeIframeSrc(object, iframeID, Menuobject) {
+            $(".icon-alinkleft").each(function (index, element) {
+                element.style.fontWeight = "normal";
+            });
+            Menuobject.style.fontWeight = "bold";
+            $("#" + iframeID)[0].src = object;
+
+            if (object.indexOf("RtCurve")>0) {
+                createCookie("IsClose", "n");
+            }
+            else {
+                createCookie("IsClose", "y");
+
+            }
+
+        }
+        //显示报警窗口
+        function showAlarmWindow() {
+            $("iframe").hide("fast");
+        }
+
+        //显示隐患的Iframe
+        function ShowAllIframe() {
+            $("iframe").show("fast");
+        }
+        function closeAllTabs() {
+            var mylength = $("#divtabs").tabs("tabs").length;
+            for (var myindex = mylength - 1; myindex > -1; myindex--) {
+                $("#divtabs").tabs("close", myindex);
+            }
+        }
+
+
+        function changeFramWidth()
+        {
+
+        }
+        //window.onresize = function ()
+        //{
+        //    alert("change");
+        //    changeFramWidth();
+        //}
+        var MenuCount = 0;
+        //获取菜单
+        function getMenu() {
+
+            //清空Tabs选项卡的所有内容
+            var mylength = $("#divtabs").tabs("tabs").length;
+            for (var myindex = mylength - 1; myindex > -1; myindex--) {
+                $("#divtabs").tabs("close", myindex);
+            }
+
+            if (MineCode == null) { MineCode = ""; }
+           
+
+            MenuCount = 0;
+            
+            //var use = UserName
+            //if (use == null || use == "")
+            //{
+            //    use = "admin";
+            //}
+            //$("#span_userName")[0].innerHTML = use;
+
+            $("#span_userName")[0].innerHTML = UserName;
+            //取出一级菜单
+            $.ajax({
+                dataType: 'text', url: '../RealData/ReturnMenus?userName=' + escape(UserName) + '&mineCode=' + MineCode + getUrlStafix(),
+                type: "post",
+                //dataType: 'text', url: '../RealData/ReturnMenus?userName=' + escape(use) + '&mineCode=' + MineCode + getUrlStafix(),
+                success: function (data) {
+
+
+                    var json = $.parseJSON(data);
+                    $(json).each(function (i, item) {
+                        MenuCount++;
+                        var MenuName_1 = item.MenuName;//一级菜单名称
+                        var MenuPath_1 = item.MenuPath;//一级菜单路径
+                        var SubMenu_1 = item.subMenu; //子菜单集合
+                        var tabID = "system_" + i;
+                        var contentID = "content_" + i;
+                        var iframeID = "iframe_" + i;
+                        var menu_1 = "accordion_" + i;
+                        var iframeHeight = (document.body.clientHeight - 188) + "px";
+
+                        var iframeWidth = (document.body.clientWidth - 160);// 如果没有煤矿列表
+                        if ($("#divMineList").length > 0 )
+                            iframeWidth = (document.body.clientWidth - 390);// 如果有煤矿列表
+
+
+
+                        var stransHeight = (document.body.clientHeight - 188);
+
+                        var stransSuffix = "&Height=" + stransHeight + "&MineCode=" + MineCode + "&UserName=" + escape(UserName) + "&UserID=" + UserID;
+                        var isSelected = (i == 0);
+
+                        var menuImagePath = "";
+                        switch (MenuName_1) {
+                            case "安全监控": menuImagePath = "../content/themes/image/aqjk.png"; break;
+                            case "人员管理": menuImagePath = "../content/themes/image/rygl.png"; break;
+                            case "系统配置": menuImagePath = "../content/themes/image/systemconfig.png"; break;
+                            case "交接班管理": menuImagePath = "../content/themes/image/workshift.png"; break;
+                            case "企业档案": menuImagePath = "../content/themes/image/enterprisemanage.png"; break;
+                            case "隐患管理": menuImagePath = "../content/themes/image/troublemanage.png"; break;
+                            case "网络硬盘": menuImagePath = "../content/themes/image/modem.png"; break;
+                            case "公告发布": menuImagePath = "../content/themes/image/Notice.png"; break;
+                            case "预警管理": menuImagePath = "../content/themes/image/PreviewAlarm.png"; break;
+                            case "执法文书": menuImagePath = "../content/themes/image/LawInstruments.png"; break;
+                            case "操作日志": menuImagePath = "../content/themes/image/Timer.png"; break;
+                            case "图形系统": menuImagePath = "../content/themes/image/chart.png"; break;
+                            case "视频监控": menuImagePath = "../Content/themes/Image/SPJK.png"; break;
+                            case "矿山压力": menuImagePath = "../content/themes/image/troublemanage.png"; break;
+                            case "火灾束管": menuImagePath = "../Content/themes/Image/PreviewAlarm.png"; break; //这里先随便拖了个图片路径
+
+
+                            //case "瓦斯抽放": menuImagePath = "../Content/themes/Image/scanner.png"; break; //这里先随便拖了个图片路径
+
+                            case "安全管理": menuImagePath = "../Content/themes/Image/pda.png"; break; //这里先随便拖了个图片路径
+                            case "通讯状态": menuImagePath = "../content/themes/image/curve.png"; break; //这里先随便拖了个图片路径
+                            case "地图信息": menuImagePath = "../content/themes/image/map.png"; break;
+                            case "联动控制": menuImagePath = "../content/themes/image/LDKZ.png"; break;
+
+
+                            case "工业视频": menuImagePath = "../Content/themes/Image/SPJK.png"; break;
+
+                            case "供电系统": menuImagePath = "../Content/themes/Image/供电.png"; iframeWidth = iframeWidth + 150; break;
+                            case "通风系统": menuImagePath = "../Content/themes/Image/通风.png"; iframeWidth = iframeWidth + 150; break;
+                            case "瓦斯抽放": menuImagePath = "../Content/themes/Image/瓦斯.png"; iframeWidth = iframeWidth + 150; break;
+                            case "信息发布": menuImagePath = "../Content/themes/Image/信息.png"; iframeWidth = iframeWidth + 150; break;
+                            case "压风系统": menuImagePath = "../Content/themes/Image/压风.png"; iframeWidth = iframeWidth + 150; break;
+                            case "皮带运输": menuImagePath = "../Content/themes/Image/运输.png"; iframeWidth = iframeWidth + 150; break;
+
+
+
+                            case "导航": menuImagePath = "../Content/themes/Image/导航.png"; iframeWidth = iframeWidth + 150; break;
+                            case "水泵集控": menuImagePath = "../Content/themes/Image/排水.png"; iframeWidth = iframeWidth + 150; break;
+
+
+                        }
+                      
+                        //添加选项卡，设置选项卡内容为布局控件
+                        $('#divtabs').tabs('add', {
+                            id: tabID, closable: false, selected: isSelected,
+                            title: "<span class='tt-inner' style='cursor:pointer;'><img src='" + menuImagePath + "' /><br>" + MenuName_1 + "</span>",
+                            content: ' <div id="' + contentID + '" class="easyui-layout" data-options="fit:true,border:false" style="margin:3px 1px 3px 1px;"></div>',
+                        });
+
+
+
+                        //向选项卡的布局控件中添加中区，设置中区的内容为iframe
+                        $("#" + contentID).layout('add', {
+                            region: 'center', border: false, split: true,
+                            //content: '<iframe id="' + iframeID + '" class="change-backgroundcolor"  frameborder="0" style="width:' + iframeWidth + 'px;height:' + iframeHeight + '; border:none; overflow:hidden;" title="' + MenuPath_1 + stransSuffix + '" ></iframe>',
+
+                            content: '<iframe id="' + iframeID + '" class="change-backgroundcolor"  frameborder="0" style="width:' + iframeWidth + 'px;height:' + iframeHeight + '; border:none;" scrolling="yes" onload="changeFramWidth()"  title="' + MenuPath_1 + stransSuffix + '" ></iframe>',
+
+
+                        });
+
+                        $("#divtabs").tabs({
+                            onSelect: function (title, index) {
+                                $("iframe").each(function (myindx, myitem) {
+                                    if (myitem.id == "iframe_" + index) {
+                                        $("#iframe_" + index)[0].src = $("#iframe_" + index)[0].title;
+                                    }
+                                    else {
+                                        myitem.src = "#";
+                                    }
+                                });
+                                // 切换tab时，将之前加粗的还原
+                                $(".icon-alinkleft").each(function (index, element) {
+                                    element.style.fontWeight = "normal";
+                                });
+
+
+
+
+
+                            },
+                            onUpdate: function (title, index) {
+                                if ($("#iframe_0")[0] != undefined) {
+                                    if ($("#iframe_0")[0].src == "")
+                                    { $("#iframe_0")[0].src = $("#iframe_0")[0].title; }
+                                }
+                            }
+                        });
+                       
+                        if (SubMenu_1 != "" && SubMenu_1!=null) {
+                            //向选项卡的布局控件中添加左区，设置左区的内容为抽屉控件
+                            $("#" + contentID).layout('add', {
+                                region: 'west', width: 150, split: true, title: '==子功能菜单==', border: false,collapsible:false,
+                                content: ' <div id="' + menu_1 + '" class="easyui-accordion" data-options="fit:true"></div>',
+                            });
+
+                            //取出二级菜单
+                            $(SubMenu_1).each(function (j, jtem) {
+                                var MenuName_2 = jtem.MenuName;
+                                var MenuPath_2 = jtem.MenuPath;
+                                var SubMenu_2 = jtem.subMenu;
+                                var tableID = "table_" + i + '_' + j;
+                                var Menu2_Selected = (j == 0);
+
+                                //向抽屉菜单添加子菜单表格
+                                $('#' + menu_1).accordion('add', {
+                                    title: MenuName_2, selected: Menu2_Selected,
+                                    content: '<table id="' + tableID + '"></table>',
+                                });
+
+                                if (SubMenu_2 != "") {
+                                    //取出三级菜单
+                                    $(SubMenu_2).each(function (k, ktem) {
+                                        var MenuName_3 = ktem.MenuName;
+                                        var MenuPath_3 = ktem.MenuPath;
+                                        var SubMenu_3 = ktem.subMenu;
+                                        //相对应表格添加子菜单
+                                        $("#" + tableID).append("<tr><td> <a onclick=\"ChangeIframeSrc('" + MenuPath_3 + stransSuffix + "','" + iframeID + "',this)\" class='icon-alinkleft'>" + MenuName_3 + "</a><td></tr>");
+                                    });
+                                }
+                            });
+                        }
+                    });
+
+                    resizeIframe();
+                    setTimeout("", 2000)
+                },
+                error: function (data) {
+
+                }
+            });
+
+            // $.parser.parse();
+            $.get({
+                type: 'get', dataType: 'text', url: 'http://www.weather.com.cn/adat/sk/101260906.html',
+                success: function (data) { },
+                error: function (data) { }
+            });
+
+            $("#divVideo").window("close");
+            $.parser.parse("#divtabs");
+
+
+
+        }
+        var UserName = "";
+        var UserID = "";
+        var treeUrl = "";
+
+        //动态加载菜单信息
+        var count_1 = 0;
+        function MineList(Type) {
+            var count_tree = 0;
+            if (Type == "City") {
+                $("#MineListByCity").css('fontWeight', 'bold');
+                $("#MineListByMiningBureau").css('fontWeight', 'normal');
+            }
+            else {
+                $("#MineListByCity").css('fontWeight', 'normal');
+                $("#MineListByMiningBureau").css('fontWeight', 'bold');
+            }
+            //加载树
+            var node_id_old=0;
+            treeUrl = "../RealData/ReturnMineList?Type=" + Type,
+
+                    //$('#treeMine').tree({
+                    //    anysc:false,
+                    //    cache: false,
+                    //    url: "../RealData/ReturnMineList?Type=" + Type + getUrlStafix(),
+                    //    method: 'get',
+                    //    onClick: function (node) {
+                    //        // 点击煤矿触发
+
+                    //        if (node.children == null) {
+                    //            //将之前的节点变为普通
+                    //            if (MineCode != "") {
+
+                    //                var node_old = $("#treeMine").tree("find", MineCode);
+                    //                if (node_old != null) {
+                    //                    node_old.target.style.fontWeight = "normal";
+                    //                }
+                    //            }
+                    //            else {
+                    //                var node_old = $("#treeMine").tree("find", "ALL");
+                    //                if (node_old != null) {
+                    //                    node_old.target.style.fontWeight = "normal";
+                    //                }
+
+                    //            }
+                    //            MineCode = node.id;
+
+                    //            if (MineCode == "ALL") {
+                    //                MineCode = "";
+                    //            }
+                    //            node.target.style.fontWeight = "bold";
+
+                    //            // 获取菜单
+                    //            // 双击事件不予以处理 ， 比较新节点是否与上一节点相同
+                    //            if (node.id == node_id_old)
+                    //            { return; }
+                    //            //记录该节点
+                    //            node_id_old = node.id;
+                    //            getMenu();
+                    //        }
+                    //    },
+                    //    onDblClick: function (node) {
+                    //        return;
+                    //    },
+                    //    onLoadSuccess: function (node, data) {
+                    //        if (data.length > 0) {
+                    //            if (count_tree == 0)
+                    //            {
+                    //                //MineCode = data[0].children[0].id;
+                    //                // 获取菜单
+                    //                MineCode = "";
+                    //                getMenu();
+                    //                count_tree++;
+
+                    //            }
+                    //            // 因为不断刷新树，所以在这里设置选中节点样式
+                    //            if (MineCode != "") {
+
+                    //                var node = $("#treeMine").tree("find", MineCode);
+                    //                if (node != null) {
+                    //                    node.target.style.fontWeight = "bold";
+                    //                }
+                    //            }
+                    //            else {
+
+                    //                var node = $("#treeMine").tree("find", "ALL");
+                    //                if (node != null) {
+                    //                    node.target.style.fontWeight = "bold";
+                    //                }
+                    //            }
+
+                    //        }
+                    //    },
+                    //    formatter: function (node)
+                    //    {
+                    //        var text = node.text;
+                    //        if (node.AQJKState != "" && node.AQJKState != "-")
+                    //        {
+
+                    //            if (node.AQJKState=="0")
+                    //                text += '&nbsp;<img  style="width:10px;height:10px" src="../content/themes/image/green.png"/>';
+                    //            else
+                    //                text += '&nbsp;<img  style="width:10px;height:10px" src="../content/themes/image/red.png"/>';
+                    //        }
+                    //        if (node.RYGLState != "" && node.RYGLState != "-") {
+                    //            if (node.RYGLState == "0")
+                    //                text += '&nbsp;<img  style="width:10px;height:10px" src="../content/themes/image/green.png"/>';
+                    //            else
+                    //                text += '&nbsp;<img  style="width:10px;height:10px" src="../content/themes/image/red.png"/>';
+                    //        }
+                    //        return text;
+
+                    //    }
+
+                    //});
+
+  $('#treeMine').treegrid({
+      /// 0正常，
+      /// 1.网络中断：无数据上传。
+      /// 2.传输异常：客户端上传打开，未生成数据。
+      /// 3、通讯中断：网络不稳定。
+      /// 4、网络故障：网络不通。
+      /// 5、数据延时：解析中实时数据与本机时间不一致
+      cache: false,
+      url: treeUrl + getUrlStafix(),
+      method: 'get',
+      lines: true,
+      idField: 'id',
+      treeField: 'text',
+      anysc: false,
+      columns: [[
+          { title: '煤矿编号', field: 'id', width: 60, hidden: true },
+          { title: '煤矿名称', field: 'text', width: 100 },
+          {
+              title: '安全监控', field: 'AQJKState', width: 55, styler: function (value, row, index) {
+
+                  switch (value) {
+                      // 给他加tooltip
+
+                      case "正常": return 'color:green;<a href="#" title="正常" class="easyui-tooltip</a>'; break;
+                      case "通讯中断": return 'color:red;<a href="#" title="通讯中断：网络不稳定" class="easyui-tooltip</a>'; break;
+                      case "传输异常": return 'color:darkorange;<a href="#" title="传输异常：客户端上传打开，但未生成数据" class="easyui-tooltip</a>'; break;
+                      case "网络中断": return 'color:orange;<a href="#" title="网络中断：无数据上传" class="easyui-tooltip</a>'; break;
+                      case "网络故障": return 'color:magenta;<a href="#" title="网络故障：网络不通" class="easyui-tooltip</a>'; break;
+                      case "数据延时": return 'color:maroon;<a href="#" title="数据延时：解析中是实时数据与本机时间不一致" class="easyui-tooltip</a>'; break;
+                      default: return 'color:black;'; break;
+                  }
+
+              }
+          },
+          {
+              title: '人员管理', field: 'RYGLState', width: 55, styler: function (value, row, index) {
+                  switch (value) {
+
+                      case "正常": return 'color:green;<a href="#" title="正常" class="easyui-tooltip</a>'; break;
+                      case "通讯中断": return 'color:red;<a href="#" title="通讯中断：网络不稳定" class="easyui-tooltip</a>'; break;
+                      case "传输异常": return 'color:darkorange;<a href="#" title="传输异常：客户端上传打开，但未生成数据" class="easyui-tooltip</a>'; break;
+                      case "网络中断": return 'color:orange;<a href="#" title="网络中断：无数据上传" class="easyui-tooltip</a>'; break;
+                      case "网络故障": return 'color:magenta;<a href="#" title="网络故障：网络不通" class="easyui-tooltip</a>'; break;
+                      case "数据延时": return 'color:maroon;<a href="#" title="数据延时：解析中是实时数据与本机时间不一致" class="easyui-tooltip</a>'; break;
+                      default: return 'color:black;'; break;
+                  }
+              }
+          },
+
+      ]],
+      onClickRow: function (node) {
+          // 点击煤矿触发
+          if (node.children == null) {
+              MineCode = node.id;
+
+              if (MineCode == "ALL") {
+                  MineCode = "";
+              }
+              // 获取菜单
+              // 双击事件不予以处理 ， 比较新节点是否与上一节点相同
+              if (node.id == node_id_old)
+              { return; }
+              //记录该节点
+              node_id_old = node.id;
+              getMenu();
+          }
+      },
+      onDblClickRow: function (node) {
+          return;
+      },
+      onLoadSuccess: function (node, data) {
+          if (count_1 == 0) {
+              if (data.length > 0) {
+                  //MineCode = data[0].children[0].id;
+                  // 获取菜单
+                  MineCode = "";
+                  getMenu();
+                  count_1++;
+              }
+
+          }
+
+      },
+  });
+            window.setTimeout("ReloadTree()", 10000);
+
+        }
+        //function ReloadTree() {
+
+        //    $('#treeMine').treegrid({
+        //        anysc: false,
+        //        url: treeUrl + getUrlStafix(),
+        //    });
+
+        //    window.setTimeout("ReloadTree()", 10000);
+        //}
+        function ReloadTree()
+        {
+            var p = $("#layoutMineList").layout("panel", "west")[0].clientWidth;
+            if (p == 0) {
+                
+            }
+            else {
+                    $('#treeMine').treegrid({
+                        anysc: false,
+                        url: treeUrl + getUrlStafix(),
+                    });
+            } 
+            window.setTimeout("ReloadTree()", 10000);
+        }
+        function resizeIframe() {
+            changeSize();
+        }
+
+    
+
+        var iframeWidth_Before = -1;
+        var width_Before = -1;
+        window.onresize = function () { changeSize() };
+        function changeSize() {
+           
+            if ($("#layoutMineList").layout("panel", "west").length == 0) {
+                if (document.body.clientWidth != width_Before) {
+                    var iframeHeight = (document.body.clientHeight - 188) + "px";
+                    var iframeWidth = (document.body.clientWidth - 160);// 如果没有煤矿列表
+
+                    for (var i = 0; i < MenuCount; i++) {
+                        var id = "iframe_" + i;
+                        var title = document.getElementById(id).title.toString().substring(0, 20);
+                        if (title.indexOf("DH") > 0 )
+                        {
+                            document.getElementById(id).style.width = iframeWidth +140 + "px";
+                            document.getElementById(id).style.height = iframeHeight;
+
+                        }
+                    else  
+                        {
+                            document.getElementById(id).style.width = iframeWidth - 20 + "px";
+                            document.getElementById(id).style.height = iframeHeight;
+
+                        }
+
+
+                    }
+                    width_Before = document.body.clientWidth;
+
+                }
+
+
+            }
+            else {
+                if ($("#layoutMineList").layout("panel", "west")[0].clientWidth != iframeWidth_Before || document.body.clientWidth != width_Before) {
+                    var iframeHeight = (document.body.clientHeight - 188) + "px";
+                    var iframeWidth = (document.body.clientWidth - 160);// 如果没有煤矿列表
+
+                    for (var i = 0; i < MenuCount; i++) {
+                        var id = "iframe_" + i;
+                       
+                        if ($("#layoutMineList").layout("panel", "west")[0].clientWidth > 0) {
+                            iframeWidth = (document.body.clientWidth - 390);// 如果有煤矿列表
+                            document.getElementById(id).style.width = iframeWidth + "px";
+                        }
+                        else {
+                            document.getElementById(id).style.width = iframeWidth - 20 + "px";
+                        }
+                        document.getElementById(id).style.height = iframeHeight
+
+
+                    }
+                    width_Before = document.body.clientWidth;
+                    iframeWidth_Before = $("#layoutMineList").layout("panel", "west")[0].clientWidth;
+                }
+            }
+          
+        
+          
+          
+            //************************   为了点折叠可以更新大小     ******************************
+            window.setTimeout("changeSize()", 500);
+        }
+
+    </script>
+</head>
+
+<body style="margin:0,0,0,0"  class="easyui-layout" onresize="resizeIframe()" onload="resizeIframe()">
+    @RenderBody()
+    <div id="divPlays" style="display: none;"></div>
+
+    <div id="divAlarmPageDetail" title="实时报警数据" class="easyui-window" data-options="closed:true,iconCls:'icon-error',onClose:function(){ShowAllIframe();},minimizable:false,onMinimize:function(){ShowAllIframe();}"
+         style="z-index: 100; width: 780px; height: 560px; z-index: 100; ">
+        <div style="margin-top: 20px; font-weight: 700;">安全监控报警：</div>
+        <div id="divAlarmNetAQJK" style="height: auto; padding-left: 20px; border-style: solid; border-width: 1px; border-color: silver; ">
+        </div>
+        <div style="margin-top: 20px; font-weight: 700;">人员管理报警：</div>
+        <div id="divAlarmNetRYGL" style="height: auto; padding-left: 20px; border-style: solid; border-width: 1px; border-color: silver; ">
+        </div>
+        <div style="margin-top: 20px; font-weight: 700;" >基站报警：</div>
+        <div id="divAlarmNetJZBJ" style="height: auto; padding-left: 20px; border-style: solid; border-width: 1px; border-color: silver; ">
+        </div>
+
+        <div style="margin-top: 20px; font-weight: 700; display: none" >矿山压力报警：</div>
+        <div id="divAlarmNetKSYL" style="height: auto; padding-left: 20px; border-style: solid; border-width: 1px; border-color: silver; display: none" >
+        </div>
+        <div style="margin-top: 20px; font-weight: 700; display: none" >火灾束管报警：</div>
+        <div id="divAlarmNetHZSG" style="height: auto; padding-left: 20px; border-style: solid; border-width: 1px; border-color: silver; display: none;" >
+        </div>
+        @*<div style="margin-top: 20px; font-weight: 700;">安全监控报警：</div>
+            <div id="divAlarmNetExp2" style="height: auto; padding-left: 20px; border-style: solid; border-width: 1px; border-color: silver; ">
+            </div>*@
+        <div style="margin-top: 20px;font-weight:700;">网络异常报警：</div>
+        <div id="divAlarmNetExp1" style="height: auto; padding-left: 20px; border-style:solid;border-width:1px;border-color:silver;">
+        </div>
+
+        @* <div style="margin-top: 20px; font-weight: 700;">人员超时报警：</div>
+            <div id="divAlarmNetExp3" style="height: auto; padding-left: 20px; border-style: solid; border-width: 1px; border-color: silver; ">
+            </div>*@
+        @*<div style="margin-top: 20px; font-weight: 700;">人员超员报警：</div>*@
+        @*<div id="divAlarmNetExp4" style="height: auto; padding-left: 20px; border-style: solid; border-width: 1px; border-color: silver; ">
+            </div>*@
+        @*<div style="margin-top: 20px; font-weight: 700;">特种作业工作异常报警：</div>*@
+        @*<div id="divAlarmNetExp5" style="height: auto; padding-left: 20px; border-style: solid; border-width: 1px; border-color: silver; ">
+            </div>*@
+    </div>
+
+    <div id="divAlarmSet" title="报警设置" class="easyui-window" data-options="closed:true,minimizable:false,modal:true,iconCls:'icon-save',onClose:function(){ShowAllIframe();},onMinimize:function(){ShowAllIframe();}"
+         style="z-index: 100; width: 50%; height: 600px; z-index: 100;">
+        <div style="display: inline-block; margin-top: 10px; padding-left: 50px;" onclick="alert(AlarmSoundPlayMode);">提示：<div id="btnAlarmSetTip" style="display: inline-block;"></div></div>
+        <div style="margin-left:50px;margin-top: 10px;">声音类型：</div>
+        <div style="margin-left: 50px; padding-left: 20px;">
+            <div style="width: 160px; display: inline-block;"><input id="soundA" type="radio" value="静音" name="Sound" />静音</div>
+            <div style="width: 160px; display: inline-block;"><input id="soundB" type="radio" value="单一声音" name="Sound" />单一声音</div>
+            <div style="width: 160px; display: inline-block;"><input id="soundC" type="radio" value="完整声音" checked="true" name="Sound" />完整声音</div>
+        </div>
+        <div style="margin-left:50px;">
+            @*<div style="margin-top: 20px;">按煤矿报警：</div>*@
+            <div id="divMines" hidden="hidden" style="height: auto; padding-left: 20px;">
+            </div>
+
+            @*<div style="margin-top: 20px;">按系统报警：</div>*@
+            <div id="divSystem" hidden="hidden" style="height: auto; padding-left: 20px;">
+            </div>
+
+            <div style="margin-top: 20px;">按类别报警：</div>
+            <div id="divCall" style="height: auto; padding-left: 20px;">
+            </div>
+
+            @*<div style="margin-top: 20px;">按设备报警：</div>*@
+            <div id="divSensor" hidden="hidden" style="height: auto;padding-left: 20px;">
+            </div>
+        </div>
+
+        @*<table>
+                <tr>
+                    <td style="width:60px;"></td>
+                    <td style="width:60px;height:40px;">声音类型：</td>
+                    <td>
+                        <input id="Radio1" type="radio" value="静音" name="Sound"/>静音
+                        <input id="Radio1" type="radio" value="单一声音" name="Sound" />单一声音
+                        <input id="Radio1" type="radio" value="完整声音" name="Sound" />完整声音
+                    </td>
+                </tr>mi
+                <tr>
+                    <td >煤矿是否选择播放声音</td>
+                </tr>
+                <tr></tr>
+            </table>*@
+
+    </div>
+    <div data-options="region:'north'" style="height:66px; text-align:center; display:table-cell; vertical-align:middle;">
+        <table style="width:100%;height:100%;font-size:12px; border-style:none;border-collapse:collapse;border-width:0 0 0 0;">
+            <tr>
+                <td id="TopLeftBgImage"></td>
+                <td id="TopMiddleBgImage">&nbsp;</td>
+                <td id="TopRightBgImage">
+                    <table id="TabTopTitle">
+                        <tr>
+                            <td style="text-align:right;height:40%;" colspan="2">欢迎你，<span id="span_userName"></span>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                            <td colspan="2" class="toptd" style="text-align:center;width:165px;"><span id="clock"></span></td>
+                            <td style="text-align:right;height:40%;"><span>版本号：V1.0</span></td>
+                            <td colspan="2" style="text-align:center;width:165px;">
+                                <div class="bs">
+                                    <label class="styleswitch a1" style="CURSOR: pointer;font-size:7px;" title="橘黄色" rel="orange">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                                    <label class="styleswitch a2" style="CURSOR: pointer; font-size: 7px" title="竹绿色" rel="green">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                                    <label class="styleswitch a3" style="CURSOR: pointer; font-size: 7px" title="天蓝色" rel="blue">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                                    <label class="styleswitch a4" style="CURSOR: pointer; font-size: 7px" title="黑灰色" rel="gray">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                                    <label class="styleswitch a5" style="CURSOR: pointer; font-size: 7px" title="艳红色" rel="pink">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <label id="weather"></label>
+                            </td>
+                            <td id="Home" style="width:87px;height:32px;text-align:center;">
+                                <div style="width:80px;height:32px;cursor:pointer;" onclick="SysBtnClick('Home')"></div>
+                            </td>
+                            <td id="PwdSet" style="width: 86px; height: 32px; text-align: center;">
+                                <div style="width:80px;height:32px;cursor:pointer;" onclick="SysBtnClick('PWDSET')"></div>
+                            </td>
+                            <td id="Logout" style="width: 87px; height: 32px; text-align: center;">
+                                <div style="width:80px;height:32px;cursor:pointer;" onclick="SysBtnClick('LOGOUT')"></div>
+                            </td>
+                            <td id="Exite" style="width: 86px; height: 32px; text-align: center;">
+                                <div style="width:80px;height:32px;cursor:pointer;" onclick="SysBtnClick('EXIT')"></div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div data-options="region:'south'" style="height:20px;">
+
+    </div>
+    <div id="divcenter" data-options="region:'center'" title="
+        <table style='width:100%;'>
+            <tr>
+
+                <td></td>
+                <td style='text-align:left;width:100px;'><div style='width:98px;display:none' id='XJRS'></div> </td>
+                <td style='text-align:right;width:130px;'><div style='cursor:pointer; width:128px;' id='AlarmPrompt' onclick='LoadAlarmPageDetail();'>当前无报警</div> </td>
+                
+                <td style='width:37px; text-align:center;'><img id='imgSound' style='cursor:pointer;' src='../../Files/Icon/sound_blue.png' onclick='AlarmSoundPauseOrResume();' /></td>
+                <td style='width: 60px; text-align: center; cursor:pointer;' onclick='AlarmSet();'>报警设置</td>
+                
+                <td style='width: 150px; text-align: center; cursor:pointer;'  ><div ><input type='checkbox' id='IsChecked'  onclick='ShowPre(this)' /><label for='IsChecked'>自动弹出预警</label></div></td>
+              
+            </tr>
+        </table> " >
+        @*1*@
+        @*<div id="divtabs" class="easyui-tabs" data-options="region:'center',tabWidth:100,tabHeight:60,fit:true" style="width:100%;margin:0 0 0 0;">
+        </div>*@
+    @*2*@
+        <div id="layoutMineList" class="easyui-layout" style="width: 100%; height: 100%;">
+            @*<div id="divMineList" data-options="region:'west',title:'煤矿列表',split:true,collapsed:false" style="width:150px; height: 100%;">*@
+            <div id="divMineList" data-options="region:'west',title:'煤矿列表',split:true,collapsed:false" style="width:235px; height: 100%;">
+                <table style="width: 100%; border-bottom: 1px solid #AED0EA; ">
+                    <tr>
+                        <td style='width: 60px; text-align: center; cursor: pointer; border-right: 1px solid #AED0EA; ' id="MineListByCity" onclick="MineList('City')">按地区</td>
+                        <td style='width: 60px; text-align: center; cursor:pointer;' id="MineListByMiningBureau" onclick="MineList('MiningBureau')">按集团</td>
+                    </tr>
+                </table>
+                <div id="treeMine" class="easyui-treegrid" style="height:95%"></div>
+            </div>
+
+            <div id="divtabs" class="easyui-tabs" data-options="region:'center',tabWidth:100,tabHeight:60,fit:true" style="margin:0 0 0 0">
+            </div>
+        </div>
+    </div>
+    <div id="divVideo" title="视频联网" class="easyui-window" data-options="modal:true" style="width:95%;max-height:2000px;min-height:600px;">
+        <iframe id="iframeVideo"  frameborder="0" style="z-index:1; width:100%;min-height:600px;max-height:1000px;border:0; border-width:0px; border-color:white;   margin:0 0 0 0;padding:0 0 0 0;"></iframe>
+    </div>
+
+
+    <div id="myDivePA" class="easyui-window" title="实时预警" data-options="closed:true,minimizable:false,collapsed:false,collapsible:true,fit:false" style="width:80%; height: 70%">
+        <iframe id="myiframepa" frameborder="0" style="width: 100%; height: 99%; border: 0px;" src="../Center/ShowData?PageName=PreAlarm&refresh=1&SystemType=1"></iframe>
+    </div>
+    <style scoped="scoped">
+        .tt-inner {
+            display: inline-block;
+            line-height: 12px;
+            padding-top: 5px;
+        }
+
+            .tt-inner img {
+                border: 0;
+            }
+    </style>
+
+    <div class="easyui-window" id="divPwdSet" data-options="closed:true,maximizable:false,minimizable:false,resizable:false,onClose:function(){$('iframe').show('fast');}" style="width:390px;height:280px;">
+        <span id="hiddenValue" style="display:none;"></span>
+        <form id="ff" method="post">
+            <table style="text-align: center; width: 100%; height: 60%; border-width:1px; border-color:black; border-collapse:collapse;">
+                <tr style="height:20px;" />
+                <tr style="height:39px;">
+                    <td class="left">用户名：</td>
+                    <td class="right"><div id="txtAccount" data-options="readonly:true,disabled:true" class="easyui-textbox" style="width:70%;"></div></td>
+                </tr>
+                <tr style="height:39px;">
+                    <td class="left">原始密码：</td>
+                    <td class="right"><input id="txtPwdOrg" type="password" class="easyui-textbox" style="width:70%;" data-options="required:true" /></td>
+                </tr>
+                <tr style="height: 39px;">
+                    <td class="left">新密码：</td>
+                    <td class="right">
+                        <input id="txtPwdNew" type="password" class="easyui-textbox" style="width:70%;" data-options="required:true,validType:'length[1,15]'" />
+                    </td>
+                </tr>
+                <tr style="height: 39px;">
+                    <td class="left">新密码确认：</td>
+                    <td class="right"><input id="txtPwdAging" type="password" class="easyui-textbox" style="width:70%;" data-options="required:true,validType:'length[1,15]'"></td>
+                </tr>
+                <tr style="height:60px;">
+                    <td colspan="4" style="text-align: center;">
+                        <a id="btnSave" href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-save'" style="width:150px;">保存</a>
+                        <a id="btnclose" class="easyui-linkbutton" href="#" data-options="iconCls:'icon-cancel',onClick:function(){$('#divPwdSet').window('close');}" style="width:150px">关闭</a>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    @RenderSection("scripts", required: false)
+</body>
+</html>
+
+
+

@@ -1,0 +1,82 @@
+﻿@{
+    ViewBag.Title = "煤矿信息";
+}
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/easyui")
+@Styles.Render("~/Content/icon")
+<link rel="stylesheet" type="text/css" href="../Content/themes/metro-orange/easyui.css" title="orange">
+<link rel="stylesheet" type="text/css" href="../Content/themes/metro-red/easyui.css" title="pink">
+<link rel="stylesheet" type="text/css" href="../Content/themes/ui-cupertino/easyui.css" title="blue">
+<link rel="stylesheet" type="text/css" href="../Content/themes/metro-gray/easyui.css" title="gray">
+<link rel="stylesheet" type="text/css" href="../Content/themes/metro-green/easyui.css" title="green">
+<script src="~/Scripts/CompanyInfo.js" type="text/javascript"></script>
+<style type="text/css">
+    .datagrid-header {
+        position: absolute;
+        visibility: hidden;
+    }
+</style>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        LoadMineInfo();
+    });
+
+    function LoadMineInfo() {
+
+        var MineCode = getQueryString("MineID");
+        $("#dgvMine").datagrid({
+            title: '<span style="font-size:16px;text-align:center">煤矿名称:' + getQueryString("MarkerName") + '</span>',
+            url: "../Map/GetMineInfo?mineID=" + MineCode,
+            fitColumns: true,
+            columns: [[
+                    { field: 'AQ', title: '安全监控', width: 120 },
+                    { field: 'RY', title: '人员定位', width: 120, align: 'left' }]],
+
+            striped: true, //奇偶行是否区分
+            singleSelect: true,//单选模式
+            onDblClickCell: function (rowIndex, field, value) {
+                var PageName = "";
+                var SystemType = 1;
+                if (field == "AQ") {
+                    SystemType = 1;
+                    switch (rowIndex) {
+                        case 0:
+                            PageName = 'AQBJ';
+                            break;
+                        case 1:
+                            PageName = 'AQDD';
+                            break;
+                        case 2:
+                            PageName = 'AQGZ';
+                            break;
+                        case 3:
+                            PageName = 'AQKD';
+                            break;
+                    }
+                } else {
+                    SystemType = 2;
+                    switch (rowIndex) {
+                        case 0:
+                            PageName = 'RealCS';
+                            break;
+                        case 1:
+                            PageName = 'RealCY';
+                            break;
+                        case 2:
+                            PageName = 'RealXZ';
+                            break;
+                        case 3:
+                            PageName = 'RealTZYC';
+                            break;
+                    }
+                }
+
+                parent.ShowMineAlarm(MineCode, PageName, SystemType)
+            }
+
+        });
+    }
+</script>
+<div id="dgvMine" class="easyui-datagrid"></div>

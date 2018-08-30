@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="GBK" standalone="yes"?>
+<!DOCTYPE root[<!ELEMENT Station ANY><!ATTLIST Station SSN ID #REQUIRED>]>
+<MapConfig>
+  <Divs>
+    <Div key="" MinWidth="500" MaxWidth="20000">新建图形</Div>
+  </Divs>
+  <Statics />
+  <Stations>
+    <Station SSN="1-1">新建图形|</Station>
+    <Station SSN="1-2">新建图形|</Station>
+    <Station SSN="2-1">新建图形|</Station>
+    <Station SSN="2-2">新建图形|</Station>
+    <Station SSN="2-3">新建图形|</Station>
+    <Station SSN="2-4">新建图形|</Station>
+    <Station SSN="3-1">新建图形|</Station>
+    <Station SSN="3-2">新建图形|</Station>
+    <Station SSN="3-3">新建图形|</Station>
+    <Station SSN="3-4">新建图形|</Station>
+    <Station SSN="4-1">新建图形|</Station>
+    <Station SSN="4-2">新建图形|</Station>
+    <Station SSN="4-3">新建图形|</Station>
+    <Station SSN="4-4">新建图形|</Station>
+    <Station SSN="4-5">新建图形|</Station>
+    <Station SSN="5-1">新建图形|</Station>
+    <Station SSN="5-2">新建图形|</Station>
+    <Station SSN="5-3">新建图形|</Station>
+    <Station SSN="5-4">新建图形|</Station>
+    <Station SSN="6-1">新建图形|</Station>
+    <Station SSN="6-2">新建图形|</Station>
+    <Station SSN="6-3">新建图形|</Station>
+    <Station SSN="6-4">新建图形|</Station>
+    <Station SSN="6-5">新建图形|</Station>
+    <Station SSN="主斜井">新建图形|</Station>
+  </Stations>
+  <Words />
+  <Map MinWidth="500" MaxWidth="20000">278106541</Map>
+</MapConfig>

@@ -1,0 +1,14 @@
+﻿@{
+    ViewBag.Title = "运输系统";
+}
+
+<div style="width:100%;height:100%">
+    <img style="width:100%;height:100%" src="../Content/themes/Image/YSXT.png" />
+    <img src="~/Content/themes/Image/MORE.png" onclick="Load()" style="position: absolute; right: 60px; bottom: 15px; cursor: pointer" />
+</div>
+<script type="text/javascript">
+    function Load() {
+        window.open("http://172.16.18.50");
+    }
+
+</script>

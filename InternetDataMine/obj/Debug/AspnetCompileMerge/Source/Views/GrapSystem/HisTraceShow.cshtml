@@ -1,0 +1,608 @@
+﻿@{
+    ViewBag.Title = "轨迹回放";
+    Layout = "~/Views/Shared/_LayoutEditer.cshtml";
+}
+
+@{
+    ViewBag.Title = "HisTraceShow";
+    var UserMineCode = Model.UserMineCode;
+    var PicID = Model.FileID;
+}
+<script type="text/javascript">
+    var FileID = '@PicID';
+    var url = "";
+    var dataList;
+    var speed;//速度
+    var ZF;//记录正着走还是反着走 0正1反
+    var IsStop = 0;//记录是否要停止 1为停止
+    var color = ["red", "orange", "yellow", "green", "blue", "pink", "gray", "skyblue", "purple", "black"];
+    var OverCount = 0;//记录播放轨迹数量，每增加一条轨迹OverCount++，每播放完一条轨迹OverCount--
+    var msg = "";
+    var IsShowLine;//是否显示轨迹线，0否 1是
+    var PicRateW = 1.0;
+    var PicRateH = 1.0;
+    $(document).ready(function () {
+        //document.getElementById("GroundGraph").src = "../GrapSystem/LoadGroundGraph?FileID=" + FileID;
+        //document.getElementById("GroundGraph").style.zoom = "25%";
+        //document.getElementById("Main2").style.zoom = "25%";
+        $.messager.progress();	// 显示进度条
+        document.getElementById("AllPic").style.zoom = "25%";
+        var imgUrl = '@ViewBag.Url';
+        document.getElementById("GroundGraph").src = "../Content/128Graph/" + imgUrl;
+        LoadPerson();
+        $("#SF").combobox({
+            onSelect: function (record) {
+                var r = parseFloat(record.value.substring(0, record.value.length - 1)) / 4;
+                document.getElementById("AllPic").style.zoom = r + "%";
+            }
+        });
+        document.onkeydown = function (e) {
+            var theEvent = window.event || e;
+            var code = theEvent.keyCode || theEvent.which;
+            // enter 的ASCII 码 是13
+            if (code == 13) {
+                // 不然 提交时候出错 关不掉（关掉了后又因为其他原因打开了）
+                document.getElementById("CloseThis").focus();
+                $("#MessageBox").dialog("close");
+            }
+        }
+        $("#Speed").combobox({
+            onSelect: function (record) {
+                speed = record.value;
+            }
+        });
+
+        LoadRate();
+    });
+    //获取图片比例
+    function LoadRate()
+    {
+        if (parseFloat(document.getElementById("GroundGraph").width)==0|| parseFloat(document.getElementById("GroundGraph").height)==0)
+        {
+            setTimeout('LoadRate()', 500);
+        }
+        else
+        {
+            $.ajax({
+                url: '../GrapSystem/LoadRate',
+                type: 'post',
+                datatype: 'json',
+                data: { "FileID": FileID },
+                success: function (data)
+                {
+                    if (data.State == 1) {
+                        PicRateW = parseFloat(data.width) / parseFloat(document.getElementById("GroundGraph").width);
+                        PicRateH = parseFloat(data.height) / parseFloat(document.getElementById("GroundGraph").height);
+
+                        var dc = document.getElementById("div_can");
+                        dc.style.width = document.getElementById("GroundGraph").width;
+                        dc.style.height = document.getElementById("GroundGraph").height;
+                        document.getElementById("can0").width = document.getElementById("GroundGraph").width;
+                        document.getElementById("can0").height = document.getElementById("GroundGraph").width;
+                        //alert(parseFloat(document.getElementById("GroundGraph").width) + ";" + parseFloat(document.getElementById("GroundGraph").height));
+                        //测试时注释，太挤了
+                        LoadData();
+                    }
+                    else if (data.State = 0) {
+                        $.messager.progress('close');
+                        document.getElementById("Message").innerText = "获取图片失败！";
+                        $("#MessageBox").window("open");
+
+                    }
+                    else {
+                        $.messager.progress('close');
+                        document.getElementById("Message").innerText = "获取图片数据失败！";
+                        $("#MessageBox").window("open");
+
+                    }
+                },
+                error: function (data)
+                {
+                    $.messager.progress('close');
+                    document.getElementById("Message").innerText = "获取图片比例失败！";
+                    $("#MessageBox").window("open");
+                }
+
+
+            });
+
+        }
+
+    }
+    //获取分站
+    function LoadData() {
+        $.ajax({
+            datatype: 'json',
+            type: 'post',
+            url: '../GrapSystem/LoadALLOver',
+            success: function (data) {
+
+                var json = $.parseJSON(data);
+                var d1 = document.getElementById("Main2");
+                d1.innerHTML = '';
+                for (var i = 0; i < json.length; i++) {
+                    //分站下面的字 128中没显示
+                   // var d2 = document.createElement("div");
+                  //  d2.innerHTML = json[i].StationName ;
+                  //  d2.style.color = "red";
+                  //  d2.style.fontSize = "10px";
+                  //  d2.style.width = "1000px";
+                  //  d2.style.textAlign = "left";
+                   // d2.style.left = parseFloat(json[i].StationPointX) / PicRateW - 15 + "px";
+                  //  d2.style.top = parseFloat(json[i].StationPointY) / PicRateH + 53 + "px";
+                   // d2.style.position = "absolute";
+                  // d1.appendChild(d2);
+                    var img = document.createElement("img");
+                    img.id = "img_" + i;
+                    img.style.width = "50px";
+                    img.style.height = "50px";
+                    img.src = "../Content/image/Signal.GIF?";
+                    img.style.left = parseFloat(json[i].StationPointX) / PicRateW + "px";
+                    img.style.top = parseFloat(json[i].StationPointY) / PicRateH + "px";
+                    img.style.position = "absolute";
+                    d1.appendChild(img);
+
+                }
+                $.messager.progress('close');
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $.messager.progress('close');
+                alert("error:" + textStatus);
+            }
+        });
+
+    }
+    //获取人员
+    function LoadPerson()
+    {
+
+        $("#Person").combogrid({
+            url: '../GrapSystem/LoadPerson',
+            type: 'post',
+            idField: 'EmpID',
+            textField: 'EmpName',
+            multiple: true,
+            columns: [[
+            { field: '', checkbox: true, title: '选择' },
+             { field: 'EmpID', title: 'EmpID',hidden:true },
+            { field: 'EmpNo', title: '卡号' ,width:40},
+            { field: 'EmpName', title: '姓名', width: 50 },
+            { field: 'DeptName', title: '部门', width: 60 },
+            ]]
+        });
+    }
+    // 获取轨迹
+    function TraceShow()
+    {
+        //alert(document.getElementById("GroundGraph").width);
+        OverCount = 0;
+        msg = "";
+        var name = $("#Person").combogrid("getValues");
+        speed = $("#Speed").combobox("getValue");
+        var startTime  = $("#StartTime").datebox("getValue");
+        var endTime = $("#EndTime").datebox("getValue");
+        if (name == "")
+        {
+            document.getElementById("Message").innerText = "请选择人员姓名！";
+            $("#MessageBox").window("open");
+            return false;
+        }
+        if (name.length>10) {
+            document.getElementById("Message").innerText = "人员最多选择10个！";
+            $("#MessageBox").window("open");
+            return false;
+        }
+        if (startTime == "")
+        {
+
+            document.getElementById("Message").innerText = "请选择开始时间！";
+            $("#MessageBox").window("open");
+            return false;
+        }
+        if (endTime == "") {
+            document.getElementById("Message").innerText = "请选择结束时间！";
+            $("#MessageBox").window("open");
+            return false;
+        }
+        var start = new Date(Date.parse(startTime.replace(/-/g, "/")));
+        var end = new Date(Date.parse(endTime.replace(/-/g, "/")));
+        var flag = 0;
+        if (start.getFullYear() == end.getFullYear()) {
+            if (start.getMonth() == end.getMonth())
+            {
+                flag=1
+            }
+        }
+        if (flag == 0)
+        {
+            document.getElementById("Message").innerText = "时间段只能在同一个月内！";
+            $("#MessageBox").window("open");
+            return false;
+
+        }
+        $.messager.progress();	// 显示进度条
+        // 根据所选人员、时间读取信息
+        $.ajax({
+            type: 'post',
+            datatype:'json',
+            url: '../GrapSystem/LoadTrace',
+            data: { "Name": name.toString(), "Speed": speed, "StartTime": startTime, "EndTime": endTime, "FileID": FileID },
+            success: function (str) {
+                var data = eval('(' + str + ')');
+                dataList = data;
+                IsStop = 0;
+                var nameStr = $("#Person").combogrid("getText");
+                $.messager.progress('close');
+                if (nameStr != "")
+                {
+                    nameList = nameStr.split(',');
+                    var NoTrace = "";
+                    if (dataList.length < nameList.length) {
+                        for (var i = 0; i < nameList.length; i++) {
+                            var flag=0;
+                            for (var j = 0; j < dataList.length; j++) {
+                                if (dataList[j].Emp.indexOf(nameList[i]) > 0)
+                                {
+                                    flag = 1;
+                                }
+                            }
+                            if (flag == 0)
+                            {
+                                NoTrace += nameList[i]+ "、";
+                            }
+                        }
+                        if (NoTrace != "")
+                        {
+                            NoTrace = NoTrace.substr(0, NoTrace.length - 1);
+                            msg = "所选人员中:" + NoTrace + " 无历史轨迹信息！";
+                            document.getElementById("Message").innerText = msg;
+                            $("#MessageBox").window("open");
+                            //$.messager.alert("提示","所选人员中:" + NoTrace + " 无历史轨迹信息！");
+                        }
+                    }
+                }
+                if (data.length > 0) {
+                    IsShowLine = $("#IsLine").is(':checked');
+                    for (var i = 0; i < data.length; i++) {
+                        if (data[i].Route.length > 0) {
+                            OverCount++;
+                            var img1 = document.createElement("img");
+                            img1.id = "img" + i;
+                            img1.style.position = "absolute";
+                            img1.src = "../Content/image/Zg.gif?";
+                            img1.style.width = "100px";
+                            img1.style.height = "100px";
+                            var tip1 = document.createElement("div");
+                            tip1.id = "tip" + i;
+                            tip1.style.position = "absolute";
+                            document.getElementById("div_ori").appendChild(img1);
+                            document.getElementById("div_ori").appendChild(tip1);
+                            var count = 0;
+                            var count_Station = 0;
+                            var route = data[i].Route;// 把读取到的route信息给全局变量
+                            RunRoute(i, route[count], count, count_Station, 0.0, 0.0);//这个count 也是全局变量 控制route的
+
+                        }
+                    }
+
+                    $("#DGquery").linkbutton("disable");
+
+                }
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                document.getElementById("Message").innerText = "errod：" + textStatus;
+                $("#MessageBox").window("open");
+                $.messager.progress('close');
+            }
+        });
+    }
+  // 根据读取到的坐标（x，y），走的每个点
+    function RunRoute(index, RouteItem, count, count_station, lastx, lasty)
+    {
+        $.messager.progress('close');
+        var lastRoute;
+        // 先判断是否要停止
+        if (IsStop == 0) {
+            var tips = document.getElementById("tip"+index);
+            tips.style.color = "red";
+            tips.style.width = "1000px";
+            tips.style.fontSize = "44px";
+            var amintion = document.getElementById("img"+index);
+            var rate = 0.0;
+            //var canvans = document.getElementById("can" + index);
+            //var context = canvans.getContext("2d");
+
+            if (count < dataList[index].Route.length) {
+
+                //这里 分站与分站（Station）之间可能存在若干route点
+                //这里route[Count]为目的地坐标，Station[count_station]为当前坐标。所以对比route[Count-1]与Station[count_station]即可知道是否已到分站
+                if (count > 0) {
+                    lastRoute = dataList[index].Route[count - 1];
+                    if (lastRoute == dataList[index].Station[count_station].toString()) {
+                        //如果已经到了一个分站上面，那边目的地分站count_station+1
+                        count_station++;
+                    }
+                }
+                //显示的姓名、目的地以及时间 。这个时间与128中一致，只显示进入分站时间
+                tips.innerHTML = dataList[index].Emp + "<br>  " + dataList[index].Time[count_station * 2] + "<br>  目的地：" + dataList[index].Place[count_station];
+                if (count == 0) {
+                    //记录上一此的坐标 因为offset读出来只有整数部分无小数 不够精确 会出现偏差
+                    lastx = parseFloat(RouteItem.toString().split(',')[0])/PicRateW;
+                    lasty = parseFloat(RouteItem.toString().split(',')[1]) / PicRateH;
+                    amintion.style.left = lastx -30+ "px";
+                    tips.style.left = lastx + "px";
+                    amintion.style.top = lasty-60 + "px";
+                    tips.style.top = lasty + 22 + "px";
+                    //context.moveTo(lastx, lasty);
+                    count++;
+                    setTimeout('RunRoute(' + index + ',"' + dataList[index].Route[count] + '",' + count + ',' + count_station + ',' + lastx + ',' + lasty + ')', 30);
+                }
+                else {
+                    var isZero = 0;
+                    if ((parseFloat(RouteItem.toString().split(',')[0]) - parseFloat(lastRoute.toString().split(',')[0])) == 0) {
+                        // x不变 只变y ,因x作为被除数，不可为0
+                        isZero = 1;
+                    }
+                    else {
+                        //计算出斜率
+                        rate = ((parseFloat(RouteItem.toString().split(',')[1]) - parseFloat(lastRoute.toString().split(',')[1])) / (parseFloat(RouteItem.toString().split(',')[0]) - parseFloat(lastRoute.toString().split(',')[0])));
+                    }
+                    //走每一步
+                    RunStep(index, RouteItem, count, count_station, rate, isZero, lastx, lasty);
+                }
+            }
+            else {
+                OverCount--;
+                if (OverCount == 0)
+                {
+                    $("#DGquery").linkbutton("enable");
+                    $.messager.confirm('提示', '历史轨迹播放结束，是否重放？', function (result) {
+                        if (result) {
+                            document.getElementById("can0").width = document.getElementById("GroundGraph").width;
+                            document.getElementById("can0").height = document.getElementById("GroundGraph").width;
+                            document.getElementById("div_ori").innerHTML = "";
+                            var data = dataList;
+                            if (msg != "") {
+                                document.getElementById("Message").innerText = msg;
+                                $("#MessageBox").window("open");
+                            }
+                            if (data.length > 0) {
+                                for (var i = 0; i < data.length; i++) {
+                                    if (data[i].Route.length > 0) {
+                                        OverCount++;
+                                        var img1 = document.createElement("img");
+                                        img1.id = "img" + i;
+                                        img1.style.position = "absolute";
+                                        img1.src = "../Content/image/Zg.gif?";
+                                        img1.style.width = "100px";
+                                        img1.style.height = "100px";
+                                        var tip1 = document.createElement("div");
+                                        tip1.id = "tip" + i;
+                                        tip1.style.position = "absolute";
+                                        document.getElementById("div_ori").appendChild(img1);
+                                        document.getElementById("div_ori").appendChild(tip1);
+                                        var count = 0;
+                                        var count_Station = 0;
+                                        var route = data[i].Route;// 把读取到的route信息给全局变量
+
+                                        RunRoute(i, route[count], count, count_Station, 0.0, 0.0);//这个count 也是全局变量 控制route的
+                                    }
+                                }
+
+                                $("#DGquery").linkbutton("disable");
+
+                            }
+
+                        }
+                        else {
+                            document.getElementById("can0").width = document.getElementById("GroundGraph").width;
+                            document.getElementById("can0").height = document.getElementById("GroundGraph").width;
+                            document.getElementById("div_ori").innerHTML = "";
+
+                        }
+
+
+                    });
+                }
+
+            }
+
+        }
+        else {
+            //若需要停止 则清空所有临时内容
+
+            document.getElementById("div_ori").innerHTML = "";
+        }
+
+
+    }
+    //根据给出的两个坐标点，所作的位移
+    function RunStep(index, RouteItem, count, count_station, rate, isZero, lastx, lasty)
+    {
+        //console.log("rate" + rate + ",isZero" + isZero + ",lastx" + lastx + ",lasty" + lasty)
+        var canvans = document.getElementById("can0");
+        var context = canvans.getContext("2d");
+        var BX = lastx;
+        var BY = lasty;
+        var AX = lastx;
+        var AY = lasty;
+        if (IsStop == 0) {
+            var tips = document.getElementById("tip"+index);
+            var amintion = document.getElementById("img"+index);
+            //会存在这样的情况，当前坐标与目的坐标差不足一次位移的距离，此时停止计时器且讲当前坐标修改为目的左边，并且此时可以走下一个目的坐标，即count++，且定时器指向RunRoute
+            if (Math.sqrt(Math.pow((parseFloat(RouteItem.toString().split(',')[1]) / PicRateH - lasty), 2) + Math.pow((parseFloat(RouteItem.toString().split(',')[0]) / PicRateW - lastx), 2)) <= speed) {
+                lastx = parseFloat(RouteItem.toString().split(',')[0]) / PicRateW;
+                lasty = parseFloat(RouteItem.toString().split(',')[1]) / PicRateH;
+                amintion.style.left = lastx-30 + "px";
+                amintion.style.top = lasty -60+ "px";
+                tips.style.left = lastx + "px";
+                tips.style.top = lasty + 22 + "px";
+                count++;
+                RouteItem = dataList[index].Route[count];
+                if (IsShowLine == true)
+                {
+                    context.lineWidth = 5;
+                    AX = lastx;
+                    AY = lasty;
+                    context.beginPath();
+                    context.moveTo(BX, BY);
+                    context.lineTo(AX, AY);
+                    context.strokeStyle = color[index];
+                    context.stroke();
+                    context.closePath();
+                }
+
+
+                //function RunRoute(index, RouteItem, count, count_station, lastx, lasty)
+                setTimeout('RunRoute(' + index + ',"' + RouteItem + '",' + count + ',' + count_station + ',' + lastx + ',' + lasty + ')', 30);
+            }
+            else {
+                if (isZero == 1) {
+                    // 没有计算斜率的情况，前后两坐标x的值相同吗，即只需改变y的值
+                    if (parseFloat(RouteItem.toString().split(',')[1])/PicRateH > lasty) {
+
+                        amintion.style.top = lasty + parseFloat(speed)-60 + "px";
+                        tips.style.top = lasty + parseFloat(speed) + 22 + "px";
+                        lasty = lasty + parseFloat(speed);
+                    }
+                    else {
+                        amintion.style.top = lasty - parseFloat(speed) -60+ "px";
+                        tips.style.top = lasty - parseFloat(speed) + 22 + "px";
+                        lasty = lasty - parseFloat(speed);
+                    }
+                    amintion.style.left = lastx-30+"px";
+                }
+                else {
+                    if (parseFloat(RouteItem.toString().split(',')[1])/PicRateH > lasty) {
+                        // 因为 offsetLeft只能获取到坐标的整数部分所以要手动记录下上一个坐标
+                        var dis = lasty + Math.abs(rate) * Math.sqrt(Math.pow(speed, 2) / (Math.pow(rate, 2) + 1));
+                        amintion.style.top = dis-60 + "px";
+                        tips.style.top = dis + 22 + "px";
+                        lasty = dis;
+                    }
+                    else {
+                        var dis = lasty - Math.abs(rate) * Math.sqrt(Math.pow(speed, 2) / (Math.pow(rate, 2) + 1));
+                        amintion.style.top = dis -60+ "px";
+                        tips.style.top = dis + 22 + "px";
+                        lasty = dis;
+                    }
+                    if (parseFloat(RouteItem.toString().split(',')[0])/PicRateW > lastx) {
+                        ZF = 0;
+                        var dis = lastx + Math.sqrt(Math.pow(speed, 2) / (Math.pow(rate, 2) + 1));
+                        amintion.style.left = dis-30 + "px";
+                        tips.style.left = dis + "px";
+                        lastx = dis;
+                    }
+                    else {
+                        ZF = 1;
+                        var dis = lastx - Math.sqrt(Math.pow(speed, 2) / (Math.pow(rate, 2) + 1));
+                        amintion.style.left = dis-30 + "px";
+                        tips.style.left = dis + "px";
+                        lastx = dis;
+                    }
+                }
+                if (IsShowLine == true)
+                {
+                    context.lineWidth = 5;
+                    AX = lastx;
+                    AY = lasty;
+
+                    context.beginPath();
+                    context.moveTo(BX, BY);
+                    context.lineTo(AX, AY);
+                    context.strokeStyle = color[index];
+                    context.stroke();
+                    context.closePath();
+
+                }
+
+                //人的转向：当当前为正向且当前图片非正向图片时改图片
+                if (ZF == 0 && amintion.src.indexOf('Zg') < 0) {
+                    amintion.src = "../Content/image/Zg.gif?";
+                }
+                if (ZF == 1 && amintion.src.indexOf('Fg') < 0) {
+                    amintion.src = "../Content/image/Fg.gif?";
+                }
+                //RunStep(index, RouteItem, count, count_station, rate, isZero)
+                setTimeout('RunStep(' + index + ',"' + RouteItem + '",' + count + ',' + count_station + ','+rate+','+isZero+','+lastx+','+lasty+')', 30);
+            }
+        }
+        else {
+            document.getElementById("div_ori").innerHTML = "";
+        }
+        }
+
+
+    //停止轨迹 所有内容初始化
+    function TraceStop()
+    {
+        IsStop = 1;
+        document.getElementById("div_ori").innerHTML = "";
+         //count_station = 0;//地点名、时间的下标
+        //Count = 0;//route下标
+        //debugger;
+        document.getElementById("can0").width = document.getElementById("GroundGraph").width;
+        document.getElementById("can0").height = document.getElementById("GroundGraph").width;
+         $("#DGquery").linkbutton("enable");
+    }
+</script>
+<body style=" min-height: 800px; overflow: auto; ">
+    <div id="ToolBar" style="text-align: left; min-width: 1000px;z-index:10">
+        &nbsp;&nbsp;
+        <span>     人员姓名：</span>   <div class="easyui-combogrid" id="Person" style="width:180px"></div>
+        <span>     &nbsp;&nbsp;&nbsp;速度：</span>
+        <select class="easyui-combobox" id="Speed" style="width:50px">
+            @for (int i = 1; i < 11; i++)
+            {
+                <option>@i</option>
+            }
+        </select>
+        <span>  &nbsp;开始时间</span>
+        <input class="easyui-datebox" id="StartTime" style="width:100px" />
+        <span>  &nbsp;结束时间</span>
+        <input class="easyui-datebox" id="EndTime" style="width:100px" />
+        <br>   &nbsp;&nbsp;
+        <input type="checkbox" id="IsLine" /><label for="IsLine">显示轨迹线</label>
+        &nbsp;&nbsp;  &nbsp;&nbsp;
+        <span>缩放：</span>
+        <select class="easyui-combobox" id="SF" style="width:100px">
+            <option>400%</option>
+            <option>200%</option>
+            <option selected>100%</option>
+            <option>75%</option>
+            <option>50%</option>
+        </select>
+        <a href="javascript:void(0)" id="DGquery" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="TraceShow()" style="width:70px">查询</a>
+        &nbsp; <a href="javascript:void(0)" id="Stop" class="easyui-linkbutton" data-options="iconCls:'icon-error'" onclick="TraceStop()" style="width:70px">停止</a>
+
+    </div>
+    <div id="AllPic" style="position: absolute; z-index: -1; " align="left">
+        @*底图*@
+        <div id="Main" style="position: absolute; z-index: -1; " align="left">
+            <img id="GroundGraph" style="position: absolute; left: 12px; top: 20px">
+        </div>
+        @*分站*@
+        <div id="Main2" align="left" style="position: absolute; z-index: -1; ">
+
+        </div>
+        @*轨迹线*@
+        <div id="div_can" style="position: absolute; z-index: -1; left: 12px;" align="left">
+            <canvas id="can0" style="z-index: -1; top: 20px; position: absolute; "></canvas>
+        </div>
+        @*人的轨迹*@
+        <div align="left" id="div_ori" style="z-index: -1; position: absolute;  ">
+        </div>
+     
+    </div>
+    <div id="MessageBox" class="easyui-dialog" title="提示" data-options="modal:true,closed:true" style="height:180px;width:300px;text-align:center;vertical-align:middle;">
+        <br />
+        <br />
+        <label id="Message" style="padding-top:50px; vertical-align:middle;">操作失败</label>
+        <div>
+            <a id="CloseThis" href="javascript:void(0)" class="easyui-linkbutton" data-options="onClick:function(){    $('#MessageBox').window('close');  }" style="width: 100px;top:130px;left:100px;position:absolute">
+                确定
+            </a>
+        </div>
+    </div>
+</body>

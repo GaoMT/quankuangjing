@@ -1,0 +1,62 @@
+﻿@{
+    ViewBag.Title = "岩脚煤矿";
+}
+
+<div style="width:100%;height:100%">
+    <table style="width:75%;height:75%;text-align:center" align="center">
+        <tr>
+            <td onclick="ClickThis('ys')">
+                <img src="~/Content/themes/Image/anjianjutubiao.png" style="width: 150px; height: 150px" />
+                <br>
+                <br>
+                <br><span>运输系统</span>
+            </td>
+
+
+            <td onclick="ClickThis('tf')">
+                <img src="~/Content/themes/Image/Worker.png" style="width: 150px; height: 150px; " />
+                <br>
+                <br>
+                <br><span>排水系统</span>
+            </td>
+            <td onclick="ClickThis('gd')">
+                <img src="~/Content/themes/Image/Manager.png" style="width: 150px; height: 150px; " />
+                <br>
+                <br>
+                <br><span>通风系统</span>
+            </td>
+        </tr>
+        <tr>
+            <td onclick="ClickThis('yf')">
+                <img src="~/Content/themes/Image/delinLOGO.png" style="width: 150px; height: 150px; " />
+                <br>
+                <br>
+                <br><span>压风系统</span>
+            </td>
+            <td onclick="ClickThis('cf')">
+                <img src="~/Content/themes/Image/Manager.png" style="width: 150px; height: 150px; " />
+                <br>
+                <br>
+                <br><span>瓦斯抽放系统</span>
+            </td>
+            <td onclick="ClickThis('cf')">
+                <img src="~/Content/themes/Image/Manager.png" style="width: 150px; height: 150px; " />
+                <br>
+                <br>
+                <br><span>供电系统</span>
+            </td>
+        </tr>
+    </table>
+</div>
+<script type="text/javascript">
+    function ClickThis(obj) {
+        switch (obj) {
+            case "ys":
+
+                window.open(encodeURI("http://172.16.20.247"), "_blank", "left=0,top=0,fullscreen = no, toolbar = no", false);
+                break;
+
+        }
+    }
+</script>
+

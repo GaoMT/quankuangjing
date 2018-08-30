@@ -1,0 +1,273 @@
+﻿@{
+    ViewBag.Title = "子系统控制";
+    Layout = "~/Views/Shared/_LayoutEditer.cshtml";
+}
+
+
+<body>
+
+
+    <div id="toolbar">
+        <table>
+            <tr>
+                <td style="padding-left:20px; text-align:right;"><a id="btnAdd" class="easyui-linkbutton" data-options="iconCls:'icon-add'" style="width:120px;">添加</a></td>
+                <td style="padding-left:10px; text-align:right;"><div id="btnEdit" style="width: 120px;" class="easyui-linkbutton" data-options="iconCls:'icon-edit'">修改</div></td>
+                <td style="padding-left:10px; text-align:right;"><div id="btnRemove" style="width: 120px;" class="easyui-linkbutton" data-options="iconCls:'icon-remove'">删除</div></td>
+                <td style="padding-left:30px;"><div id="btnQuery" class="easyui-linkbutton" data-options="iconCls:'icon-reload'" style="width: 120px;">刷新</div></td>
+            </tr>
+        </table>
+    </div>
+    <div id="dgvMain" class="easyui-datagrid"></div>
+
+
+    @*弹出框*@
+    <div id="MessageBox" class="easyui-dialog" title="提示" data-options="modal:true,closed:true" style="height:180px;width:300px;text-align:center;vertical-align:middle;">
+        <br />
+        <br />
+        <label id="Message" style="padding-top:50px; vertical-align:middle;">操作失败</label>
+        <div>
+            <a id="CloseThis" href="javascript:void(0)" class="easyui-linkbutton" data-options="onClick:function(){    $('#MessageBox').window('close');  }" style="width: 100px;top:130px;left:100px;position:absolute">
+                确定
+            </a>
+        </div>
+    </div>
+
+
+    @*添加*@
+    <div class="easyui-window" id="divAdd" title="子系统控制" data-options="modal:true,closed:true" style="height:340px;width:600px;text-align:center;vertical-align:middle;">
+
+
+        <table>
+            <tr>
+                <td>
+                    <span>测量点ID</span>
+                </td>
+                <td>
+                    <div class="easyui-combogrid" id="TypeCodeS" style="width:150px"></div>
+                    <div class="easyui-combogrid" id="SensorNumS" style="width:150px"></div>
+                </td>
+            </tr>
+            @*<tr>
+                <td>
+                    <span>测量名</span>
+                </td>
+                <td>
+                    <div class="easyui-textbox" id="PointName"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span>设备类型</span>
+                </td>
+                <td>
+                    <div class="easyui-textbox" id="EquipType"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span>设备名</span>
+                </td>
+                <td>
+                    <div class="easyui-textbox" id="EquipName"></div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <span>安装位置</span>
+                </td>
+                <td>
+                    <div class="easyui-textbox" id="EquipPlace"></div>
+                </td>
+            </tr>*@
+            <tr>
+                <td>
+                    <span>值</span>
+                </td>
+                <td>
+                    @*<div class="easyui-textbox" id="Value"></div>*@
+                    <div class="easyui-combobox" id="KGLValue"></div>
+                </td>
+            </tr>
+        </table>
+
+
+    </div>
+
+</body>
+<script type="text/javascript">
+    var ChildSys = '@ViewBag.ChildSys';
+    function getUrlStafix() {
+        var myDate = new Date();
+        return "&myDate=" + myDate.getFullYear() + myDate.getMonth() + myDate.getDate() + myDate.getHours() + myDate.getMinutes() + myDate.getSeconds();
+    }
+
+    function LoadData() {
+        var wid = document.body.clientWidth - 150;
+        alert(ChildSys);
+        $("#dgvMain").datagrid(
+        {
+            url: '../DH/LoadChildSysControl?ChildSys=' + ChildSys + getUrlStafix(),
+            columns: [[
+                { field: 'TmpID', title: '序号', width: wid / 12 },
+                { field: 'PointName', title: '测量点', width: wid / 5 },
+                   { field: 'EquipName', title: '设备名', width: wid / 5 },
+                    { field: 'EquipName', title: '设备类型', width: wid / 5 },
+                        { field: 'EquipName', title: '安装位置', width: wid / 5 },
+                           { field: 'EquipName', title: '当前值', width: wid / 5 },
+                           { field: 'EquipName', title: '控制值', width: wid / 5 },
+                          
+            ]], fitColumns: true,
+            singleSelect: false,
+
+        });
+
+    }
+
+   
+
+    // 加载编辑信息
+    function LoadEditeInfo() {
+        var rows = $("#dgvMain").datagrid("getChecked");
+        if (rows.length < 1) {
+            document.getElementById("Message").innerText = "请先选取一行";
+            $("#MessageBox").window("open");
+            return;
+        }
+        if (rows.length > 1) {
+            document.getElementById("Message").innerText = "最多选取一行";
+            $("#MessageBox").window("open");
+            return;
+        }
+
+        var data = rows[0];
+        var Selected = document.getElementsByName("TextType");
+        if (data.DHLoad == "模拟图") {
+            Selected[0].checked = true;
+        }
+        else {
+            Selected[1].checked = true;
+        }
+        $("#ChildName").textbox("setText", data.ChildSysName);
+        $("#ChildUrl").textbox("setText", data.ChildSysUrl);
+        $("#ChildSys").combobox("setValue", data.ChildSysCode);
+        $("#divAdd").window("setTitle", "修改控制信息");
+        $("#divAdd").window("open");
+    }
+
+    // 删除数据项
+    function DeleteItem() {
+
+        var rows = $("#dgvMain").datagrid("getChecked");
+        if (rows.length < 1) {
+            document.getElementById("Message").innerText = "请先选取一行或多行";
+            $("#MessageBox").window("open");
+            return;
+        }
+
+        $.messager.confirm("提示", "你确定要删除吗？", function (r) {
+            if (r) {
+
+
+                var condition = "";
+                var index = 0;
+                for (index = 0; index < rows.length; index++) {
+                    if (index == rows.length - 1) {
+                        condition += rows[index].ChildSysCode;
+                    }
+                    else {
+                        condition += rows[index].ChildSysCode + ",";
+                    }
+                }
+                var url = "../DH/DeleteSysControl?Condition=" + condition;
+                $.ajax({
+                    dataType: "json",
+                    method: "post",
+                    url: url,
+                    success: function (data) {
+                        document.getElementById("Message").innerText = data.data;
+                        $("#MessageBox").window("open");
+                        LoadData();
+                    },
+                    error: function () {
+
+                        document.getElementById("Message").innerText = "删除失败请检查网络";
+                        $("#MessageBox").window("open");
+                    }
+                });
+            }
+        });
+    }
+
+    // 保存信息
+    function SaveEditeInfo() {
+        var SysCode = $("#ChildSys").combobox("getValue");
+        var SysName = $("#ChildName").textbox("getText");
+        var SysUrl = $("#ChildUrl").textbox("getText");
+        var DHLoad = $("input[name='TextType']:checked").val();
+        if (SysCode == "" || SysName == "") {
+            document.getElementById("Message").innerText = "子系统类型以及子系统名称必须填写!";
+            $("#MessageBox").window("open");
+            return false;
+        }
+        $.ajax({
+            url: '../DH/SaveChildControl',
+            datatype: 'json',
+            type: 'post',
+            data: { "PointID": PointID, "Value": Value },
+            success: function (data) {
+                document.getElementById("Message").innerText = data.data;
+                $("#MessageBox").window("open");
+                LoadData();
+            },
+            error: function (data) {
+                document.getElementById("Message").innerText = "保存失败请检查网络!";
+                $("#MessageBox").window("open");
+            }
+
+        });
+
+    }
+
+    $(document).ready(function () {
+
+        // 加载表格数据
+        LoadData();
+        LoadSys();
+        //加载查询按钮的单击响应事件
+        $("#btnQuery").bind('click', function () {
+            LoadData();
+        });
+
+        //加载添加按钮的单击响应事件
+        $("#btnAdd").bind('click', function () {
+            $("#ChildName").textbox("setText", "");
+            $("#ChildUrl").textbox("setText", "");
+            $("#ChildSys").combobox("setValue", "");
+
+            var Selected = document.getElementsByName("TextType");
+            Selected[0].checked = true;
+
+            $("#divAdd").window("setTitle", "新增子系统配置");
+            $("#divAdd").window("open");
+        });
+
+        //加载编辑按钮的单击响应事件
+        $("#btnEdit").bind('click', function () {
+            LoadEditeInfo();
+        });
+
+        //加载保存按钮的单击响应事件
+        //$('#btnSave').bind('click', function () {
+        //    //SaveEditeInfo();
+        //});
+
+        //加载删除按钮的单击响应事件
+        $("#btnRemove").bind('click', function () {
+            DeleteItem();
+
+        });
+    });
+
+</script>
+

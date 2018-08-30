@@ -1,0 +1,343 @@
+﻿@{
+    ViewBag.Title = "实时分布";
+    @model InternetDataMine.Models.LoadModel
+    Layout = "~/Views/Shared/_LayoutEditer.cshtml";
+}
+
+@{
+    ViewBag.Title = "RealDistribute";
+    var UserMineCode = Model.UserMineCode;
+    var PicID = Model.FileID;
+}
+<script type="text/javascript" >
+    var MineCode = '@UserMineCode';
+    var url = "";
+    var url_fileID = "";
+    var url_fileName = "";
+    var FileID = '@PicID';
+    var PicRateW = 1.0;
+    var PicRateH = 1.0;
+    var zoom = 25.0;
+    $(document).ready(function () {
+       
+
+        $("#SF").combobox({
+            onSelect: function (record) {
+                zoom = parseFloat(record.value.substring(0, record.value.length - 1)) / 4;
+                document.getElementById("Pic").style.zoom = zoom + "%";
+                //document.getElementById("Main2").style.zoom = r + "%";
+             
+            }
+        });
+        document.onkeydown = function (e) {
+            var theEvent = window.event || e;
+            var code = theEvent.keyCode || theEvent.which;
+            // enter 的ASCII 码 是13
+            if (code == 13) {
+                // 不然 提交时候出错 关不掉（关掉了后又因为其他原因打开了）
+                document.getElementById("CloseThis").focus();
+                $("#MessageBox").dialog("close");
+            }
+        }
+        //LoadComboGraph();
+        document.getElementById("Pic").style.zoom = zoom + "%";
+        //document.getElementById("Main2").style.zoom = "25%";
+        var imgUrl = '@ViewBag.Url';
+        document.getElementById("GroundGraph").src = "../Content/128Graph/" + imgUrl;
+        LoadRate();
+        LoadComboOverGraph();
+
+    });
+
+    function ShowName(obj)
+    {
+        var d11 = document.getElementById("Main3");
+        if (obj.checked)
+        {
+            d11.style.display = "block";
+        }
+        else 
+        {
+            d11.style.display = "none";
+        }
+    }
+    function getUrlStafix() {
+        var myDate = new Date();
+        return "&myDate=" + myDate.getFullYear() + myDate.getMonth() + myDate.getDate() + myDate.getHours() + myDate.getMinutes() + myDate.getSeconds();
+    }
+    function LoadRate() {
+        $.ajax({
+            url: '../GrapSystem/LoadRate',
+            type: 'post',
+            datatype: 'json',
+            data: { "FileID": FileID },
+            success: function (data) {
+                if (data.State == 1) {
+                    if (parseFloat(document.getElementById("GroundGraph").width) == 0) {
+                        setTimeout("LoadRate()", 500);
+                    }
+                    else {
+                        PicRateW = parseFloat(data.width) / parseFloat(document.getElementById("GroundGraph").width);
+                        PicRateH = parseFloat(data.height) / parseFloat(document.getElementById("GroundGraph").height);
+                    }
+                  
+                    //alert(PicRateH + ";" + PicRateW);
+                }
+                else if (data.State = 0) {
+                    document.getElementById("Message").innerText = "获取图片失败！";
+                    $("#MessageBox").window("open");
+
+                }
+                else {
+                    document.getElementById("Message").innerText = "获取图片数据失败！";
+                    $("#MessageBox").window("open");
+
+                }
+            },
+            error: function (data) {
+                document.getElementById("Message").innerText = "获取图片比例失败！";
+                $("#MessageBox").window("open");
+            }
+
+
+        });
+
+    }
+    //function LoadComboGraph()
+    //{
+
+    //    $("#ComboGroundGraph").combogrid({
+    //        url: '../GrapSystem/LoadComboGraph',
+    //        panelWidth: 200,
+    //        idField: 'FileID',
+    //        textField: 'FileName',
+    //        multiple: false,
+    //        columns: [[
+    //         { field: 'FileID', title: '文件编号', width: 80 },
+    //         { field: 'FileName', title: '文件名称', width: 110 },
+    //        ]],
+    //        onClickRow: function (index, data)
+    //        {
+    //            url = "";
+    //            url_fileID = "";
+    //            url_fileName = "";
+    //            LoadComboOverGraph(data.FileID);
+    //            document.getElementById("GroundGraph").src = "../GrapSystem/LoadGroundGraph?FileID=" + data.FileID;
+    //            //LoadSatation(data.FileID);
+    //        }
+    //    });
+
+    //}
+    function LoadComboOverGraph() {
+        document.getElementById('Main2').innerHTML = '';
+        $("#OverGraph").combogrid({
+            url: '../GrapSystem/LoadComboOver',
+            idField: 'FileName',
+            textField: 'FileName',
+            multiple: true,
+            columns: [[
+             { field: '', title: '选择', checkbox: true, },
+             { field: 'FileName', title: '文件名称', width: 120 },
+            ]],
+            onChange: function (newValue, OldValue) {
+
+                var d1 = document.getElementById("Main2");
+                document.getElementById('Main2').innerHTML = '';
+                LoadSatation(FileID, newValue.toString());
+
+            }
+        });
+
+    }
+
+
+
+    function LoadSatation(FileID,FileName)
+    {
+        url = '../GrapSystem/LoadOverGraph?test=test';
+        
+        if (FileID != null || FileID != "");
+        {
+            url_fileID = FileID;
+            //url += "&FileID=" + FileID;
+        }
+        if (FileName != "" || FileName != null) {
+            url_fileName = FileName;
+            //url += "&FileName=" + FileName;
+          
+        }
+        LoadData(url_fileID, url_fileName);
+      
+    }
+
+    function LoadData(FileID, FileName)
+    {
+        $.ajax({
+            datatype: 'json',
+            type: 'post',
+            url: '../GrapSystem/LoadOverGraph',
+            data:{"FileID":FileID,"FileName":FileName},
+            success: function (data) {
+                var json = $.parseJSON(data);
+       
+                var d1 = document.getElementById("Main2");
+                var d11 = document.getElementById("Main3");
+                d1.innerHTML = '';
+                for (var i = 0; i < json.length; i++) {
+                    debugger;
+                    var d2 = document.createElement("div");
+                    d2.innerHTML = json[i].DivName+"人";
+		//json[i].StationName;
+                    d2.style.color = "red";
+                    d2.style.fontSize = "10px";
+                    d2.style.width = "1000px";
+                    d2.style.left = parseFloat(json[i].StationPointX)/PicRateW + "px";
+                    d2.style.top = parseFloat(json[i].StationPointY)/PicRateH-  50 + "px";
+                    d2.style.fontSize = "34px";
+                    d2.style.position = "absolute";
+		    d2.style.textAlign = "left";
+
+
+var d3 = document.createElement("div");
+                    d3.innerHTML = json[i].StationName;
+		
+                    d3.style.color = "red";
+                    d3.style.fontSize = "10px";
+                    d3.style.width = "1000px";
+                    d3.style.left = parseFloat(json[i].StationPointX)/PicRateW + "px";
+                    d3.style.top = parseFloat(json[i].StationPointY)/PicRateH +  50 + "px";
+                    d3.style.fontSize = "34px";
+                    d3.style.position = "absolute";
+		    d3.style.textAlign = "left";
+
+
+
+
+                    var img = document.createElement("img");
+                    img.style.width = "50px";
+                    
+                    img.style.height = "50px";
+                    img.id = "img_" + json[i].StationID;
+                    img.textContent = "分站名称：" + json[i].StationName + "\n分站状态：" + json[i].StationState + "\n当前人数：" + json[i].DivName;
+                    
+                    switch (json[i].StationState) {
+                        case "正常":
+                            img.src = "../Content/image/Signal.GIF?"; 
+                            break;
+                        case "故障":
+                            img.src = "../Content/image/No-Signal.GIF?"; break;
+                        case "休眠":
+                            img.src = "../Content/image/Station.GIF?"; break;
+                        default: img.src = ""; break;
+                    }
+                    img.addEventListener("mouseover", function () {
+                        var tValue = this.textContent;
+                        this.setAttribute("title", tValue);
+                    }, false);
+                    img.onclick = function () {
+                        $("#Div_List").window("open");
+                        //alert(parseFloat(this.style.left.substring(0, this.style.left.length - 2))*zoom/100 + 25)
+                        var left = (parseFloat(this.style.left.substring(0, this.style.left.length - 2)) + 50) * zoom / 100;
+                        var top = (parseFloat(this.style.top.substring(0, this.style.top.length - 2)) + 100) * zoom / 100;
+                        $("#Div_List").window('move', {
+                            left: left + "px",
+                            top: top + "px"
+
+                        });
+                        var title = this.textContent.replace(/\n/g, "：");
+                        title = title.split("：")[1] + "-共检测到" + title.split("：")[5] + "人";
+                        $("#Div_List").window("setTitle", title);
+                        ShowPeople(this.id)
+                    };
+                    img.style.left = parseFloat(json[i].StationPointX) / PicRateW + "px";
+                    img.style.top = parseFloat(json[i].StationPointY) / PicRateH  + "px";
+                    img.style.position = "absolute";
+                    d1.appendChild(img);
+                    d1.appendChild(d2);
+		        d11.appendChild(d3);
+                }
+                setTimeout('LoadData(url_fileID,url_fileName)', 10000);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+  
+            }
+        });
+    
+    }
+ 
+
+    function ShowPeople(id)
+    {
+    
+        if (id.length > 4) {
+            var StationHeadID = id.substring(4, id.length);
+            $("#personList").datagrid({
+                url: "../GrapSystem/ShowPeople?StationHeadID=" + StationHeadID + "&rows=10",
+                pageSize:10,
+                singleSelect: true,
+                pagination: false,
+                columns: [[
+                { field: "EmpNo", title: "标识卡", width:50},
+                { field: "EmpName", title: "姓名", width: 60 },
+                { field: "DeptName", title: "部门", width: 80 },
+                { field: "InStationHeadTime", title: "时间", width: 120 }, ]],
+            });
+
+        }
+        else {
+            document.getElementById("Message").innerText = "获取StationHeadID失败";
+            $("#MessageBox").window("open");
+        }
+    
+
+    }
+
+</script>
+<body style="width: 100%; min-height: 800px; overflow: auto; ">
+    <div id="ToolBar" style="text-align: left">
+        @*&nbsp;&nbsp;&nbsp;&nbsp;*@
+        @*<span>     &nbsp;底图：</span>*@   @*<div class="easyui-combogrid" id="ComboGroundGraph" style="width:200px"></div>*@
+        <span>     &nbsp;&nbsp;&nbsp;图形：</span>   <div class="easyui-combogrid" id="OverGraph" style="width:150px"></div>
+        <span>缩放：</span>
+        <select class="easyui-combobox" id="SF" style="width:100px">
+            <option>400%</option>
+            <option>200%</option>
+            <option selected>100%</option>
+            <option>75%</option>
+            <option>50%</option>
+        </select>
+        <input type="checkbox" id="IsLine" onclick="ShowName(this)" checked="checked" /><label for="IsLine">显示分站名</label>
+    </div>
+    <div id="Pic" style="position: absolute; ">
+        @*底图*@
+        <div id="Main" style="overflow: visible; min-height: 800px; position: absolute; ">
+            <img id="GroundGraph" style="position: absolute; left: 12px;top:20px">
+        </div>
+
+        @*分站名称*@
+        <div id="Main3" style="position: absolute; ">
+
+        </div>
+        @*分站*@
+        <div id="Main2" style="position: absolute; ">
+
+        </div>
+    </div>
+    @*弹出提示框*@
+    <div id="MessageBox" class="easyui-dialog" title="提示" data-options="modal:true,closed:true" style="height:180px;width:300px;text-align:center;vertical-align:middle;">
+        <br />
+        <br />
+        <label id="Message" style="padding-top:50px; vertical-align:middle;">操作失败</label>
+        <div>
+            <a id="CloseThis" href="javascript:void(0)" class="easyui-linkbutton" data-options="onClick:function(){    $('#MessageBox').window('close');  }" style="width: 100px;top:130px;left:100px;position:absolute">
+                确定
+            </a>
+        </div>
+    </div>
+    @*弹出来的当前分站有谁谁谁*@
+    <div  id="Div_List" class="easyui-window" data-options="closed:true,minimizable:false,maximizable:false">
+        <div class="easyui-datagrid" style="width:330px;height:200px;position:absolute;" id="personList">
+
+        </div>
+    </div>
+</body>

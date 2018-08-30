@@ -1,0 +1,594 @@
+﻿@{
+    ViewBag.Title = "实时曲线";
+    Layout = "~/Views/Shared/_Charts.cshtml";
+    var UserMineCode = Model.UserMineCode;
+    var PreLoadData = Model.PreLoadData;
+}
+
+<style type="text/css">
+    .title {
+        float: left;
+        margin: 5px 0 0 5px;
+        width: auto;
+    }
+
+    .input {
+        width: 50%;
+    }
+</style>
+<div id="MessageBox" class="easyui-dialog" title="提示" data-options="modal:true,closed:true" style="height:160px;width:200px;text-align:center;vertical-align:middle;">
+    <br />
+    <br />
+    <label id="Message" style="padding-top:50px; vertical-align:middle;">操作失败</label>
+    <br />
+    <br />
+    <br />
+    <div>
+        <a id="CloseThis" href="javascript:void(0)" class="easyui-linkbutton" data-options="onClick:function(){    $('#MessageBox').window('close');  }" style="width: 100px;">
+            确定
+        </a>
+    </div>
+</div>
+
+<div class="easyui-layout" data-options="fit:true" >
+    <div data-options="region:'north',title:'模拟量实时曲线',split:false,collapsible:false,border:0" style="height:70px;">
+        <form id="myform" class="easyui-form" method="post" data-options="novalidate:true">
+            @if (@UserMineCode == "" || @UserMineCode == null)
+            {
+                <div class="title"><div class="easyui-combobox" id="ddlMine" data-options="prompt:'煤矿名称',required:true" style="width:150px;height:35px;"></div></div>
+            }
+            <div class="title"><div class="easyui-combogrid" id="ddlDevType" data-options="prompt:'设备名称',required:true" style="width:150px;height:35px;"></div></div>
+            <div class="title"><div class="easyui-combogrid" id="ddlSensor" data-options="prompt:'测点位置',required:true" style="width:300px;height:35px;"></div></div>
+            @*<div class="title"><div class="easyui-datebox" id="ddlBeginTime" data-options="prompt:'查询日期',required:true" style="height:35px;"></div></div>*@
+            @*<div id="divEndtime" class="title"><div class="easyui-datebox" id="ddlEndTime" data-options="prompt:'结束时间',required:true"></div></div>*@
+            <div id="divQuery" class="title"><div class="easyui-linkbutton" data-options="iconCls:'icon-search'" style="height:35px;text-align:center" onclick="ValidateQureyInput()">查询</div></div>
+            &nbsp; <div id="PrintArea" class="title"><div class="easyui-linkbutton" data-options="iconCls:'icon-print'" style="height:35px;" onclick="Exproter()">打印</div></div>
+            <div   style="display:none" id="legend"></div>
+        </form>
+    </div>
+    <div id="mydiv" data-options="region:'center',fit:true,split:false,border:false" style="overflow-y:visible">
+        <div id="main" style="width:99%; height:530px; border:0px solid #ccc;margin:10px 0 0 10px;"></div>
+    </div>
+</div>
+<div id="myDialog"></div>
+
+
+
+
+<script type="text/javascript">
+
+    document.onkeydown = function (e) {
+        var theEvent = window.event || e;
+        var code = theEvent.keyCode || theEvent.which;
+        // enter 的ASCII 码 是13
+        if (code == 13) {
+            // 不然 提交时候出错 关不掉（关掉了后又因为其他原因打开了）
+            document.getElementById("CloseThis").focus();
+            $("#MessageBox").dialog("close");
+        }
+    }
+
+
+    function Exproter() {
+        //找到曲线的canvas
+        var baseCanvas = $("#main").find("canvas").first()[0];
+        if (!baseCanvas) {
+            document.getElementById("Message").innerText = "未找到画布，请刷新";
+            $("#MessageBox").window("open");
+            //alert("未找到画布，请刷新。");
+            return false;
+        };
+        //将canvas转化为img
+        var imgsrc = baseCanvas.toDataURL("image/png");
+
+
+        var blank = document.createElement('canvas');
+        blank.width = baseCanvas.width;
+        blank.height = baseCanvas.height;
+
+        if (baseCanvas.toDataURL() == blank.toDataURL()) {
+            document.getElementById("Message").innerText = "请先绘制曲线";
+            $("#MessageBox").window("open");
+            //alert("请先绘制曲线");
+            return false;
+        }
+
+
+        //填充img标签
+        document.getElementById("img").src = imgsrc;
+        var newstr = document.all.item("mainPrint").innerHTML;
+        windowPrint = window.open();
+        //新页面打开图片
+        windowPrint.document.write(newstr);
+        //调用了document.write。然后去调用window.print
+        //js调用write之后，就打开了一个流操作，只要没有关闭流操作，其他的系统性的调用，都是不会走的。
+        //在调用document.write后面，先调用document.close()，然后再去调用print，就可以了。
+        windowPrint.document.close();
+        windowPrint.focus();
+        //延迟打印。若无 对ie无影响，对谷歌浏览器会有影响。
+        window.setTimeout(function () { windowPrint.print(); windowPrint.close(); }, 100);
+
+
+    }
+    var PreLoad = '@PreLoadData';//记录是否有预设值
+    var MineCode = "";//煤矿名称
+    var DevType = "A";//设备类型
+    var DevTypeName = "";
+    var devTypeCodes = "";//传感器名称编码
+    var SensorNames = "";
+    var SensorCodes = "";
+    var IsSensorCountOverSix = false;//所选传感器数量是否超出6个
+    var Unit = "";
+    var time = "";
+    var myChart = null;
+    $("#ddlMine").ready(function () {
+        if ('@UserMineCode' == "" || '@UserMineCode' == null) {
+            $("#ddlMine").combotree({
+                url: '../Center/ReturnComboTreeData?mineCode=',
+                onChange: function (newValue, oldValue) {
+                    if (newValue != "0") {
+
+
+                        MineCode = newValue; LoadDeviceTypeforCombobox(newValue);
+
+
+                    }
+                }
+            });
+            if (PreLoad == "y") {
+
+                $('#ddlMine').combobox('setValue', readCookie("MineCode_SS"));
+                LoadDeviceTypeforCombobox(readCookie("MineCode_SS"));
+
+
+
+            }
+        } else {
+            MineCode = '@UserMineCode';
+            LoadDeviceTypeforCombobox(MineCode);
+        }
+    });
+
+
+
+    function LoadSensorInfoFoCombogrid(devTypeCodes) {
+        var count = 0;
+        $("#ddlSensor").combogrid({
+            url: '../Center/ReturnComboGridForSensorInfo?mineCode=' + MineCode + "&SensorNameCode=" + devTypeCodes + "&devType=" + DevType,
+            panelWidth: 600,
+            sortName: 'TypeName',
+            sortOrder: 'desc',
+            idField: 'SensorNum',
+            textField: 'Place',
+            method: 'get',
+            //multiple: true,
+            //singleSelect: false,
+            columns: [[
+         //{ field: 'select', title: '选择', checkbox: true, width: 40 },
+        { field: 'SensorNum', title: '测点编号', width: 60 },
+        { field: 'TypeName', title: '测点类型', width: 100 },
+        { field: 'Place', title: '测点位置', width: 200 },
+        { field: 'Unit', title: '单位', width: 60 },
+        { field: 'AlarmLower', title: '报警下限', width: 60 },
+        { field: 'AlarmHigh', title: '报警上限', width: 60 }
+            ]],
+            onCheck: function (rowIndex, rowData) {
+                if ($("#ddlSensor").combogrid("getValues").length > 6) {
+                    IsSensorCountOverSix = true;
+                    $.messager.alert('错误提示', '最多只能选六个测点！', 'error');
+                }
+                else {
+                    IsSensorCountOverSix = false;
+                }
+            },
+            onUncheck: function (rowIndex, rowData) {
+
+                if ($("#ddlSensor").combogrid("getValues").length > 6) {
+                    IsSensorCountOverSix = true;
+
+                }
+                else {
+                    IsSensorCountOverSix = false;
+                }
+
+            },
+            onCheckAll: function (rowIndex, rowData) {
+                if ($("#ddlSensor").combogrid("getValues").length > 6) {
+                    IsSensorCountOverSix = true;
+
+                }
+                else {
+                    IsSensorCountOverSix = false;
+                }
+            },
+            onLoadSuccess: function () {
+
+                    if (PreLoad == "y") {
+                        if (count == 0) {
+                            count++;
+                            //debugger;
+                            time = new Date().Format("yyyy-MM-dd hh:mm:ss");
+                            $('#ddlSensor').combogrid('setValue', readCookie("sensorNum_SS"));
+                            LoadData_time();
+
+
+
+
+                    }
+
+                }
+
+
+            }
+        });
+    }
+
+
+
+
+    $("#main").ready(function () {
+        var height = getQueryString("Height");
+        $("#main")[0].style.height = (height - 80) + 'px';
+        myChart = echarts.init(document.getElementById('main'));
+    });
+
+
+    function LoadDeviceTypeforCombobox(mineCode) {
+        var count = 0;
+        $("#ddlDevType").combogrid({
+            url: '../Center/ReturnComboboxForDevType?mineCode=' + mineCode + '&Type=' + DevType,
+            panelWidth: 300,
+            sortName: 'Typename',
+            sortOrder: 'desc',
+            idField: 'TypeCode',
+            textField: 'TypeName',
+            singleSelect: false,
+            method: 'get',
+            columns: [[
+               { field: 'TypeCode', title: '设备编号', width: 60 },
+               { field: 'TypeName', title: '设备名称', width: 100 },
+               { field: 'Unit', title: '单位', width: 60 },
+               { field: 'Type', title: '类型', width: 60 }
+            ]],
+            onchange: function (newValue, oldValue) {
+            },
+            onClickRow: function (rowIndex, rowData) {
+
+
+                devTypeCodes = rowData.TypeCode;
+                DevTypeName = $("#ddlDevType").combogrid("getText");
+                Unit = "  单位：" + '(' + rowData.Unit + ')';
+                LoadSensorInfoFoCombogrid($("#ddlDevType").combogrid("getValue"));
+            },
+            onLoadSuccess: function () {
+
+                    if (PreLoad== "y") {
+                        if (count == 0) {
+                            //debugger;
+                            $('#ddlDevType').combogrid('setValue', readCookie("Type_SS"));
+                            LoadSensorInfoFoCombogrid(readCookie("Type_SS"));
+                            count++;
+
+
+                    }
+                }
+            }
+        });
+
+    }
+
+
+
+    // Step:3 echarts & zrender as a Global Interface by the echarts-plain.js.
+    // Step:3 echarts和zrender被echarts-plain.js写入为全局接口
+
+
+    var IsClick = 1;
+
+    function ValidateQureyInput() {
+        IsClick = 0;
+        $.messager.progress();	// 显示进度条
+        var isValid = false;
+        $('#myform').form('submit',
+            {
+                onSubmit: function () {
+                    isValid = $(this).form('enableValidation').form('validate');
+
+                },
+                success: function () {
+                    if (isValid) {
+                        if (!IsSensorCountOverSix) {
+                            IsClick = 1;
+                            time = new Date().Format("yyyy-MM-dd hh:mm:ss");
+                            LoadData_time();
+                        }
+                        else {
+                            $.messager.progress('close');
+                         
+                            document.getElementById("Message").innerText = "最多选择6个测点";
+                            $("#MessageBox").window("open");
+                            //  这个验证不通过的时候 默认焦点在文本框上面 所以按enter监测不到
+                            document.getElementById("CloseThis").focus();
+
+                        }
+                    }
+                    else {
+                        $.messager.progress('close');
+                      
+                        document.getElementById("Message").innerText = "所有选项必选！";
+                        $("#MessageBox").window("open");
+                        //  这个验证不通过的时候 默认焦点在文本框上面 所以按enter监测不到
+                        document.getElementById("CloseThis").focus();
+                    }
+                },
+                error: function ()
+                {
+                    $.messager.progress('close');
+               
+                    document.getElementById("Message").innerText = "查询失败，请检查网络";
+                    $("#MessageBox").window("opne");
+                    document.getElementById("CloseThis").focus();
+                }
+            });
+    }
+
+    var myoption = {
+        title: {
+            text: '',
+            subtext: ''
+        },
+        grid: { y: '20%' },
+        tooltip: {
+            trigger: 'axis',
+        },
+        legend: {//图例
+            data: [],
+            formatter: function (name) {
+                //debugger;
+                var Legend = "";
+                Legend = showPlace(name);
+                return document.getElementById("legend").textContent;
+            }
+        },
+
+        animation: false,//是否开启动画
+        toolbox: {
+            show: true,
+            feature: {
+                mark: { show: true },
+                dataZoom: { show: false },//区域缩放
+                dataView: { show: false },
+                magicType: { show: true, type: ['line', 'bar'] },
+                restore: { show: true },
+                saveAsImage: { show: true }
+            }
+        },
+        calculable: true,
+        xAxis: [
+            {
+                type: 'category',
+                data: [],
+                splitLine: {
+                    show: false
+                }
+            }
+        ],
+        yAxis: [
+            {
+                type: 'value',
+                splitArea: { show: true },
+            }
+        ],
+        series: [],
+        dataZoom: {
+            show: false,
+        }
+    };
+
+    //在测点编号后加上地点
+    function showPlace(name) {
+        var Legend;
+        $.ajax({
+            url: '../Chart/FindPlace',
+            data: { mineCode: MineCode, sensorNum: name },
+            method: 'post', async: false,
+            type: 'json',
+            success: function (data) {
+
+                var json = $.parseJSON(data)
+
+                document.getElementById("legend").textContent = name + "(" + json.Table[0].Place + ")";
+            },
+            error: function (object) {
+                document.getElementById("Message").innerText = "请求失败，请检查网络";
+                $("#MessageBox").window("open");
+            }
+        });
+    }
+
+
+    var count_Tmp = 0;
+    var count2 = 0;
+    var data = [];
+    var hours = new Date();
+    var count_time = 0;
+    var line;
+    //加载数据
+    function LoadData_time() {
+        myChart.clear();
+        debugger;
+        var height = getQueryString("Height");
+        $("#main")[0].style.height = "200";
+
+        //var BeginTime = $("#ddlBeginTime").datebox("getText");
+
+        myoption.title.text = '实时曲线' + Unit;
+        var xAxisdataIndex = 0;
+        myoption.xAxis[0].data = [];
+
+        myoption.legend.data = [];
+        myoption.series = [];
+        hours = new Date();
+        SensorCodes = $("#ddlSensor").combogrid("getValue");
+
+      if ('@UserMineCode' == "" || '@UserMineCode' == null) {
+            MineCode = $("#ddlMine").combogrid("getValue");
+
+        }
+        else {
+          MineCode ='@UserMineCode';
+        }
+        if (PreLoad== "y") {
+            count_Tmp = 1;
+            MineName_SS = readCookie('MineName_SS');
+            myoption.title.subtex = readCookie('Type_SS');
+            Place_SS = readCookie('Place_SS');
+
+
+
+            if (readCookie('Unit_SS') == null || readCookie('Unit_SS') == "") {
+                myoption.title.text = '实时曲线';
+            }
+            else {
+                myoption.title.text = '实时曲线' + readCookie('Unit_SS');
+            }
+            PreLoad = "n";
+
+        }
+        else {
+            myoption.title.subtext = DevTypeName;
+            //var mySensorNames = String($("#ddlSensor").combogrid("getText")).split(",");
+        }
+
+        data = [];
+        count_time = 0;
+
+
+        line = {
+            name: SensorCodes,
+            type: 'line',
+            data: data,
+            symbolSize: 0.01,
+            //markPoint: {
+            //    data: [{ type: 'max', name: '最大值' }]
+            //},
+        };
+        LoadData();
+
+    }
+    // 每过n秒，取数据 data.shift();data.push();setOption;  其余不变
+    function LoadData() {
+
+        var flag = 0;
+        time = new Date().Format("yyyy-MM-dd hh:mm");
+        $.ajax({
+            url: '../Chart/ReturnRtCurverDatas',
+            data: { mineCode: MineCode, time: time, sensorCodes: SensorCodes },
+            method: 'post',
+            type: 'json',
+            aynas:false,
+            success: function (object) {
+
+                var sensorsOjbect = $.parseJSON(object);
+                if (sensorsOjbect.length <= 0) {
+                    return;
+                }
+                $(sensorsOjbect).each(function (index, item) {
+                    if (item.length > 0) {
+                        $(item).each(function (myindex, myitem) {
+                            flag = 0;
+                            //该数据点 与 上一 数据点时间差
+                            var cuttime = new Date(Date.parse(myitem.dtm2.replace(/-/g, "/"))).getTime() - hours.getTime();
+
+                            if (cuttime != 0) {
+
+                                flag = 1;
+                                if (line.data.length > 10) {
+                                    //数据点超过0个 则移动
+                                    data.shift();
+                                    myoption.xAxis[0].data.shift();
+
+                                }
+
+                                //if (cuttime>0 && cuttime != 10000) {
+                                //    //myoption.xAxis[0].data.push("");  2017-03-09注释
+
+                                //    line.data.push("-");
+                                //    //myoption.series.push(line);
+                                //}
+                                //if (cuttime == 10000)
+                                //{
+                                //    myoption.xAxis[0].data.push(myitem.dtm2);
+                                //    line.data.push(myitem.ShowValue);
+                                //}
+
+
+                                if (cuttime > 0) {
+                                    myoption.xAxis[0].data.push(myitem.dtm2);
+                                    line.data.push(myitem.ShowValue);
+
+                                }
+                                //第一个点
+                                if (count_time == 0) {
+                                    myoption.xAxis[0].data.push(myitem.dtm2);
+                                    line.data.push(myitem.ShowValue);
+                                    //myoption.series.push(line);
+                                    myoption.series.push(line);
+                                    myoption.legend.data.push(myitem.SensorNum);
+                                    hours = new Date(Date.parse(myitem.dtm2.replace(/-/g, "/")))
+                                }
+
+                                //记录上一测点的分秒
+                                if (cuttime > 0)
+                                    hours = new Date(Date.parse(myitem.dtm2.replace(/-/g, "/")))
+
+
+
+
+
+                                count_time = 1;
+
+
+                            }
+                        });
+
+                    }
+                });
+                //更新数据
+                if (flag == 1) {
+                    myoption.series[0].data = data;
+
+                    myChart.setOption(myoption);
+
+                }
+                $.messager.progress('close');
+
+
+
+            },
+            error: function (object) {
+                $.messager.progress('close');
+                document.getElementById("Message").innerText = "绘图出错，请检查网络";
+                $("#MessageBox").window("open");
+                //alert("绘图出错");
+            }
+        });
+
+
+        var isContinue = readCookie("IsClose");
+        if (isContinue == "y")
+        { }
+        else {
+
+            t = setTimeout("LoadData()", 10000)
+        }
+    }
+
+
+</script>
+
+
+
+
+
+

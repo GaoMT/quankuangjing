@@ -1,0 +1,73 @@
+﻿@{
+    ViewBag.Title = "RealData";
+    Layout = "~/Views/Shared/_LayoutEditer.cshtml";
+}
+
+
+<script type="text/javascript">
+    var SysCode = '@ViewBag.SysCode';
+   
+    //根据时间，生成URl后缀，防止URL数据不刷新
+    function getUrlStafix() {
+        var myDate = new Date();
+        return "&myDate=" + myDate.getFullYear() + myDate.getMonth() + myDate.getDate() + myDate.getHours() + myDate.getMinutes() + myDate.getSeconds();
+    }
+
+    function LoadDataGrid()
+    {
+        
+        var Rows = parseInt((document.body.clientHeight - 140) / 26).toString();
+        var wid = document.body.clientWidth - 150;
+        //alert("../LDKZ/LoadLDKZ?&MineCode=" + readCookie("MineCode") + "&rows=" + Rows + getUrlStafix());
+        $("#dgvMain").datagrid({
+            rownumbers: true,
+            singleSelect: false,
+            pageList: [Rows],
+            pageSize: Rows,
+            toolbar:"#toolbar",
+            url: "../DH/ShowRealData?SysCode=" + SysCode + "&rows=" + Rows + getUrlStafix(),
+            fitColumns: true,
+            columns: [[
+                        { field: "VarName", title: "测点编号", width: wid / 10 },
+                        { field: "EquipName", title: "设备名" },
+                         { field: "EquipPlace", title: "安装位置", width: wid / 10 },
+                        { field: "VarValues", title: "当前值", width: wid / 12,},
+                        { field: "Unit", title: "单位", width: wid / 8, },
+                        { field: "UpdateTime", title: "监测时间", width: wid / 8,},
+                        { field: "VarStatus", title: "当前状态", width: wid / 12,},
+                     
+            ]],
+            pagination: true,
+        });
+        var p = $("#dgvMain").datagrid("getPager");
+        p.pagination({
+            showPageList: false,
+            beforePageText: '第',//页数文本框前显示的汉字
+            layout: ['first', 'prev', 'links', 'next', 'last', 'refresh', 'manual'],
+            displayMsg: '当前显示 {from} - {to} 条记录   共 {total} 条记录',
+            afterPageText: '页    共 {pages} 页',
+        });
+
+    }
+ 
+
+
+    $(document).ready(function () {
+        // 加载表格数据
+        LoadDataGrid();
+      
+    });
+
+</script>
+<div id="toolbar">
+    <table>
+        <tr>
+            <td style="padding-left:20px; text-align:right;"><span>设备类型：</span></td>
+            <td style="padding-left:20px; text-align:right;"><span>设备名：</span></td>
+            <td style="padding-left:20px; text-align:right;"><span>测点编号：</span></td>
+
+        </tr>
+    </table>
+</div>
+<div id="dgvMain" class="easyui-datagrid" data-options="fit:true">
+</div>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="GBK" standalone="yes"?>
+<!DOCTYPE root[<!ELEMENT Station ANY><!ATTLIST Station SSN ID #REQUIRED>]>
+<MapConfig>
+  <Divs>
+    <Div key="" MinWidth="500" MaxWidth="20000">新建图形</Div>
+  </Divs>
+  <Statics />
+  <Stations>
+    <Station SSN="主竖井井口">新建图层|新建图形|</Station>
+    <Station SSN="主竖井-220M">新建图层|新建图形|</Station>
+    <Station SSN="主竖井-220平巷车场">新建图层|新建图形|</Station>
+    <Station SSN="主竖井-340M">新建图层|新建图形|</Station>
+    <Station SSN="主竖井-340北巷西沿脉">新建图层|新建图形|</Station>
+    <Station SSN="主竖井-340北巷东沿脉">新建图层|新建图形|</Station>
+    <Station SSN="主竖井-340延脉点">新建图层|新建图形|</Station>
+    <Station SSN="主竖井-340大风机">新建图层|新建图形|</Station>
+    <Station SSN="主竖井-365M">新建图层|新建图形|</Station>
+    <Station SSN="主竖井-550M">新建图层|新建图形|</Station>
+    <Station SSN="主竖井-550北巷西沿脉">新建图层|新建图形|</Station>
+    <Station SSN="主竖井-550北巷东沿脉">新建图层|新建图形|</Station>
+    <Station SSN="主竖井-650M">新建图层|新建图形|</Station>
+    <Station SSN="主竖井-650北巷东沿脉">新建图层|新建图形|</Station>
+    <Station SSN="主竖井-650北巷西沿脉">新建图层|新建图形|</Station>
+    <Station SSN="650避难硐室">新建图层|新建图形|</Station>
+    <Station SSN="主竖井-675M">新建图层|新建图形|</Station>
+    <Station SSN="106井井口">新建图层|新建图形|</Station>
+    <Station SSN="106井-100M炸药库">新建图层|新建图形|</Station>
+    <Station SSN="106井-100米">新建图层|新建图形|</Station>
+    <Station SSN="130大风机">新建图层|新建图形|</Station>
+    <Station SSN="106井-130M">新建图层|新建图形|</Station>
+    <Station SSN="106井-160M">新建图层|新建图形|</Station>
+    <Station SSN="106井-220M">新建图层|新建图形|</Station>
+    <Station SSN="斜井口">新建图层|</Station>
+    <Station SSN="-10M">新建图层|新建图形|</Station>
+    <Station SSN="-40M">新建图层|新建图形|</Station>
+    <Station SSN="-70M">新建图层|新建图形|</Station>
+    <Station SSN="-91M">新建图层|新建图形|</Station>
+    <Station SSN="-130M三分层">新建图层|新建图形|</Station>
+    <Station SSN="-130M一分层">新建图层|新建图形|</Station>
+    <Station SSN="-160M三分层">新建图层|新建图形|</Station>
+    <Station SSN="-160M一分层">新建图层|新建图形|</Station>
+    <Station SSN="-160M">新建图层|新建图形|</Station>
+    <Station SSN="-190M">新建图层|新建图形|</Station>
+    <Station SSN="-220M">新建图层|新建图形|</Station>
+    <Station SSN="70大风机">新建图层|新建图形|</Station>
+    <Station SSN="-550米西沿脉">新建图层|新建图形|</Station>
+    <Station SSN="-600米东沿脉">新建图层|新建图形|</Station>
+    <Station SSN="-650西沿脉">新建图层|新建图形|</Station>
+    <Station SSN="-650盲竖井码头门">新建图层|新建图形|</Station>
+    <Station SSN="-650斜井井口">新建图层|新建图形|</Station>
+    <Station SSN="斜井井口">新建图形|</Station>
+  </Stations>
+  <Words />
+  <Map MinWidth="500" MaxWidth="20000">-1574213074</Map>
+</MapConfig>

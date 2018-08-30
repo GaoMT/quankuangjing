@@ -1,0 +1,909 @@
+﻿@{
+    ViewBag.Title = "联动控制";
+    @model InternetDataMine.Models.LoadModel
+    Layout = "~/Views/Shared/_LayoutEditer.cshtml";
+}
+@{
+  var UserMineCode = Model.UserMineCode;
+}
+
+
+<script type="text/javascript">
+    var IsNew = 0;// 0编辑1新
+    var MineCode = '@UserMineCode';
+    //alert(MineCode);
+    // 加载表格数据
+    function LoadMineCode() {
+
+        $("#txtSimpleName").combogrid({
+            panelWidth: 250,
+            idField: 'MineCode',
+            textField: 'SimpleName',
+            url: '../TransJson/TransJsonToTreeList?DataType=MineName&isDG=y',
+            method: 'get',
+            columns: [[
+            { field: 'MineCode', title: '煤矿编号', width: 80, align: 'center' },
+            { field: 'SimpleName', title: '矿名', width: 90, align: 'center' },
+            { field: 'City', title: '归属城市', width: 90, align: 'center' },
+            ]], fitColumns: true,
+            onChange: function (newValue, oldValue) {
+               newValue;
+                //if (obj==null)
+                //{
+               LoadSensorNums(newValue);
+               LoadFZBH(newValue);
+               LoadBZKH(newValue);
+               LoadHZBH(newValue);
+               LoadCKBH(newValue);
+                //}
+             
+            },
+            //onClickRow: function (rowIndex, rowData) {
+            //    MineCode = rowData.MineCode;
+            //    LoadSensorNums(MineCode);
+            //    LoadFZBH(MineCode);
+            //    LoadBZKH(MineCode);
+            //    LoadHZBH(MineCode);
+                
+            //}
+        });
+
+
+    }
+
+    function LoadSensorNums(newValue)
+    {
+        var list = [];
+        $("#txtSensorNums").combogrid({
+            url: '../Center/ReturnLDKZ?mineCode=' + newValue + "&rows=20" + "&Type=SensorNum",
+            panelWidth: 400,
+            panelHeight: 300,
+            pageSize: 20,
+            //sortName: 'TypeName',
+            //sortOrder: 'desc',
+            idField: 'SensorNum',
+            textField: 'SensorNum',
+            multiple: false,
+            striped: true,
+            pagination: true,
+            queryParams: { "bopTmDataSet.id": '${bopTmDataSet.id}' },//将项目的ID也要传过去 
+            columns: [[
+         //{ field: 'select', title: '选择', checkbox: true, width: 40 },
+        { field: 'SensorNum', title: '测点编号', width: 60 },
+
+        { field: 'TypeName', title: '测点类型', width: 80 },
+        { field: 'Place', title: '测点位置', width: 200 },
+        { field: 'Type', title: '类型', width: 40 },
+            ]],
+            onChange: function (newValue, oldValue) {
+            },
+          
+            onClickRow: function (rowIndex, rowData) {
+          
+                //var index = -1;
+                //for (var i = 0; i < list.length; i++) {
+                //    if (list[i] == rowData.SensorNum) {
+                //        index = i;
+                //    }
+                //}
+                //if (index != -1) {
+                //    list.splice(index, 1);
+                //}
+                //else {
+                //    list.push(rowData.SensorNum);
+                //}
+                //$("#txtSensorNums").combogrid("setValues", list);
+            },
+           
+        });
+        var p = $("#txtSensorNums").combogrid('grid').datagrid('getPager');
+        p.pagination({
+            showPageList: false,
+            beforePageText: '第',//页数文本框前显示的汉字
+            layout: ['first', 'prev','next', 'last', 'refresh', 'manual'],
+            afterPageText: '共 {pages} 页',
+        });
+    }
+
+    function LoadFZBH(newValue)
+    {
+        var list = [];
+        $("#txtFZBH").combogrid({
+            url: '../Center/ReturnLDKZ?mineCode=' + newValue + "&rows=20" + "&Type=FZBH",
+            panelWidth: 400,
+            panelHeight: 300,
+            pageSize: 20,
+            multiple: true,
+            striped: true,
+            singleSelect: false,
+            pagination: true,
+            //sortName: 'StationCode',
+            //sortOrder: 'desc',
+            idField: 'StationCode',
+            textField: 'StationCode',
+           
+            columns: [[
+         //{ field: 'select', title: '选择', checkbox: true, width: 40 },
+        { field: 'StationCode', title: '分站编号', width: 60 },
+        { field: 'StationName', title: '分站名称', width: 140 },
+        { field: 'Place', title: '安装位置', width:190 },
+            ]],
+        onClickRow: function (rowIndex, rowData) {
+            var index = -1;
+            for (var i = 0; i < list.length; i++) {
+                if (list[i] == rowData.StationCode) {
+                    index = i;
+                }
+            }
+            if (index != -1) {
+                list.splice(index, 1);
+            }
+            else {
+                list.push(rowData.StationCode);
+            }
+            $("#txtFZBH").combogrid("setValues", list);
+        },
+           
+        });
+        var p = $("#txtFZBH").combogrid('grid').datagrid('getPager');
+    p.pagination({
+        showPageList: false,
+        beforePageText: '第',//页数文本框前显示的汉字
+        layout: ['first', 'prev','next', 'last', 'refresh', 'manual'],
+        afterPageText: '共 {pages} 页',
+    });
+    }
+
+    function LoadBZKH(newValue)
+    {
+        var list = [];
+        $("#txtBZKH").combogrid({
+            url: '../Center/ReturnLDKZ?mineCode=' + newValue + "&rows=20" + "&Type=BZKH",
+            panelWidth: 400,
+            panelHeight: 300,
+            pageSize: 20,
+            multiple: true,
+            striped: true,
+            singleSelect: false,
+            pagination: true,
+            //sortName: 'JobCardCode',
+            //sortOrder: 'desc',
+            idField: 'JobCardCode',
+            textField: 'JobCardCode',
+      
+            columns: [[
+         //{ field: 'select', title: '选择', checkbox: true, width: 40 },
+        { field: 'JobCardCode', title: '标识卡号', width: 130 },
+        { field: 'Name', title: '姓名', width: 60 },
+        { field: 'Position', title: '职务/工种', width: 100 },
+         { field: 'Department', title: '部门', width: 100 },
+            ]],
+            onClickRow: function (rowIndex, rowData) {
+                //
+                var index = -1;
+                for (var i = 0; i < list.length; i++) {
+                    if (list[i] == rowData.JobCardCode) {
+                        index = i;
+                    }
+                }
+                if (index != -1) {
+                    list.splice(index, 1);
+                }
+                else {
+                    list.push(rowData.JobCardCode);
+                }
+              
+                $("#txtBZKH").combogrid("setValues", list);
+            },
+
+        });
+        var p = $("#txtBZKH").combogrid('grid').datagrid('getPager');
+        p.pagination({
+            showPageList: false,
+            beforePageText: '第',//页数文本框前显示的汉字
+            layout: ['first', 'prev', 'next', 'last', 'refresh', 'manual'],
+            afterPageText: '共 {pages} 页',
+        });
+    }
+
+    function LoadHZBH(newValue)
+    {
+        var list = [];
+        $("#txtHZBH").combogrid({
+            url: '../Center/ReturnLDKZ?mineCode=' + newValue + "&rows=20" + "&Type=HZBH",
+            panelWidth: 400,
+            panelHeight: 300,
+            pageSize: 20,
+            multiple: true,
+            striped: true,
+            singleSelect: false,
+            pagination: true,
+            //sortName: 'SensorNum',
+            //sortOrder: 'desc',
+            //idField: 'SensorNum',
+            textField: 'SensorNum',
+      
+            columns: [[
+         //{ field: 'select', title: '选择', checkbox: true, width: 40 },
+        { field: 'SensorNum', title: '话站编号', width: 60 },
+        { field: 'Place', title: '安装位置', width: 150 },
+        { field: 'IPAddress', title: '网络地址', width: 190 },
+            ]],
+            onClickRow: function (rowIndex, rowData) {
+                //
+                var index = -1;
+                for (var i = 0; i < list.length; i++) {
+                    if (list[i] == rowData.SensorNum) {
+                        index = i;
+                    }
+                }
+                if (index != -1) {
+                    list.splice(index, 1);
+                }
+                else {
+                    list.push(rowData.SensorNum);
+                }
+                $("#txtHZBH").combogrid("setValues", list);
+            },
+
+        });
+        var p = $("#txtHZBH").combogrid('grid').datagrid('getPager');
+        p.pagination({
+            showPageList: false,
+            beforePageText: '第',//页数文本框前显示的汉字
+            layout: ['first', 'prev', 'next', 'last', 'refresh', 'manual'],
+            afterPageText: '共 {pages} 页',
+        });
+    }
+
+
+
+    function LoadCKBH(newValue) {
+        var list = [];
+        $("#txtCKBH").combogrid({
+            url: '../Center/ReturnLDKZ?mineCode=' + newValue + "&rows=20" + "&Type=CKBH",
+            panelWidth: 400,
+            panelHeight: 300,
+            pageSize: 20,
+            multiple: true,
+            striped: true,
+            singleSelect: false,
+            pagination: true,
+            //sortName: 'SensorNum',
+            //sortOrder: 'desc',
+            //idField: 'SensorNum',
+            textField: 'SensorNum',
+
+            columns: [[
+         //{ field: 'select', title: '选择', checkbox: true, width: 40 },
+        { field: 'SensorNum', title: '程控编号', width: 60 },
+        { field: 'Place', title: '安装位置', width: 150 },
+        { field: 'IPAddress', title: '网络地址', width: 190 },
+            ]],
+            onClickRow: function (rowIndex, rowData) {
+                //
+                var index = -1;
+                for (var i = 0; i < list.length; i++) {
+                    if (list[i] == rowData.SensorNum) {
+                        index = i;
+                    }
+                }
+                if (index != -1) {
+                    list.splice(index, 1);
+                }
+                else {
+                    list.push(rowData.SensorNum);
+                }
+                $("#txCKZBH").combogrid("setValues", list);
+            },
+
+        });
+        var p = $("#txtHZBH").combogrid('grid').datagrid('getPager');
+        p.pagination({
+            showPageList: false,
+            beforePageText: '第',//页数文本框前显示的汉字
+            layout: ['first', 'prev', 'next', 'last', 'refresh', 'manual'],
+            afterPageText: '共 {pages} 页',
+        });
+    }
+    //根据时间，生成URl后缀，防止URL数据不刷新
+    function getUrlStafix() {
+        var myDate = new Date();
+        return "&myDate=" + myDate.getFullYear() + myDate.getMonth() + myDate.getDate() + myDate.getHours() + myDate.getMinutes() + myDate.getSeconds();
+    }
+
+    function LoadDataGrid()
+    {
+        if (MineCode == "")
+        {
+            MineCode = readCookie("MineCode");
+        }
+        var Rows = parseInt((document.body.clientHeight - 140) / 26).toString();
+        var wid = document.body.clientWidth - 150;
+        //alert("../LDKZ/LoadLDKZ?&MineCode=" + readCookie("MineCode") + "&rows=" + Rows + getUrlStafix());
+        $("#dgvMain").datagrid({
+            rownumbers: true,
+            singleSelect: false,
+            pageList: [Rows],
+            pageSize: Rows,
+            toolbar:"#toolbar",
+            url: "../LDKZ/LoadLDKZ?&MineCode=" + MineCode + "&rows=" + Rows + getUrlStafix(),
+            fitColumns: true,
+            columns: [[
+                        { field: "SimpleName", title: "煤矿名称", width: wid / 10 },
+                        { field: "MineCode", title: "MineCode", hidden: true },
+                        { field: "SensorNums", title: "测点编号", width: wid / 10 },
+                         { field: "Place", title: "安装位置", width: wid / 10 },
+                          { field: "TypeName", title: "设备类型", width: wid / 11 },
+                        { field: "IsRYHJKZ", title: "是否开启人员呼叫控制", width: wid /12,hidden:true},
+                        { field: "StationCodes", title: "分站编号", width: wid / 8 ,formatter:IsRY},
+                        { field: "JobCardCodes", title: "标识卡号", width: wid / 8, formatter: IsRY },
+                        { field: "IsGBKZ", title: "是否开启广播控制", width: wid / 12, hidden: true },
+                          { field: "IsCKKZ", title: "是否开启程控制", width: wid / 12, hidden: true },
+                        { field: "GBCodes", title: "话站编号", width: wid / 10, formatter: IsHZ },
+                        { field: "GBContent", title: "广播内容", width: wid / 7, formatter: IsHZ },
+                        { field: "CKCodes", title: "程控编号", width: wid / 10, formatter: IsCK },
+                        { field: "CKContent", title: "程控内容", width: wid / 7, formatter: IsCK },
+            ]],
+            pagination: true,
+        });
+        var p = $("#dgvMain").datagrid("getPager");
+        p.pagination({
+            showPageList: false,
+            beforePageText: '第',//页数文本框前显示的汉字
+            layout: ['first', 'prev', 'links', 'next', 'last', 'refresh', 'manual'],
+            displayMsg: '当前显示 {from} - {to} 条记录   共 {total} 条记录',
+            afterPageText: '页    共 {pages} 页',
+        });
+
+    }
+    function IsRY(val, obj)
+    {
+        switch (obj.IsRYHJKZ) {
+         
+            case true:
+                if (val == "") {
+                    return '<span>'+"全部"+'</span>';
+                }
+                else {
+                    return '<span>' + val + '</span>';
+                }
+             
+            case false:
+                if (val == "") {
+                    return '<span>' + "全部" + '</span>';
+                }
+                else {
+                    return '<span >-</span>';
+                }
+        }
+    }
+    
+    function IsHZ(val, obj) {
+
+        switch (obj.IsGBKZ) {
+            case true:
+                if (val == "") {
+                    return '<span>' + "全部" + '</span>';
+                }
+                else {
+                    return '<span>' + val + '</span>';
+                }
+            case false:
+                if (val == "") {
+                    return '<span>' + "全部" + '</span>';
+                }
+                else {
+                    return '<span >-</span>';
+                }
+
+
+        }
+    }
+
+        function IsCK(val, obj) {
+
+            switch (obj.IsCKKZ) {
+                case true:
+                    if (val == "") {
+                        return '<span>' + "全部" + '</span>';
+                    }
+                    else {
+                        return '<span>' + val + '</span>';
+                    }
+                case false:
+                    if (val == "") {
+                        return '<span>' + "全部" + '</span>';
+                    }
+                    else {
+                        return '<span >-</span>';
+                    }
+
+            }
+        }
+    // 加载编辑信息
+    function LoadEditeInfo() {
+        IsNew = 0;
+        var rows = $("#dgvMain").datagrid("getChecked");
+        if (rows.length < 1) {
+            $.messager.alert("警告", "编辑前，请先选取一行，请选取！");
+            return;
+        }
+        if (rows.length > 1) {
+            $.messager.alert("警告", "编辑的时候，只能选取一行，请重新选择！");
+            return;
+        }
+
+        var data = rows[0];
+      
+       
+        
+        $("#txtSimpleName").combogrid("clear");
+        $("#txtSensorNums").combogrid("clear");
+        $("#txtFZBH").combogrid("clear");
+        $("#txtBZKH").combogrid("clear");
+        $("#txtHZBH").combogrid("clear");
+        $("#txtCKBH").combogrid("clear");
+        $("#txtGBNR").textbox("clear");
+        $("#txtCKNR").textbox("clear");
+        var Content = data.GBContent;
+        var ContentCK = data.CKContent;
+        if (data.IsRYHJKZ == false) {
+            $("#IsRYHJ").prop("checked", false);
+        }
+        else {
+            $("#IsRYHJ").prop("checked", true);
+        }
+        if (data.IsGBKZ == false) {
+            $("#IsGBKZ").prop("checked", false);
+        }
+        else  {
+            $("#IsGBKZ").prop("checked", true);
+        }
+
+        if (data.IsCKKZ == false) {
+            $("#IsCKKZ").prop("checked", false);
+        }
+        else {
+            $("#IsCKKZ").prop("checked", true);
+        }
+        if (data.GBContent.indexOf("[测点位置]") >= 0) {
+            $("#IsPlace").prop("checked", true);
+            Content=   Content.substring(6, Content.length);
+        }
+        else {
+            $("#IsPlace").prop("checked", false);
+        }
+
+        if (data.GBContent.indexOf("[测点类型]") >= 0) {
+            $("#IsType").prop("checked", true);
+            Content= Content.substring(6, Content.length);
+        }
+        else {
+            $("#IsType").prop("checked", false);
+        }
+
+        if (data.CKContent.indexOf("[测点位置]") >= 0) {
+            $("#IsPlaceCK").prop("checked", true);
+            ContentCK = ContentCK.substring(6, ContentCK.length);
+        }
+        else {
+            $("#IsPlaceCK").prop("checked", false);
+        }
+
+        if (data.CKContent.indexOf("[测点类型]") >= 0) {
+            $("#IsTypeCK").prop("checked", true);
+            ContentCK = ContentCK.substring(6, ContentCK.length);
+        }
+        else {
+            $("#IsTypeCK").prop("checked", false);
+        }
+
+
+
+
+
+
+        $("#MineCode")[0].innerText = data.MineCode;
+        $("#txtSimpleName").combogrid("grid").datagrid("selectRecord", data.MineCode);
+        $("#txtSensorNums").combogrid("setValue", data.SensorNums.toString());
+        $("#txtFZBH").combogrid("setValue", data.StationCodes.toString().replace(/\|/g, ","));
+        $("#txtBZKH").combogrid("setValue", data.JobCardCodes.toString().replace(/\|/g, ","));
+        $("#txtHZBH").combogrid("setValue", data.GBCodes.toString().replace(/\|/g, ","));
+        $("#txtCKBH").combogrid("setValue", data.CKCodes.toString().replace(/\|/g, ","));
+        //$("#txtHZBH").combogrid("setText", data.GBCodes.toString().replace(/\|/g, ","));
+        //$("#txtHZBH").combogrid("setValues", "sss");
+        $("#txtGBNR").textbox("setText", Content);
+        $("#txtCKNR").textbox("setText", ContentCK);
+        $("#txtSimpleName").combogrid('disable');
+        $("#txtSensorNums").combogrid('disable');
+        $("#divAdd").window("setTitle", "修改联动控制配置");
+        $("#divAdd").window("open");
+        $.messager.progress();	// 显示进度条
+        setTimeout("$.messager.progress('close')",2000)	;// 显示进度条)
+    }
+
+    // 删除数据项
+    function DeleteItem() {
+        $.messager.progress();
+
+        var rows = $("#dgvMain").datagrid("getChecked");
+        if (rows.length < 1) {
+            $.messager.progress('close');
+            $.messager.alert('提示', "无法删除，请先选取一行或多行，再点击删除按钮！");
+            return;
+        }
+
+        var msg = "";
+        $.messager.confirm("提示", "你确定要删除吗？", function (r) {
+            if (r) {
+                AddProcessLogGlobal("删除了煤矿配置信息");
+                var condition = "";
+                var index = 0;
+                var MineCodes = "";
+                var SensorNums = "";
+                for (index = 0; index < rows.length; index++) {
+                    MineCodes += rows[index].MineCode + ",";
+                    SensorNums += rows[index].SensorNums + ",";
+                }
+                MineCodes = MineCodes.substring(0, MineCodes.length - 1);
+                SensorNums = SensorNums.substring(0, SensorNums.length - 1);
+                $.ajax({
+                    dataType: "json",
+                    method: "post",
+                    url: "../LDKZ/Delete",
+                    data: { "MineCode": MineCodes, "SensorNum": SensorNums },
+                    success: function (data) {
+                        $.messager.progress('close');
+                        document.getElementById("Message").innerText = data.data;
+                        $("#MessageBox").window("open");
+                        LoadDataGrid();
+                    },
+                    error: function () {
+                        $.messager.progress('close');
+                        document.getElementById("Message").innerText = "删除失败，请检查网络";
+                        $("#MessageBox").window("open");
+
+                    }
+                });
+
+            }
+            else {
+
+                $.messager.progress('close');
+            }
+
+             
+        });
+    }
+   
+
+    // 保存信息
+    function SaveLDKZ() {
+    
+
+        //$.messager.progress();
+        var MineCode_Save =$("#txtSimpleName").combogrid("getValue");
+        var SensorNums=$("#txtSensorNums").combogrid("getValues").toString();
+        var IsRYHJ = $('#IsRYHJ').is(':checked')
+        var FZBH = $("#txtFZBH").combogrid("getText").toString();
+        var BZKH = $("#txtBZKH").combogrid("getText").toString();
+        var IsGBKZ = $('#IsGBKZ').is(':checked')
+
+        var IsCKKZ = $('#IsCKKZ').is(':checked')
+        //var HZBH = $("#txtHZBH").combogrid("getValues").toString();
+        var HZBH = $("#txtHZBH").combogrid("getText").toString();
+
+        var CKBH = $("#txtCKBH").combogrid("getText").toString();
+        if ($('#txtFZBH').combobox('getText') == "") {
+            FZBH = "";
+        }
+        if ($('#txtBZKH').combobox('getText') == "") {
+            BZKH = "";
+        }
+        if ($('#txtHZBH').combobox('getText') == "") {
+            HZBH = "";
+        }
+        if ($('#txtCKBH').combobox('getText') == "") {
+            CKBH = "";
+        }
+
+
+        var Content="";
+        if ($('#IsPlace').is(':checked'))
+        {
+         Content   +="[测点位置]";
+        }
+        if ($('#IsType').is(':checked'))
+        {
+            Content += "[测点类型]";
+        }
+        Content += $("#txtGBNR").textbox("getText");
+
+
+        var ContentCK = "";
+        if ($('#IsPlaceCK').is(':checked')) {
+            ContentCK += "[测点位置]";
+        }
+        if ($('#IsTypeCK').is(':checked')) {
+            ContentCK += "[测点类型]";
+        }
+        ContentCK += $("#txtCKNR").textbox("getText");
+
+
+        var user = readCookie('UserName');
+        if (MineCode_Save == "")
+        {
+            document.getElementById("Message").innerText = "请选择煤矿！";
+            $("#MessageBox").window("open");
+            return false;
+        }
+        if (FZBH.length > 17)
+        {
+            document.getElementById("Message").innerText = "分站编号最多17个字符！";
+            $("#MessageBox").window("open");
+            return false;
+        }
+        if (Content.length > 500) {
+            document.getElementById("Message").innerText = "广播内容最多500个字符！";
+            $("#MessageBox").window("open");
+            return false;
+        }
+
+        if (ContentCK.length > 500) {
+            document.getElementById("Message").innerText = "程控内容最多500个字符！";
+            $("#MessageBox").window("open");
+            return false;
+        }
+      
+        $.ajax({
+            dataType: "json",
+            type: "post",
+            url: "../LDKZ/SaveLDKZ",
+            data: { "MineCode": MineCode_Save, "SensorNums": SensorNums, "IsRYHJ": IsRYHJ, "FZBH": FZBH, "BZKH": BZKH, "IsGBKZ": IsGBKZ, "HZBH": HZBH, "Content": Content, "User": user, "IsNew": IsNew, "CKBH": CKBH, "ContentCK": ContentCK, "IsCKKZ": IsCKKZ },
+            success: function (data) {
+              
+                document.getElementById("Message").innerText = data.data;
+                $("#MessageBox").window("open");
+                if (data.data == "添加成功!") {
+                    IsNew = 1;
+                    $(".easyui-textbox").textbox("setText", "");
+                    $("#txtSimpleName").combogrid("clear");
+                    $("#txtSensorNums").combogrid("clear");
+                    $("#IsRYHJ").prop("checked", true);
+                    $("#IsGBKZ").prop("checked", true);
+                    $("#IsCKKZ").prop("checked", true);
+                    $("#IsPlace").prop("checked", true);
+                    $("#IsType").prop("checked", true);
+                    $("#txtFZBH").combogrid("clear");
+                    $("#txtBZKH").combogrid("clear");
+                    $("#txtHZBH").combogrid("clear");
+                    $("#txtCKBH").combogrid("clear");
+                    $("#txtGBNR").textbox("setText", "超限报警，请附近瓦检员检察");
+                    $("#txtCKNR").textbox("setText", "超限报警，请附近瓦检员检察");
+                    $("#txtSimpleName").combogrid('enable');
+                    $("#txtSensorNums").combogrid('enable');
+                }
+
+                LoadDataGrid();
+
+            },
+            fail: function (data) {
+                document.getElementById("Message").innerText = data.data;
+                $("#MessageBox").window("open");
+            },
+            error: function (data) {
+                document.getElementById("Message").innerText = data.data;
+                $("#MessageBox").window("open");
+            }
+
+        });
+    }
+
+   
+    $(document).ready(function () {
+    
+        // 加载表格数据
+        LoadDataGrid();
+        LoadMineCode();
+        document.onkeydown = function (e) {
+            var theEvent = window.event || e;
+            var code = theEvent.keyCode || theEvent.which;
+            // enter 的ASCII 码 是13
+            if (code == 13) {
+                // 不然 提交时候出错 关不掉（关掉了后又因为其他原因打开了）
+                document.getElementById("CloseThis").focus();
+                $("#MessageBox").dialog("close");
+            }
+        }
+        //加载查询按钮的单击响应事件
+        $("#btnQuery").bind('click', function () {
+            LoadDataGrid();
+        });
+
+        //加载添加按钮的单击响应事件
+        $("#btnAdd").bind('click', function () {
+            IsNew = 1;
+            $("#txtSimpleName").combogrid('enable');
+            $("#txtSensorNums").combogrid('enable');
+            $(".easyui-textbox").textbox("setText", "");
+            $("#divAdd").window("setTitle", "添加联动控制配置");
+            if ('@UserMineCode' != "") {
+                $("#txtSimpleName").combogrid("grid").datagrid("selectRecord", MineCode);
+                $("#txtSimpleName").combogrid('disable');
+            }
+            else {
+                $("#txtSimpleName").combogrid("clear");
+            }
+          
+            $("#txtSensorNums").combogrid("clear");
+            $("#IsRYHJ").prop("checked", true);
+            $("#IsCKKZ").prop("checked", true);
+            $("#IsGBKZ").prop("checked", true);
+            $("#IsPlace").prop("checked", true);
+            $("#IsType").prop("checked", true);
+            $("#txtFZBH").combogrid("clear");
+            $("#txtBZKH").combogrid("clear");
+            $("#txtHZBH").combogrid("clear");
+            $("#txtCKBH").combogrid("clear");
+            $("#txtGBNR").textbox("setText", "超限报警，请附近瓦检员检察");
+            $("#txtCKNR").textbox("setText", "超限报警，请附近瓦检员检察");
+            $("#divAdd").window("open");
+          
+        });
+
+        //加载编辑按钮的单击响应事件
+        $("#btnEdit").bind('click', function () {
+            LoadEditeInfo();
+        });
+
+   
+
+        //加载删除按钮的单击响应事件
+        $("#btnRemove").bind('click', function () {
+            DeleteItem();
+
+        });
+
+
+        $("#divAdd").window({/* 修正面板位置 */
+            left: 0,
+            top: 0,
+            width: document.body.clientWidth-20,
+            height: document.body.clientHeight,
+        });
+    });
+
+</script>
+
+<style type="text/css">
+    td.left {
+        font-size:14px;
+        border: 1px solid silver;
+        text-align: right;
+        width: 20%;
+    }
+
+    td.right {
+        font-size: 14px;
+        text-align: left;
+        border: 1px solid silver;
+        width: 30%;
+    }
+</style>
+ <div id="toolbar">
+    <table>
+        <tr>
+            <td style="padding-left:20px; text-align:right;"><a id="btnAdd" class="easyui-linkbutton" data-options="iconCls:'icon-add'" style="width:120px;">添加</a></td>
+            <td style="padding-left:10px; text-align:right;"><div id="btnEdit" style="width: 120px;" class="easyui-linkbutton" data-options="iconCls:'icon-edit'">修改</div></td>
+            <td style="padding-left:10px; text-align:right;"><div id="btnRemove" style="width: 120px;" class="easyui-linkbutton" data-options="iconCls:'icon-remove'">删除</div></td>
+            <td style="padding-left:30px;"><div id="btnQuery" class="easyui-linkbutton" data-options="iconCls:'icon-reload'" style="width: 120px;">刷新</div></td>
+        </tr>
+    </table>
+</div>
+    <div id="dgvMain" class="easyui-datagrid"  data-options="fit:true" >
+
+  
+    </div>
+    @*弹出框*@
+    <div id="MessageBox" class="easyui-dialog" title="提示" data-options="modal:true,closed:true" style="height:180px;width:300px;text-align:center;vertical-align:middle;">
+        <br />
+        <br />
+        <label id="Message" style="padding-top:50px; vertical-align:middle;">操作失败</label>
+        <div>
+            <a id="CloseThis" href="javascript:void(0)" class="easyui-linkbutton" data-options="onClick:function(){    $('#MessageBox').window('close');  }" style="width: 100px;top:130px;left:100px;position:absolute">
+                确定
+            </a>
+        </div>
+    </div>
+
+    @*添加*@
+    <div class="easyui-window" id="divAdd" title="联动控制配置" data-options="closed:true,minimizable:false">
+
+        <span id="MineCode" style="display:none;"></span>
+        <form id="ff" method="post">
+            <table style="text-align: center; width: 100%; height: 100%; border-width:1px; border-color:black; border-collapse:collapse;">
+                <tr>
+                    @*<td class="left">煤矿编号：</td>
+                        <td class="right"><div id="txtMineCode" class=" easyui-textbox" data-options="required:true,prompt:'请填写煤矿编号',validType:'length[0,20]'" style="width:70%;"></div></td>*@
+                    <td class="left">煤矿名称：</td>
+                    <td class="right"><div id="txtSimpleName" class="easyui-combogrid" data-options="required:true,prompt:'请填写煤矿名称',validType:'length[0,20]'" style="width:250px"></div></td>
+                </tr>
+                <tr>
+                    <td class="left">联动测点编号：</td>
+                    <td class="right"><div id="txtSensorNums" class="easyui-combogrid" data-options="required:true,validType:'length[0,200]'" style="width:400px"></div></td>
+                </tr>
+                @*<tr>
+                        <td class="left">联动测点状态：</td>
+                        <td class="right"><div id="txtType" class="easyui-textbox" data-options="prompt:'请填写经营类别'" style="width:70%;"></div></td>
+                    </tr>*@
+                <tr>
+                    <td class="left">是否开启人员呼叫控制：</td>
+                    <td class="right"><input id="IsRYHJ" type='checkbox' checked='checked'></td>
+                </tr>
+                <tr>
+                    <td class="left">联动分站编号：</td>
+                    <td class="right"><input id="txtFZBH" class="easyui-combogrid" style="width:400px;"></td>
+                </tr>
+                <tr>
+                    <td class="left">联动人员标识卡号：</td>
+                    <td class="right"><input id="txtBZKH" class="easyui-combogrid" style="width: 400px;"></td>
+                </tr>
+                <tr>
+                    <td class="left">是否开启广播控制：</td>
+                    <td class="right"><input id="IsGBKZ" type='checkbox' checked='checked'></td>
+                </tr>
+                <tr>
+                    <td class="left">联动广播话站编号：</td>
+                    <td class="right"><input id="txtHZBH" class="easyui-combogrid" style="width: 400px; "></td>
+                </tr>
+                <tr>
+                    <td class="left">联动广播内容：</td>
+                    <td class="right">
+                        <input type="checkbox" checked="checked" id="IsPlace" /><label for="IsPlace">测点位置</label>
+                        <input type="checkbox" checked="checked" id="IsType" /><label for="IsType">测点类型</label>
+                        <input id="txtGBNR" class="easyui-textbox" data-options="multiline:false," style="width:240px">
+                    </td>
+
+                </tr>
+
+                <tr>
+                    <td class="left">是否开启程控控制：</td>
+                    <td class="right"><input id="IsCKKZ" type='checkbox' checked='checked'></td>
+                </tr>
+                <tr>
+                    <td class="left">联动程控编号：</td>
+                    <td class="right"><input id="txtCKBH" class="easyui-combogrid" style="width: 400px; "></td>
+                </tr>
+                <tr>
+                    <td class="left">联动程控内容：</td>
+                    <td class="right">
+                        <input type="checkbox" checked="checked" id="IsPlaceCK" /><label for="IsPlaceCK">测点位置</label>
+                        <input type="checkbox" checked="checked" id="IsTypeCK" /><label for="IsTypeCK">测点类型</label>
+                        <input id="txtCKNR" class="easyui-textbox" data-options="multiline:false," style="width:240px">
+                    </td>
+
+                </tr>
+                <tr>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                </tr>
+
+                <tr>
+                    <td colspan="4" style="text-align: center; border: 0px solid silver;">
+                        <a id="btnSave" href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-save',onClick:function(){ SaveLDKZ();}" style="width:120px;">
+                            保存
+                        </a>
+                        &nbsp;   &nbsp;   &nbsp;
+                        <a id="btnclose" class="easyui-linkbutton" href="#" data-options="iconCls:'icon-cancel',onClick:function(){$('#divAdd').window('close');}" style="width: 120px">关闭</a>
+
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>

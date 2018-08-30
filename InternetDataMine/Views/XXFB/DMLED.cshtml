@@ -1,0 +1,777 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutEditer.cshtml";
+    ViewBag.Title = "地面LED";
+}
+
+<body>
+    <style type="text/css">
+        td.left {
+            border: 1px solid silver;
+            text-align: right;
+            width: 20%;
+        }
+
+        td.right {
+            text-align: left;
+            border: 1px solid silver;
+            width: 30%;
+        }
+    </style>
+
+    <div id="toolbar">
+        <table>
+            <tr>
+                <td style="padding-left:20px; text-align:right;">  <input type="checkbox" id="StopReflesh" onclick="ClickReflesh(this)" /><label for="StopReflesh"  style="font-size:16px"> 停止刷新</label></td>
+<td style="padding-left:20px; text-align:right;"><a id="btnAdd" class="easyui-linkbutton" data-options="iconCls:'icon-add'" style="width:120px;">添加</a></td>
+                <td style="padding-left:10px; text-align:right;"><div id="btnEdit" style="width: 120px;" class="easyui-linkbutton" data-options="iconCls:'icon-edit'">修改</div></td>
+                <td style="padding-left:10px; text-align:right;"><div id="btnRemove" style="width: 120px;" class="easyui-linkbutton" data-options="iconCls:'icon-remove'">删除</div></td>
+                <td style="padding-left:30px;"><div id="btnQuery" class="easyui-linkbutton" data-options="iconCls:'icon-reload'" style="width: 120px;">刷新</div></td>
+            </tr>
+        </table>
+    </div>
+    <div id="dgvMain" class="easyui-datagrid" data-options="fit:true"></div>
+
+
+    @*弹出框*@
+    <div id="MessageBox" class="easyui-dialog" title="提示" data-options="modal:true,closed:true,minimizable:false" style="height:180px;width:300px;text-align:center;vertical-align:middle;">
+        <br />
+        <br />
+        <label id="Message" style="padding-top:50px; vertical-align:middle;">操作失败</label>
+        <div>
+            <a id="CloseThis" href="javascript:void(0)" class="easyui-linkbutton" data-options="onClick:function(){    $('#MessageBox').window('close');  }" style="width: 100px;top:130px;left:100px;position:absolute">
+                确定
+            </a>
+        </div>
+    </div>
+
+
+    @*添加*@
+    <div class="easyui-window" id="divAdd" title="新增信息" data-options="modal:true,closed:true,minimizable:false" style="height:650px;width:700px;text-align:center;vertical-align:middle;">
+
+
+        <table style=" margin: 20px 0px 0px 20px; text-align: center; height: 90%; width: 95%; font-size: 16px; border-width: 1px; border-color: black;">
+            <tr>
+
+                <td style="text-align:right">LED屏地址：</td>
+                <td style="text-align:left"> <input class="easyui-textbox" id="LedIP" style="width: 435px" /></td>
+            </tr>
+            <tr>
+                <td style="text-align:right">地点：</td>
+                <td style="text-align:left"><input id="LedAddress" class="easyui-textbox" data-options="multiline:false," style="width: 435px"></td>
+            </tr>
+
+            <tr>
+                <td style="text-align:right">LED屏显示格式：</td>
+                <td style="text-align:left">
+                    <div id="p" class="easyui-panel" title="LEPD屏显示格式" style="height: 130px; width: 435px; overflow: hidden" data-options="tools:[
+                        {
+                                    iconCls:'icon-add',
+                                    handler:function(){AddConfig();}
+                        },{
+                                    iconCls:'icon-edit',
+                                    handler:function(){EditConfig();}
+                           },{
+                                    iconCls:'icon-remove',
+                                    handler:function(){DeleteConfig();}
+
+                        }]">
+
+                        <select id="ConfigSelect" name="selectColors" size="8" style="height: 100%; width: 100%; border-width: 0px; "></select>
+                    </div>
+                </td>
+
+            </tr>
+            <tr>
+
+                <td style="text-align:right">声光报警器地址：</td>
+                <td style="text-align:left"> <input class="easyui-textbox" id="SGIP" style="width: 435px" /></td>
+            </tr>
+            <tr>
+
+                <td style="text-align:right">声光报警器端口号：</td>
+                <td style="text-align:left"> <input class="easyui-textbox" id="SGPort" style="width: 435px" /></td>
+            </tr>
+            <tr>
+
+                <td style="text-align:right">声光报警器语音内容：</td>
+                <td style="text-align:left"> <input id="SGText" class="easyui-textbox" data-options="multiline:true," style="width: 435px; height: 50px"></td>
+            </tr>
+
+            <tr>
+
+                <td style="text-align:right">声光报警触发条件：</td>
+                <td style="text-align:left">
+                    <input type="radio" name="IsSQL" id="DS" value="0"><label for="DS">定时</label>
+                    <br>
+                    <input type="radio" id="SQLCF" name="IsSQL" value="1"><label for="SQLCF">测点报警触发：</label><input class="easyui-textbox" data-options="multiline:true," style="width: 170px;height:50px" id="SGSQL" />
+              
+                
+                     
+                        &nbsp; <a id="RemoveOne" href="javascript:void(0)" class="easyui-linkbutton" style="width: 50px; " onclick="Formulate(this, 'SGSQL')">后退</a>
+                        &nbsp; <a id="RemoveAll" href="javascript:void(0)" class="easyui-linkbutton" style="width: 50px; " onclick="Formulate(this, 'SGSQL')">清空</a>
+
+                        <br>
+                        &nbsp; &nbsp; <label>测点列表：</label>
+
+                    <div class="easyui-combogrid" id="SGSQL_TypeName" style="width:130px"> </div>
+                        &nbsp;<div class="easyui-combogrid" id="SGSQL_SensorNum" style="width: 130px"> </div>
+                        &nbsp;<a id="AddMNL" href="javascript:void(0)" class="easyui-linkbutton" style="width: 50px; " onclick="Formulate(this, 'SGSQL')">添加</a>
+
+                        @*<input class="easyui-textbox" id="TextSQL" data-options="multiline:true," style="width:250px;height:80px" />*@
+                
+                
+                  </td>
+            </tr>
+  
+
+            <tr>
+                <td colspan="4" style="text-align: center; border: 0px solid silver;">
+                    <a id="btnSave" href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-save',onClick:function(){ SaveEditeInfo();}" style="width:120px;">
+                        保存
+                    </a>
+                    &nbsp;   &nbsp;   &nbsp;
+                    <a id="btnclose" class="easyui-linkbutton" href="#" data-options="iconCls:'icon-cancel',onClick:function(){$('#divAdd').window('close');}" style="width: 120px">关闭</a>
+
+                </td>
+            </tr>
+            <tr> <td></td>   </tr>
+        </table>
+
+    </div>
+
+
+    @*添加格式*@
+    <div class="easyui-window" id="divConfig" title="新增Led显示配置" data-options="modal:true,closed:true,minimizable:false" style="height:300px;width:550px;text-align:center;vertical-align:middle;font-size:16px">
+
+
+        <div style="position:absolute; margin:40px 0px 0px 80px">
+            <input type="radio" name="TextConfig" id="SQL" value="SQL"  checked="checked"/><label for="SQL">测点内容：</label>
+          
+            <input id="Formulation" class="easyui-textbox" style="width: 200px;" />
+            &nbsp; <a id="RemoveOne" href="javascript:void(0)" class="easyui-linkbutton" style="width: 50px; " onclick="Formulate(this, 'Formulation')">后退</a>
+            &nbsp; <a id="RemoveAll" href="javascript:void(0)" class="easyui-linkbutton" style="width: 50px; " onclick="Formulate(this, 'Formulation')">清空</a>
+           
+          <br>
+            &nbsp; &nbsp; <label >测点列表：</label>
+
+            <div class="easyui-combogrid" id="Formulation_TypeName" style="width:130px"> </div>
+            &nbsp;<div class="easyui-combogrid" id="Formulation_SensorNum" style="width: 130px"> </div>
+            &nbsp;<a id="AddMNL" href="javascript:void(0)" class="easyui-linkbutton" style="width: 50px; " onclick="Formulate(this, 'Formulation')">添加</a>
+
+
+            
+
+             @*<input class="easyui-textbox" id="TextSQL" data-options="multiline:true," style="width:250px;height:80px" />*@
+        </div>
+        <div style="position:absolute; margin:120px 0px 0px 80px">
+            <input type="radio" name="TextConfig" id="BY" value="标语" /><label for="BY">标语</label>
+        </div>
+        <a id="btnSave2" href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-save',onClick:function(){ SaveConfig();}" style="width:120px;margin:200px 0 0 0">
+            确定
+        </a>
+        &nbsp;   &nbsp;   &nbsp;
+        <a id="btnclose2"  class="easyui-linkbutton" href="#" data-options="iconCls:'icon-cancel',onClick:function(){$('#divConfig').window('close');}" style="width: 120px; margin: 200px 0 0 0">取消</a>
+
+    </div>
+</body>
+<script type="text/javascript">
+    var Selected = document.getElementsByName("TextConfig");
+    var IsSQLSelect = document.getElementsByName("IsSQL");
+    var index = 0;
+    var IsAdd = 0;//1添加 0修改 用于整个添加
+    var AddFlag = 1;//1 添加 0修改添加sql或标语
+    var Count = 0;
+    var t;
+    var GSSQL = [];
+    function getUrlStafix() {
+        var myDate = new Date();
+        return "&myDate=" + myDate.getFullYear() + myDate.getMonth() + myDate.getDate() + myDate.getHours() + myDate.getMinutes() + myDate.getSeconds();
+    }
+    function ClickReflesh(obj) {
+        if (obj.checked) {
+            clearTimeout(t);
+        }
+        else {
+            LoadData(1)
+        }
+    }
+    function LoadData(obj) {
+        var wid = document.body.clientWidth - 150;
+        var Rows = parseInt((document.body.clientHeight - 140) / 26).toString();
+        $("#dgvMain").datagrid(
+        {
+            rownumbers: true,
+            singleSelect: false,
+            pageList: [Rows],
+            pageSize: Rows,
+            toolbar: "#toolbar",
+            url: '../XXFB/LoadLedTable?rows='+Rows + getUrlStafix(),
+            columns: [[
+                { field: 'TmpID', title: '序号', width: wid / 12,hidden:true },
+                { field: 'LedIP', title: 'LED屏地址', width: wid / 10 },
+                { field: 'LedAddresss', title: '地点', width: wid / 10 },
+                { field: 'LedText', title: 'LED屏显示内容', width: wid / 5 },
+                { field: 'LedShowConfig', title: 'LED屏显示内容格式', width: wid / 6 },
+                { field: 'SGIP', title: '声光报警器地址', width: wid / 10 },
+                { field: 'SGPort', title: '声光报警器端口', width: wid / 10, formatter: ShowSGPort },
+                { field: 'SGText', title: '声光报警器语音内容', width: wid / 5 },
+                   { field: 'IsSQL', title: '是否SQL触发', width: wid / 5 ,hidden:true},
+                      { field: 'SGSQL', title: '触发条件', width: wid / 5 },
+                   { field: 'ConfigCount', title: 'led显示数据', width: wid / 5 ,hidden:true},
+                
+            ]], fitColumns: true,
+            singleSelect: false,
+            pagination: true,
+
+        });
+        var p = $("#dgvMain").datagrid("getPager");
+        p.pagination({
+            showPageList: false,
+            beforePageText: '第',//页数文本框前显示的汉字
+            layout: ['first', 'prev', 'links', 'next', 'last', 'refresh', 'manual'],
+            displayMsg: '当前显示 {from} - {to} 条记录   共 {total} 条记录',
+            afterPageText: '页    共 {pages} 页',
+        });
+        if (obj == 1)
+        {
+            t=setTimeout('LoadData(1)', 10000);
+        }
+           
+       
+    }
+    function ShowSGPort(val, obj)
+    {
+        if (obj.SGPort == 0) {
+            return "";
+        } else {
+            return obj.SGPort
+        }
+    }
+ 
+    function ShowDetail(obj) {
+        window.open(obj);
+    }
+
+    // 加载编辑信息
+    function LoadEditeInfo() {
+        var rows = $("#dgvMain").datagrid("getChecked");
+        if (rows.length < 1) {
+            document.getElementById("Message").innerText = "请先选取一行";
+            $("#MessageBox").window("open");
+            return;
+        }
+        if (rows.length > 1) {
+            document.getElementById("Message").innerText = "最多选取一行";
+            $("#MessageBox").window("open");
+            return;
+        }
+
+        var data = rows[0];
+
+        $("#LedIP").textbox("setText", data.LedIP);
+        $("#LedIP").textbox("readonly", true);
+        $("#LedAddress").textbox("setText", data.LedAddresss);
+        $("#ConfigSelect").empty();
+        $("#SGIP").textbox("setText", data.SGIP);
+        $("#SGText").textbox("setValue", data.SGText);
+        if (data.SGPort == 0) {
+            $("#SGPort").textbox("setText", "");
+
+        } else {
+            $("#SGPort").textbox("setText", data.SGPort);
+        }
+      
+        if (data.IsSQL == "0") {
+            $("#SGSQL").textbox("setValue", "");
+            IsSQLSelect[0].checked = true;
+        }
+        else {
+            IsSQLSelect[1].checked = true;
+            $("#SGSQL").textbox("setText", data.SGSQL);
+        }
+        index = data.ConfigCount;
+        var configList = data.LedShowConfig.split(")");
+        for (var i = 0; i < index; i++)
+        {
+            $("#ConfigSelect").append("<option value='" + "v" + i + "'>" + configList[i].substring(1, configList[i].length) + "</option>");
+        }
+        $("#divAdd").window("setTitle", "修改Led信息");
+        $("#divAdd").window("open");
+    }
+
+    // 删除数据项
+    function DeleteItem() {
+
+        var rows = $("#dgvMain").datagrid("getChecked");
+        if (rows.length < 1) {
+            document.getElementById("Message").innerText = "请先选取一行或多行";
+            $("#MessageBox").window("open");
+            return;
+        }
+
+        $.messager.confirm("提示", "你确定要删除吗？", function (r) {
+            if (r) {
+
+
+                var condition = "";
+                var index = 0;
+                for (index = 0; index < rows.length; index++) {
+                    if (index == rows.length - 1) {
+                        condition += rows[index].LedIP;
+                    }
+                    else {
+                        condition += rows[index].LedIP + ",";
+                    }
+                }
+                var url = "../XXFB/DeleteLedInfo?Condition=" + condition;
+                $.ajax({
+                    dataType: "json",
+                    method: "post",
+                    url: url,
+                    success: function (data) {
+                      
+                        document.getElementById("Message").innerText = data.data;
+                        $("#MessageBox").window("open");
+                        LoadData(0);
+                    },
+                    error: function () {
+
+                        document.getElementById("Message").innerText = "删除失败请检查网络";
+                        $("#MessageBox").window("open");
+                    }
+                });
+            }
+        });
+    }
+
+    // 保存信息
+    function SaveEditeInfo() {
+        
+
+
+
+        var LedIP = $("#LedIP").textbox("getText");
+      
+        var DivSelect = document.getElementById("ConfigSelect");
+        var LedShowConfig = DivSelect.options.length;
+        for (var i = 0; i < DivSelect.options.length; i++) {
+            LedShowConfig += "(" + DivSelect.options[i].text + ")";                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+        }
+        var LedAddress = $("#LedAddress").textbox("getText");
+      var SGIP = $("#SGIP").textbox("getText").toString();
+      var SGText = $("#SGText").textbox("getText");
+      var SGPort = $("#SGPort").textbox("getText").toString();
+      var SGSQL = $("#SGSQL").textbox("getText");
+      var IsSQL = $("input[name='IsSQL']:checked").val();
+      if (SGPort != "")
+      {
+          SGPort = SGPort.trim();
+
+      }
+      if (SGIP != "") {
+          SGIP = SGIP.trim();
+      }
+
+      if (IsSQL == "0")
+      {
+          SGSQL = "";
+      }
+      else 
+      {
+          if (SGSQL == "")
+          {
+              document.getElementById("Message").innerText = "请输入声光报警器触发条件!";
+              $("#MessageBox").window("open");
+              return false;
+          }
+      }
+
+      if (LedIP == "" || LedAddress=="") {
+            document.getElementById("Message").innerText = "LED屏IP以及地点必须填写!";
+            $("#MessageBox").window("open");
+            return false;
+      }
+      if (LedAddress.toString().length > 50)
+      {
+          document.getElementById("Message").innerText = "LED屏地点过长，最多50字符!";
+          $("#MessageBox").window("open");
+          return false;
+      }
+      if (SGIP == LedIP)
+      {
+          document.getElementById("Message").innerText = "LED屏地址与声光报警器地址不能相同";
+          $("#MessageBox").window("open");
+          return false;
+      }
+        $.ajax({
+            url: '../XXFB/SaveLedInfo',
+            datatype: 'json',
+            type: 'post',
+            data: { "LedIP": LedIP.toString().trim(), "LedAddress": LedAddress, "LedShowConfig": LedShowConfig, "SGIP": SGIP, "SGText": SGText, "IsSQL": IsSQL, "SGPort": SGPort, "SGSQL": SGSQL, "IsAdd": IsAdd },
+            success: function (data) {
+
+                if (data.state == 0) {
+
+                    document.getElementById("Message").innerText = data.data;
+                    $("#MessageBox").window("open");
+
+                    LoadData(0);
+                    $("#divAdd").window("close");
+                }
+                else {
+
+                    document.getElementById("Message").innerText = data.data;
+                    $("#MessageBox").window("open");
+                }
+            },
+            error: function (data) {
+                document.getElementById("Message").innerText = "保存失败请检查网络!";
+                $("#MessageBox").window("open");
+            }
+
+        });
+
+    }
+
+
+
+    //加载设备名
+    function LoadTypeName(obj, id) {
+        var ComboID = id + "TypeName";
+        $(ComboID).combogrid({
+            url: '../Center/ReturnComboboxForDevType?mineCode=' + readCookie("MineCode")   + getUrlStafix(),
+            idField: 'TypeCode',
+            textField: 'TypeName',
+            panelWidth: 200,
+            multiple: false,
+            columns: [[
+            { field: 'TypeCode', title: '测点编号', width: 60, hidden: true },
+            { field: 'TypeName', title: '测点类型', width: 80 },
+             { field: 'Unit', title: '单位', width: 60 },
+              { field: 'Type', title: '类型', width: 40 },
+            ]],
+            onSelect: function (rowIndex, rowData) {
+                LoadSensor(rowData.TypeCode, rowData.Type, id);
+            }
+        });
+
+    }
+    //加载测点
+    function LoadSensor(obj, DevType, id) {
+        var ComboID = id + "SensorNum";
+        $(ComboID).combogrid({
+            url: '../Center/ReturnComboGridForSensorInfo?mineCode=' + readCookie("MineCode") + "&SensorNameCode=" + obj + "&devType=" + DevType + getUrlStafix(),
+            idField: 'SensorNum',
+            textField: 'SensorNum',
+            panelWidth: 350,
+            multiple: true,
+            columns: [[
+                  { field: 'SensorNum', title: '测点编号', width: 60 },
+            { field: 'TypeName', title: '测点类型', width: 80 },
+            { field: 'Place', title: '安装位置', width: 145 },
+             { field: 'Unit', title: '单位', width: 60 },
+            ]],
+            onSelect: function (rowData) {
+
+            }
+        });
+    }
+
+    function Formulate(obj,TextID) {
+        GSSQL = [];
+        var FormuType = obj.id;
+        var text = $("#" + TextID).textbox("getText");
+        var ShowText = "";
+        if (obj.id == "AddMNL") {
+            var value = $("#" + TextID + "_SensorNum").combogrid("getValues");
+            //GS.push(value);
+            if (value == "")
+            {
+                document.getElementById("Message").innerText = "请选择!";
+                $("#MessageBox").window("open");
+                return false;
+            }
+            //for (var i = 0; i < GSSQL.length ; i++) {
+            //    text += GSSQL[i] ;
+            //    if (i != GSSQL.length - 1) {
+            //        text += ",";
+            //    }
+
+            //}
+            if (text!="")
+            {
+                GSSQL = text.split(",");
+                for (var i = 0; i < value.length ; i++) {
+                    var flag = 0;
+                    for (var j = 0; j < GSSQL.length; j++) {
+                      
+                        if (value[i] == GSSQL[j]) {
+                            flag = 1;
+                            break;
+                        }
+                     
+                    }
+                    if (flag == 0)
+                    {
+                        GSSQL.push(value[i]);
+                    }
+                }
+            }
+           else 
+            {
+                for (var j = 0; j < value.length; j++) {
+                        GSSQL.push(value[j]);
+                }
+           }
+          
+
+          
+            for (var i = 0; i < GSSQL.length ; i++) {
+                ShowText += GSSQL[i];
+                if (i != GSSQL.length - 1)
+                {
+                    ShowText += ",";
+                }
+               
+            }
+            $("#" + TextID).textbox("setText", ShowText);
+
+        }
+      
+        else if (obj.id == "RemoveOne") {
+            ShowText = "";
+            //GS.splice(GS.length - 1, 1);
+
+            if (text != "") {
+                GSSQL = text.split(",");
+
+                GSSQL.splice(GSSQL.length - 1, 1);
+                for (var i = 0; i < GSSQL.length ; i++) {
+                    ShowText += GSSQL[i];
+                    if (i != GSSQL.length - 1) {
+                        ShowText += ",";
+                    }
+                }
+
+            }
+
+
+         
+            $("#" + TextID).textbox("setText", ShowText);
+        }
+        else {
+            ShowText = "";
+            //GS = [];
+            GSSQL = [];
+            $("#" + TextID).textbox("setText", ShowText);
+        }
+
+    }
+    function AddConfig()
+    {
+        AddFlag = 1;
+        Selected[0].checked = true;
+      
+        $("#Formulation").textbox("setText", "");
+        //LoadTypeName("", "#GS_");
+        $("#Formulation_TypeName").combogrid("setValue", "");
+        $("#Formulation_SensorNum").combogrid("setValue", "");
+        $("#Formulation_SensorNum").combogrid({
+            columns: [[{},
+            ]]
+        });
+        $("#divConfig").window("open");
+    }
+    $(document).ready(function () {
+        Count = 0;
+        // 加载表格数据
+        
+        $("#SGSQL").textbox("readonly", true);
+        $("#Formulation").textbox("readonly", true);
+        LoadData(1);
+        LoadTypeName("", "#Formulation_");
+        LoadTypeName("", "#SGSQL_");
+        //加载查询按钮的单击响应事件
+        $("#btnQuery").bind('click', function () {
+          
+            LoadData(0);
+        });
+
+        //加载添加按钮的单击响应事件
+        $("#btnAdd").bind('click', function () {
+            index = 0;
+            IsAdd = 1;
+            $("#LedIP").textbox("setText", "");
+            $("#LedIP").textbox("readonly", false);
+            $("#LedAddress").textbox("setText", "");
+            $("#ConfigSelect").empty();
+            $("#SGIP").textbox("setText","");
+            $("#SGText").textbox("setValue", "");
+
+            $("#SGPort").textbox("setText", "");
+            $("#SGSQL").textbox("setText", "");
+            IsSQLSelect[0].checked = true;
+            GSSQL = [];
+            $("#divAdd").window("setTitle", "新增Led信息");
+            $("#divAdd").window("open");
+
+
+            $("#SGSQL_TypeName").combogrid("setValue", "");
+            $("#SGSQL_SensorNum").combogrid("setValue", "");
+            $("#SGSQL_SensorNum").combogrid({
+                columns: [[{},
+                ]]
+            });
+        });
+
+        //加载编辑按钮的单击响应事件
+        $("#btnEdit").bind('click', function () {
+            IsAdd = 0;
+
+            $("#SGSQL_TypeName").combogrid("setValue", "");
+            $("#SGSQL_SensorNum").combogrid("setValue", "");
+            $("#SGSQL_SensorNum").combogrid({
+                columns: [[{},
+                ]]
+            });
+
+
+            LoadEditeInfo();
+        });
+
+        //加载保存按钮的单击响应事件
+        //$('#btnSave').bind('click', function () {
+        //    SaveEditeInfo();
+        //});
+
+        //加载删除按钮的单击响应事件
+        $("#btnRemove").bind('click', function () {
+            DeleteItem();
+
+        });
+
+        $("#TextSQL").textbox('textbox').bind("focus", function () {
+           
+            Selected[0].checked = true;
+
+        });
+
+
+
+        $("#SGSQL").textbox('textbox').bind("focus", function () {
+
+            IsSQLSelect[1].checked = true;
+
+        });
+
+    });
+
+    function SaveConfig()
+    {
+        var TextConfig = $("input[name='TextConfig']:checked").val();
+        if (AddFlag == 1) {
+            //新增
+            index++;
+            if (TextConfig == "SQL") {
+                var sql = TextConfig + ":" + $("#Formulation").textbox("getText");
+                if (sql.length == 4)
+                {
+                    document.getElementById("Message").innerText = "请选择测点!";
+                    $("#MessageBox").window("open");
+                    return false;
+                }
+                if (sql.length > 500)
+                {
+                    document.getElementById("Message").innerText = "选择测点过多，最多500字符!";
+                    $("#MessageBox").window("open");
+                    return false;
+                }
+                $("#ConfigSelect").append("<option value='" + "v" + index + "'>" + sql + "</option>");
+            }
+            else {
+                $("#ConfigSelect").append("<option value='" + "v" + index + "'>" + TextConfig + "</option>");
+            }
+        }
+        else {
+            //编辑
+            index++;
+            var DivSelect = document.getElementById("ConfigSelect");
+            var ConfigType = $("#ConfigSelect").find("option:selected").val();
+            for (var i = 0; i < DivSelect.options.length; i++) {
+                if (DivSelect.options[i].value == ConfigType) {
+                    // 测试发现 ie中修改了某sql内容后 select就会出现假死锁现象（chrome正常），通过删除原数据再在指定位置插入该数据以解决
+                    DeleteConfig();
+
+
+                    var option = document.createElement("option");
+                    option.value = "v" + index;
+                    if (TextConfig == "SQL") {
+
+                        option.innerText = "SQL:" + $("#Formulation").textbox("getText").toString();
+                    }
+                    else {
+
+                        option.innerText = TextConfig;
+                    }
+
+                    DivSelect.insertBefore(option, DivSelect.options[i]);
+                
+                  
+                }
+            }
+            
+         
+        }
+        $('#divConfig').window('close');
+    }
+    function EditConfig()
+    {
+        AddFlag = 0;
+        var Text = $("#ConfigSelect").find("option:selected").text();
+        if (Text == "")
+        {
+            document.getElementById("Message").innerText = "先选择一行";
+            $("#MessageBox").window("open");
+            return false;
+        }
+        if (Text.indexOf("SQL") == 0) {
+           
+            Text = Text.substring(4, Text.length);
+          
+            Selected[0].checked = true;
+            $("#Formulation").textbox("setText", Text);
+            //LoadTypeName("", "#GS_");
+            $("#Formulation_TypeName").combogrid("setValue", "");
+            $("#FormulationSensorNum").combogrid("setValue", "");
+            $("#Formulation_SensorNum").combogrid({
+                columns: [[{},
+                ]]
+            });
+          
+        }
+        else {
+            $("#Formulation_SensorNum").combogrid({
+                columns: [[{},
+                ]]
+            });
+            $("#Formulation_TypeName").combogrid("setValue", "");
+            $("#Formulation").textbox("setText", "");
+            $("#Formulation_SensorNum").combogrid("setValue", "");
+            Selected[1].checked = true;
+        }
+        $("#divConfig").window("open");
+    }
+    function DeleteConfig()
+    {
+        var SelectValue = $("#ConfigSelect").find("option:selected").val();
+      
+        if ($("#ConfigSelect").find("option:selected").val() == undefined) {
+            document.getElementById("Message").innerText = "先选择一行";
+            $("#MessageBox").window("open");
+        }
+        else {
+            $("#ConfigSelect option[value='" + SelectValue + "']").remove();
+        }
+      
+    }
+</script>

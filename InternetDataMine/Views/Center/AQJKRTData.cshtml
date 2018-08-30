@@ -1,0 +1,221 @@
+﻿@{
+    ViewBag.Title = "AQJKRTData";
+    Layout = "~/Views/Shared/_LayoutEditer.cshtml";
+}
+<script type="text/javascript" src="../../binary/dynaload.js?20"> </script>
+<script type="text/javascript" src="../../binary/dynaload.js?20"> </script>
+<div>
+    <table style="width:100%;height:20px;">
+        <tr>
+            <td class="panel-title" style="text-align:left;">停止刷新<input id="stopRefresh" onclick="stopRefresh(this)" type="checkbox" /></td>
+
+        </tr>
+    </table>
+</div>
+<div id="myGrid" class="easyui-panel" data-options="fit:true,onResize:function(){DivChange();}" onchange="DivChange()">
+    <div style="height:97%;">
+        <table id="dg" style="height:94%" class="easyui-datagrid">
+            <thead>
+                @*表头*@
+                <tr>
+
+                    <th field="TmpID" width="5%" hidden="true"> ID号</th>
+                    <th field="SimpleName" width="15%">煤矿名称</th>
+                    <th field="SensorNum" width="10%">测点编号</th>
+                    <th field="TypeName" width="10%">设备名</th>
+                    <th field="Place" width="20%">安装地点</th>
+                    <th field="ShowValue" width="8%" data-options="styler:ShowValueC">测点值</th>
+                    <th field="Unit" width="5%">单位</th>
+                    <th field="Datetime" width="20%">监测时间</th>
+                    <th field="ValueState" width="10%" data-options="styler:ShowValueC">状态</th>
+
+                </tr>
+
+            </thead>
+        </table>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    var rows = 0;
+    var p
+    $(function () {
+        $('#dg').datagrid({
+            pagination: true,
+            autoRowHeight: false,
+            pageList: [rows],
+            singleSelect: true,
+            rownumbers: true,
+        });
+        p = $('#dg').datagrid('getPager');
+        $(p).pagination({
+            showPageList: false,
+            beforePageText: '第',//页数文本框前显示的汉字
+            layout: ['first', 'prev', 'links', 'next', 'last', 'refresh', 'manual'],
+            displayMsg: '当前显示 {from} - {to} 条记录   共 {total} 条记录',
+            afterPageText: '页    共 {pages} 页',
+        });
+        timedCount()
+        //这个是刷新 当前页面
+        //  setInterval("$('#dg').datagrid('getPager').pagination('select')", 5000);
+
+    });
+
+
+
+    //获取URL参数的值
+    function getParameterByName(name) {
+        var queryname = name.toLowerCase();
+        var match = RegExp('[?&]' + queryname + '=([^&]*)')
+            .exec(window.location.search.toLowerCase());
+        return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+    }
+
+    var minecode = null;
+
+
+    var times = 0;
+    var mystopRefresh = false;
+    //改变每页总行数
+    function ChangeRowsLength() {
+        var myHeight = parseInt($("#myGrid")[0].style.height.replace("px", ""));
+        if (myHeight != 0)
+        {
+            rows = parseInt((myHeight - 100) / 27);
+
+
+            $("#dg").datagrid({
+                pageSize: rows,
+            });
+            var grid = $('#dg');
+
+
+        }
+        else  rows=0;
+      
+    }
+
+
+
+
+    var i ;
+    var t;
+    function timedCount() {
+        //console.log("timedCount start " + new Date());
+     
+        var grid = $('#dg');
+        var options = grid.datagrid('getPager').data("pagination").options;
+        i = options.pageNumber;//i为当前页
+        var curr = options.pageSize;
+        var total = options.total;
+        var count = Math.ceil(total / curr);
+        if (i == count)
+        { i = 1; }
+        else i++
+        $('#dg').datagrid('getPager').pagination('select', i);
+        //console.log("timedCount end " + new Date());
+        t = setTimeout("timedCount()", 10000)
+
+    }
+
+
+    // var reflesh= setInterval("$('#dg').datagrid('getPager').pagination('select')", 5000);
+    function stopRefresh(obj) {
+        if (obj.checked) {
+            clearTimeout(t);
+
+        }
+        else {
+            timedCount()
+        }
+    }
+
+
+    function DivChange() {
+       
+        //console.log("DivChange start " + new Date());
+        ChangeRowsLength();
+        if (rows != 0) {
+            LoadData();
+        }
+        else return;
+    }
+
+    //加载数据
+    function LoadData() {
+
+        minecode = readCookie("MineCode");
+        if (minecode == null || minecode == "undefined" || minecode == "")
+        {
+
+            minecode = readCookie("Main_MineCode");
+            if (minecode == null || minecode == "undefined") {
+                minecode = "";
+            }
+
+        }
+    
+        //console.log("LoadData start " + new Date());
+        $("#dg").datagrid({
+            pagination: true,
+            autoRowHeight: false,
+            pageList: [rows],
+            singleSelect: true,
+            rownumbers: true,
+            url: "../TransJson/TransJsonToTreeList?DataType=RealData&MineCode=" + minecode + "&rows=" + rows + "&isDG=y" + getUrlStafix(),
+        });
+        p = $('#dg').datagrid('getPager');
+        p.pagination({
+            showPageList: false,
+            beforePageText: '第',//页数文本框前显示的汉字
+            layout: ['first', 'prev', 'links', 'next', 'last', 'refresh', 'manual'],
+            displayMsg: '当前显示 {from} - {to} 条记录   共 {total} 条记录',
+            afterPageText: '页    共 {pages} 页',
+        });
+
+        var grid = $('#dg');
+        var options = grid.datagrid('getPager').data("pagination").options;
+        var total = options.total;
+        if (total.toString() == "NaN")
+        {
+            DivChange();
+        }
+        //LoadData();
+    }
+
+    function ShowValueC(val,obj) {
+        if (obj.ValueState == "正常" || obj.ValueState == "复电") {
+            return "color:green;";
+        }
+        else if (obj.ValueState == "报警") {
+            return "color:red;";
+
+        }
+        else if (obj.ValueState == "故障") {
+            return "color:magenta;";
+           // return '<span style="color:magenta;">' + val + '</span>';
+
+        } else if (obj.ValueState == "馈电异常") {
+            return "color:darkorange;";
+         //   return '<span style="color:darkorange;">' + val + '</span>';
+
+        }
+        else if (obj.ValueState == "工作异常") {
+            return "color:maroon;";
+           // return '<span style="color:maroon;">' + val + '</span>';
+
+        }
+        else if (obj.ValueState == "分站故障") {
+            return "color:orange;";
+           // return '<span style="color:orange;">' + val + '</span>';
+
+        }
+        else {
+            return "color:red;";
+          //  return '<span style="color:red;">' + val + '</span>';
+        }
+    }
+</script>
+
+

@@ -1,0 +1,17 @@
+﻿<Application x:Class="SHH_TF_SubSystem.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:SHH_TF_SubSystem"
+             StartupUri="MainWindow.xaml"
+             Startup="Application_Startup"
+             Exit="Application_Exit"
+             DispatcherUnhandledException="Application_DispatcherUnhandledException"
+             >
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="./UI/TreeViewStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

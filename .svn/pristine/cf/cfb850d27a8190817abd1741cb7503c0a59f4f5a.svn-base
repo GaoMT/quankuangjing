@@ -1,0 +1,270 @@
+﻿@{
+    ViewBag.Title = "供电系统";
+}
+@{
+    ViewBag.Title = "导航";
+}
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/easyui")
+@Styles.Render("~/Content/icon")
+<link rel="stylesheet" type="text/css" href="../Content/themes/metro-orange/easyui.css" title="orange">
+<link rel="stylesheet" type="text/css" href="../Content/themes/metro-red/easyui.css" title="pink">
+<link rel="stylesheet" type="text/css" href="../Content/themes/ui-cupertino/easyui.css" title="blue">
+<link rel="stylesheet" type="text/css" href="../Content/themes/metro-gray/easyui.css" title="gray">
+<link rel="stylesheet" type="text/css" href="../Content/themes/metro-green/easyui.css" title="green">
+<script src="~/Scripts/CompanyInfo.js" type="text/javascript"></script>
+@Scripts.Render("~/bundles/common")
+
+@*<script src="drag.js"></script>*@
+<style type="text/css">
+
+
+</style>
+<body>
+    <div style="width:100%;height:100%">
+        @*底图*@
+        <div style="width:100%;height:100%;z-index:100">
+            <img src="~/Content/themes/Image/底图.png" id="GroundPic" style="width:100%;height:100%;" />
+        </div>
+    </div>
+    <a href="javascript:void(0)" style="position: absolute; right: 10px; top: 10px; color: white; cursor:pointer" onclick="EditGif()">配</a>
+
+    @*gif*@
+    <div style="width:100%;height:100%;position:absolute;left:0px;top:0px;" id="divMain"> </div>
+  
+    <div style="width: 325px; height:100%;display:none ">
+        <table id="dgGif" style="width: 100% ;height: 100%; " class="easyui-datagrid"></table>
+    </div>
+    @*弹出框*@
+    <div id="MessageBox" class="easyui-dialog" title="提示" data-options="modal:true,closed:true" style="height:180px;width:300px;text-align:center;vertical-align:middle;">
+        <br />
+        <br />
+        <label id="Message" style="padding-top:50px; vertical-align:middle;">操作失败</label>
+        <div>
+            <a id="CloseThis" href="javascript:void(0)" class="easyui-linkbutton" data-options="onClick:function(){    $('#MessageBox').window('close');  }" style="width: 100px;top:130px;left:100px;position:absolute">
+                确定
+            </a>
+        </div>
+    </div>
+
+</body>
+<script type="text/javascript">
+    function getUrlStafix() {
+        var myDate = new Date();
+        return "&myDate=" + myDate.getFullYear() + myDate.getMonth() + myDate.getDate() + myDate.getHours() + myDate.getMinutes() + myDate.getSeconds();
+    }
+    LoadGraph("GDST");
+    function LoadGraph(SysCode) {
+        document.getElementById("GroundPic").src = '../DH/LoadGraph?SysCode=' + SysCode + getUrlStafix();;
+    }
+    $(document).ready(function () {
+        // Gif 停止与开始
+        if ('getContext' in document.createElement('canvas')) {
+            HTMLImageElement.prototype.play = function () {
+                if (this.storeCanvas) {
+                    // 移除存储的canvas
+                    this.storeCanvas.parentElement.removeChild(this.storeCanvas);
+                    this.storeCanvas = null;
+                    // 透明度还原
+                    image.style.opacity = '';
+                }
+                if (this.storeUrl) {
+                    this.src = this.storeUrl;
+                }
+            };
+            HTMLImageElement.prototype.stop = function () {
+                var canvas = document.createElement('canvas');
+                // 尺寸
+                var width = this.width, height = this.height;
+                if (width && height) {
+                    // 存储之前的地址
+                    if (!this.storeUrl) {
+                        this.storeUrl = this.src;
+                    }
+                    // canvas大小
+                    canvas.width = width;
+                    canvas.height = height;
+                    // 绘制图片帧（第一帧）
+                    canvas.getContext('2d').drawImage(this, 0, 0, width, height);
+                    // 重置当前图片
+                    try {
+                        this.src = canvas.toDataURL("image/gif");
+                    } catch (e) {
+                        // 跨域
+                        this.removeAttribute('src');
+                        // 载入canvas元素
+                        canvas.style.position = 'absolute';
+                        // 前面插入图片
+                        this.parentElement.insertBefore(canvas, this);
+                        // 隐藏原图
+                        this.style.opacity = '0';
+                        // 存储canvas
+                        this.storeCanvas = canvas;
+                    }
+                }
+            };
+            // Gif 停止与开始 end
+        }
+        ChangeLocation();
+
+        window.onresize = function () {
+
+            ChangeLocation();
+        }
+    });
+    function EditGif() {
+        window.open("../DH/DHConfig?SysCode=GDST");
+    }
+    function ChangeLocation() {
+        //alert("1");
+        LoadGif();
+    }
+    // gif停止与开始
+    function ControlGif(i, Divid) {
+        counts[i]++;
+        var count = counts[i];
+        var id = "img" + Divid;
+        var image = document.getElementById(id);
+        if (count % 2 == 0) {
+            image.play();
+        }
+        else {
+            image.stop();
+        }
+    }
+
+    // gif停止与开始  end
+    LoadData();
+    function LoadData() {
+        $("#dgGif").datagrid({
+            url: '../DH/ShowGifTable?SysCode=GDST'+getUrlStafix(),
+
+            columns: [[
+
+                { field: 'SensorNum', title: '测点', width: 120 },
+                { field: 'CurrentValue', title: '当前值', width: 100 },
+                 { field: 'SetValue', title: '停时值', width: 80, formatter: ControlFZ },
+                  { field: 'Tag', title: '符号', width: 100 },
+                     { field: 'ID', title: 'ID', width: 100 },
+            ]],
+            singleSelect: true
+
+        });
+
+        loadPerson();
+        setTimeout("LoadData()", 10000);
+    }
+
+    function ControlFZ(val, obj) {
+
+        if (obj.ID != null) {
+            var imgid = "imgdiv" + obj.ID;
+            var image = document.getElementById(imgid);
+            if (obj.SetValue != "-1") {
+                switch (obj.Tag) {
+                    case 0:
+                        if (parseFloat(obj.CurrentValue) > parseFloat(obj.SetValue)) {
+                            image.stop();
+                        }
+                        else {
+                            image.play();
+                        }
+                        break;
+                    case 1:
+                        if (parseFloat(obj.CurrentValue) == parseFloat(obj.SetValue)) {
+                            image.stop();
+                        }
+                        else {
+                            image.play();
+                        }
+                        break;
+                    case 2:
+                        if (parseFloat(obj.CurrentValue) < parseFloat(obj.SetValue)) {
+                            image.stop();
+                        }
+                        else {
+                            image.play();
+                        }
+                        break;
+                }
+            }
+
+        }
+        return val;
+
+    }
+   
+
+    LoadGif();
+    var DivCount = 0;
+    var counts = [];
+    function LoadGif() {
+        changeList = [];
+        $.ajax({
+            url: '../DH/LoadGif?SysCode=GDST' + getUrlStafix(),
+            datatype: 'json',
+            type: 'post',
+            success: function (data) {
+
+                var par = document.getElementById("divMain");
+                var json = $.parseJSON(data.data);
+                par.innerHTML = "";
+                if (json.length > 0) {
+                    DivCount = json.length;
+                    var width = document.getElementById("divMain").clientWidth;
+                    var height = document.getElementById("divMain").clientHeight;
+                    for (var i = 0; i < json.length; i++) {
+                        counts.push(0);
+                        var divID = "div" + json[i].DivID;
+                        //<div id="div1" onmousemove="mousemove()" onmousedown="mousedown()" onmouseup="mouseup()" ondragstart="mouseStop()"  onmouseover="dragimages = div1; drag = 'div1';" style="height:50px;left:10px;top:10px ;position:absolute;width:50px">
+                        var div = document.createElement("div");
+                        div.setAttribute("id", divID);
+                        div.style.width = json[i].RateW * width + "px";
+                        div.style.height = json[i].RateH * height + "px";
+                        div.style.position = "absolute";
+                        div.style.top = json[i].RateT * height + "px";
+
+                        div.style.left = json[i].RateL * width + "px";
+                        var img = document.createElement("img");
+                        img.setAttribute("id", "img" + divID);
+                        //img.setAttribute("onclick", "ControlGif(" + i + ",'" + json[i].DivID + "')");
+
+                        if (json[i].Tip != null) {
+                            img.textContent = json[i].Tip;
+                        }
+
+                        img.addEventListener("mouseover", function () {
+                            var tValue = this.textContent;
+                            this.setAttribute("title", tValue);
+                        }, false);
+                        //img.style.cursor = "pointer";
+                        img.style.width = json[i].RateW * width + "px";
+                        img.style.height = json[i].RateH * height + "px";
+                        img.src = json[i].ImageSrc;
+                        div.appendChild(img);
+
+                        par.appendChild(div);
+                    }
+                }
+            },
+            error: function (e) {
+                alert("加载动画失败,请检查网络!");
+            }
+        });
+
+    }
+
+ 
+</script>
+
+
+
+<div style="width:100%;height:100%">
+    <img src="~/Content/themes/Image/MORE.png"   onclick="Load()" style="position: absolute; right: 60px; bottom: 15px; cursor: pointer" />
+</div>
+<script type="text/javascript">
+    function Load() {
+        window.open("http://172.16.18.50");
+    }
+
+</script>
