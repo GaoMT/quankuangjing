@@ -129,7 +129,6 @@
         { field: 'Place', title: '安装位置', width:190 },
             ]],
         onClickRow: function (rowIndex, rowData) {
-            debugger;
             var index = -1;
             for (var i = 0; i < list.length; i++) {
                 if (list[i] == rowData.StationCode) {
@@ -404,7 +403,6 @@
 
         function IsCK(val, obj) {
 
-            debugger;
             switch (obj.IsCKKZ) {
                 case true:
                     if (val == "") {
@@ -509,8 +507,8 @@
         $("#MineCode")[0].innerText = data.MineCode;
         $("#txtSimpleName").combogrid("grid").datagrid("selectRecord", data.MineCode);
         $("#txtSensorNums").combogrid("setValue", data.SensorNums.toString());
-        $("#txtFZBH").combogrid("setValues", data.StationCodes.toString().replace(/\|/g, ","));
-        $("#txtBZKH").combogrid("setValues", data.JobCardCodes.toString().replace(/\|/g, ","));
+        $("#txtFZBH").combogrid("setValue", data.StationCodes.toString().replace(/\|/g, ","));
+        $("#txtBZKH").combogrid("setValue", data.JobCardCodes.toString().replace(/\|/g, ","));
         $("#txtHZBH").combogrid("setValue", data.GBCodes.toString().replace(/\|/g, ","));
         $("#txtCKBH").combogrid("setValue", data.CKCodes.toString().replace(/\|/g, ","));
         //$("#txtHZBH").combogrid("setText", data.GBCodes.toString().replace(/\|/g, ","));
@@ -565,11 +563,16 @@
                         $.messager.progress('close');
                         document.getElementById("Message").innerText = "删除失败，请检查网络";
                         $("#MessageBox").window("open");
-                        
+
                     }
                 });
-              
+
             }
+            else {
+
+                $.messager.progress('close');
+            }
+
              
         });
     }
@@ -583,8 +586,8 @@
         var MineCode_Save =$("#txtSimpleName").combogrid("getValue");
         var SensorNums=$("#txtSensorNums").combogrid("getValues").toString();
         var IsRYHJ = $('#IsRYHJ').is(':checked')
-        var FZBH = $("#txtFZBH").combogrid("getValues").toString();
-        var BZKH = $("#txtBZKH").combogrid("getValues").toString();
+        var FZBH = $("#txtFZBH").combogrid("getText").toString();
+        var BZKH = $("#txtBZKH").combogrid("getText").toString();
         var IsGBKZ = $('#IsGBKZ').is(':checked')
 
         var IsCKKZ = $('#IsCKKZ').is(':checked')

@@ -2293,7 +2293,7 @@ delete [dbo].[DiskManage] Where Disk_ID ='{0}' Or PDiskID ='{0}'", id);
         {
             // 去的时间是Badlog的Continuous  
             string wheredata = " select  Row_Number() over (order by  b.LastTime asc) as TmpID, " +
-" (case b.TypeCode when 1 then '安全监控' when 2 then '人员管理' when 5 then '矿山压力' when 7 then '火灾束管' else '其他系统' end ) as JKXT, "+
+" (case b.TypeCode when 1 then '安全监控' when 2 then '人员管理' when 5 then '广播系统' when 7 then '火灾束管' else '其他系统' end ) as JKXT, "+
 " case b.stateCode  when 1 then '网络中断' when 2 then '传输异常'  when 3 then '通讯中断' when 4 then '网络故障' when 5 then '数据延时' else '其他异常' end StateCode, "+
 " b.MineCode,m.SimpleName,b.LastTime StartTime ,b.Continuous,b.LastTime EndTime,  cast ( null as VARCHAR(50)) LastTime "+
 " from ShineView_His.dbo.BadLog b left join MineConfig m on b.MineCode=m.MineCode "+
@@ -2324,7 +2324,7 @@ delete [dbo].[DiskManage] Where Disk_ID ='{0}' Or PDiskID ='{0}'", id);
         {
 
             string wheredata = "select Row_Number() over (order by getdate() asc) as TmpID, b.MineCode , b.BeginTime,b.EndTime,m.SimpleName,cast(NULL as  varchar(50)) Continuous," +
-                "(case b.typecode when 1 then '安全监控' when 2 then '人员管理'  when 5 then '矿山压力' when 7 then '火灾束管' else '其他系统' end) as JKXT " +
+                "(case b.typecode when 1 then '安全监控' when 2 then '人员管理'  when 5 then '广播系统' when 7 then '火灾束管' else '其他系统' end) as JKXT " +
                 "from  ShineView_His.dbo.BadCreate b  " +
                 "left join ShineView_Data.dbo.MineConfig m on b.MineCode=m.minecode where 1=1  ";
             if (!string.IsNullOrEmpty(minecode))
@@ -2360,7 +2360,7 @@ delete [dbo].[DiskManage] Where Disk_ID ='{0}' Or PDiskID ='{0}'", id);
 //"LEFT JOIN  (select MineCode,name hzsg,StateCode hzsgstate,UpdateTime from SystemConfig where TypeCode=7 and IsEnabled=1) as d on d.MineCode=m.id)  as a  on mc.ID=a.id " +
 //"  where  1=1   ");
             //string sql = "";
-            string sql = "select  Row_Number() over (order by getdate() asc) as TmpID,  m.MineCode , m.SimpleName , case s.TypeCode when 1 then '安全监控'  when '2' then '人员管理' when '5' then '矿山压力' when '7' then '火灾束管' else '其他系统' end as  Type ," +
+            string sql = "select  Row_Number() over (order by getdate() asc) as TmpID,  m.MineCode , m.SimpleName , case s.TypeCode when 1 then '安全监控'  when '2' then '人员管理' when '5' then '广播系统' when '7' then '火灾束管' else '其他系统' end as  Type ," +
                             " case s.StateCode  when 1 then '网络中断'  when '0' then '正常'  when  2 then '传输异常' when 3 then '通讯中断' when 4 then '网络故障' when 5 then '数据延时' else '异常状态' end ValueState,s.UpdateTime from SystemConfig  s  " +
                             " LEFT JOIN  MineConfig m on m.id=s.MineCode " +
                             " where s.StateCode!=0 and s.isenabled =1 ";
@@ -2380,7 +2380,7 @@ delete [dbo].[DiskManage] Where Disk_ID ='{0}' Or PDiskID ='{0}'", id);
         public DataTableCollection GetData_TXZDTG(string minecode, DateTime BegingTime, DateTime EndTime, int  flag)
         {
             string sql1="select  Row_Number() over (order by m.MineCode,s.TypeCode asc) as TmpID,m.MineCode,SimpleName  , " +
-                            " case s.typecode   when 1 then '安全监控' when 2 then '人员管理' when 5 then '矿山压力' when 7 then '火灾束管' END JKXT ,"+
+                            " case s.typecode   when 1 then '安全监控' when 2 then '人员管理' when 5 then '广播系统' when 7 then '火灾束管' END JKXT ,"+
                             " IsNull(WLZDCount,0) WLZDCount,IsNull(CSYCCount,0) CSYCCount,IsNull(TXZDCount,0) TXZDCount,IsNull(WLGZCount,0) WLGZCount,IsNull(SJYSCount,0) SJYSCount"+
                             " from ShineView_Data.dbo.SystemConfig s "+
                             " left join ShineView_Data.dbo.MineConfig m on m.ID = s.MineCode "+
@@ -2754,7 +2754,7 @@ delete [dbo].[DiskManage] Where Disk_ID ='{0}' Or PDiskID ='{0}'", id);
         public DataTableCollection GetData_TXYCTG(string minecode, DateTime BegingTime, DateTime EndTime, int flag)
         {
             string wheredata = "select  Row_Number() over (order by getdate() asc) as TmpID,SimpleName ,s.MineCode , isnull(Counts,0) Counts,isnull(LongestTimes,0) LongestTimes,isnull(ShortestTimes,0) ShortestTimes,isnull(SumTimes,0) SumTimes,LongestTime,ShortestTime,SumTime ,  " +
-"  case s.typecode   when 1 then '安全监控' when 2 then '人员管理' when 5 then '矿山压力' when 7 then '火灾束管' END JKXT   " +
+"  case s.typecode   when 1 then '安全监控' when 2 then '人员管理' when 5 then '广播系统' when 7 then '火灾束管' END JKXT   " +
 "  from ShineView_Data.dbo.SystemConfig s    left join ShineView_Data.dbo.MineConfig m on m.id = s.minecode  " +
 " left join (select minecode ,count(typecode) Counts, typecode,max(DATEDIFF(second , BeginTime, EndTime) ) LongestTimes,min(DATEDIFF(second , BeginTime, EndTime) ) ShortestTimes,sum(DATEDIFF(second , BeginTime, EndTime) ) SumTimes ,     " +
 " cast(NULL as  varchar(50)) LongestTime,  cast(NULL as  varchar(50)) ShortestTime,  cast(NULL as  varchar(50)) SumTime  " +
@@ -4492,9 +4492,12 @@ Left Join  MineConfig o on o.MineCode = b.MineCode where " + (where.Equals("") ?
             //}
             where += " and OutTime>='" + BegingTime + "' and OutTime<='" + EndTime + "'";
             //dt = dal.GetTrack(where);
-            string wheredata = "select Row_Number() over (order by getdate() asc) as TmpID,SimpleName ,Name ,Position ,Department ,InTime ,OutTime ,[dbo].[FunConvertTime](datediff(second, InTime,OutTime)) as continuoustime,StationList from ShineView_His.dbo.RYHisTrack o " + where;
-            string wherecount = "select * from ShineView_His.dbo.RYHisTrack o " + where;
-            return ReturnTables(wheredata, wherecount, "TmpID", "His");
+            //string wheredata = "select Row_Number() over (order by getdate() asc) as TmpID,SimpleName ,Name ,Position ,Department ,InTime ,OutTime ,[dbo].[FunConvertTime](datediff(second, InTime,OutTime)) as continuoustime,StationList from ShineView_His.dbo.RYHisTrack o " + where;
+            //string wherecount = "select * from ShineView_His.dbo.RYHisTrack o " + where;
+            //return ReturnTables(wheredata, wherecount, "TmpID", "His");
+
+            string wheredata = "select Row_Number() over (order by getdate() asc) as TmpID,SimpleName ,Name,Position ,Department ,InTime ,OutTime ,[dbo].[FunConvertTime](datediff(second, InTime,OutTime)) as continuoustime,StationList from ShineView_His.dbo.rykq o " + where;
+            return ReturnTables(wheredata, wheredata, "TmpID", "His");
         }
 
         /// <summary>
@@ -4550,9 +4553,13 @@ Left Join  MineConfig o on o.MineCode = b.MineCode where " + (where.Equals("") ?
             //        exec('select * from ('+@sql+') as mytable order by inStationTime offset {1} row fetch next {2} rows only')
             //        ", where, pageIndex * pageSize, pageSize);
             //return dal.ReturnDs(sql).Tables;
-            string sql = string.Format(@"select Row_Number() over (order by getdate() asc) as TmpID,A.*,B.StationCode,B.InoutTime,StationName,Place from ShineView_His.dbo.RYHisTrack A
+
+
+            string sql = string.Format(@"select Row_Number() over (order by getdate() asc) as TmpID,A.*,B.StationCode,B.InoutTime,StationName,Place from ShineView_His.dbo.RYKQ A
 Left Join  (Select * From ShineView_His.dbo.Split_TraceStrings()) B on A.ID = B.ID
 Left Join RYFZ C on A.MineCode = c.MineCode and B.StationCode =C.StationCode {0}", where);
+            log.WriteTextLog(sql, DateTime.Now);
+
             return ReturnTables(sql, sql, "TmpID", "His");
         }
 

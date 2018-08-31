@@ -148,6 +148,6 @@ E:\联网\1联动控制\InternetDataMine\bin\zh-Hans\System.Web.Razor.resources.
 E:\联网\1联动控制\InternetDataMine\bin\zh-Hans\System.Web.WebPages.resources.dll
 E:\联网\1联动控制\InternetDataMine\bin\zh-Hans\System.Web.WebPages.Deployment.resources.dll
 E:\联网\1联动控制\InternetDataMine\bin\zh-Hans\System.Web.WebPages.Razor.resources.dll
-E:\联网\1联动控制\InternetDataMine\obj\Debug\InternetDataMine.csprojResolveAssemblyReference.cache
 E:\联网\1联动控制\InternetDataMine\obj\Debug\InternetDataMine.dll
 E:\联网\1联动控制\InternetDataMine\obj\Debug\InternetDataMine.pdb
+E:\联网\1联动控制\InternetDataMine\obj\Debug\InternetDataMine.csprojResolveAssemblyReference.cache

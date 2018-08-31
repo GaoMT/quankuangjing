@@ -140,7 +140,13 @@
         }
 
         var data = rows[0];
-    
+        var Selected = document.getElementsByName("TextType");
+        if (data.DHLoad == "模拟图") {
+            Selected[0].checked = true;
+        }
+        else {
+            Selected[1].checked = true;
+        }
         $("#ChildName").textbox("setText", data.ChildSysName);
         $("#ChildUrl").textbox("setText", data.ChildSysUrl);
         $("#ChildSys").combobox("setValue", data.ChildSysCode);
@@ -240,6 +246,10 @@
             $("#ChildName").textbox("setText", "");
             $("#ChildUrl").textbox("setText", "");
             $("#ChildSys").combobox("setValue", "");
+
+            var Selected = document.getElementsByName("TextType");
+                Selected[0].checked = true;
+
             $("#divAdd").window("setTitle", "新增子系统配置");
             $("#divAdd").window("open");
         });

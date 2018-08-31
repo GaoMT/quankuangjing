@@ -168,5 +168,14 @@ namespace InternetDataMine.Controllers
             BaseInfoModel bim = new BaseInfoModel();
             bim.ReturnComboTreeMineInfo("");
         }
+
+        /// <summary>
+        /// 开关量状态曲线
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult SwitchState()
+        {
+            return View();
+        }
     }
 }

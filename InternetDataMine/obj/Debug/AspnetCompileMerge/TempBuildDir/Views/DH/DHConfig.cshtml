@@ -58,8 +58,8 @@
                 <a id="btnSave" href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="Add()" style="width:100px;position:absolute;right:500px">新增动画</a>
 
                 <a id="btnSave" href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="Edit()" style="width:100px;position:absolute;right:380px">编辑动画</a>*@
-            <span style="font-size:14px">页面:</span>
-            <select class="easyui-combobox" id="ChooseSysCode" style="width: 100px"></select>
+            @*<span style="font-size:14px">页面:</span>
+            <select class="easyui-combobox" id="ChooseSysCode" style="width: 100px"></select>*@
 
             <a id="btnSave" href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-tip'" onclick="Select()" style="width:100px;position:absolute;left:160px">选择</a>
             <a id="btnSave" href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-tagblue'" onclick="AddText()" style="width: 100px; position: absolute; left: 280px; ">添加文字</a>
@@ -1820,17 +1820,7 @@
                 else {
                     document.getElementById(TextID + "_Remark").innerHTML = "6";
                     document.getElementById(TextID + "_Sp").innerHTML = $("#Formulation").textbox("getText") + "   公式";
-                   //var vaID = "#" + TextID + "_Va";
-                   // if ($(vaID).length > 0) {
-                   //     document.getElementById(TextID + "_Va").innerHTML = $("#Formulation").textbox("getText");
-                   // }
-                   // else {
-                   //     var va = document.createElement("span");
-                   //     va.id = TextID + "_Va";
-                   //     va.innerHTML = $("#Formulation").textbox("getText");
-                   //     va.style.display = "none";
-                   //     document.getElementById(TextID).appendChild(va);
-                   // }
+              
                     var text = "";
                     for (var i = 0; i < GSSQL.length; i++)
                     {

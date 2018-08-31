@@ -513,6 +513,65 @@
                     </a>
                 </div>
             </div>
+
+
+    <div id="ControlOPC" class="easyui-window" data-options="modal:true,closed:true,minimizable:false">
+        <table>
+            <tr>
+                <td>
+                    <span>测量点ID</span>
+                </td>
+                <td>
+                    <div class="easyui-textbox"  data-options="readonly:true" id="PointID"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span>测量名</span>
+                </td>
+                <td>
+                    <div class="easyui-textbox" id="PointName"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span>设备类型</span>
+                </td>
+                <td>
+                    <div class="easyui-textbox" id="EquipType"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span>设备名</span>
+                </td>
+                <td>
+                    <div class="easyui-textbox" id="EquipName"></div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <span>安装位置</span>
+                </td>
+                <td>
+                    <div class="easyui-textbox" id="EquipPlace"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span>值</span>
+                </td>
+                <td>
+                    @*<div class="easyui-textbox" id="Value"></div>*@
+                    <div class="easyui-combobox" id="KGLValue"></div>
+                </td>
+            </tr>
+        </table>
+
+
+    </div>
+
             <script type="text/javascript">
 
 
@@ -646,8 +705,8 @@
                         colunms.push({ field: "TypeName", title: "设备名", width: wid / 15 });
                         colunms.push({ field: "Place", title: "安装地点", width: wid / 15 });
                         colunms.push({ field: "Unit", title: "单位", width: wid / 17 });
-                        colunms.push({ field: "ShowValue", title: "测点值", width: wid / 15, formatter: ShowValueC });
-                        colunms.push({ field: "ValueState", title: "状态", width: wid / 15, formatter: ShowValueC });
+                        colunms.push({ field: "ShowValue", title: "测点值", width: wid / 15, formatter: ShowValueBin });
+                        colunms.push({ field: "ValueState", title: "状态", width: wid / 15, formatter: ShowValueBin });
                         colunms.push({ field: "Datetime", title: "监测时间", width: wid / 10 });
 
 
@@ -969,7 +1028,6 @@
                 break;
             case "HisTrack":
                 colunms.push({ field: "TmpID", title: "序号", width: 30, hidden: true });
-                colunms.push({ field: "MineCode", title: "煤矿编码", hidden: true, width: wid / 5 });
                 colunms.push({ field: "SimpleName", title: "煤矿名称", width: wid / 6 });
                 colunms.push({ field: "Name", title: "姓名", width: wid / 6 });
                 colunms.push({ field: "Department", title: "部门", width: wid / 6 });
@@ -1352,21 +1410,37 @@
                 break;
 
             case "TFST":
+            case "PDST":
+            case "SPST":
+            case "GDST":
+            case "YFST":
+            case "WSCF":
+                colunms.push({ field: "SensorName", title: "测点名", width: wid / 7 });
+                colunms.push({ field: "TypeName", title: "设备名", width: wid / 5 });
+                colunms.push({ field: "Type", title: "设备类型", width: wid / 5 });
+                colunms.push({ field: "Place", title: "安装位置", width: wid / 5 });
+                colunms.push({ field: "Value", title: "当前值", width: wid / 5, formatter: ShowValueC });
+                colunms.push({ field: "Unit", title: "单位", width: wid / 5 });
+                colunms.push({ field: "UpdateTime", title: "检测时间", width: wid / 5 });
+                colunms.push({ field: "ValueState", title: "当前状态", formatter: ShowValueC, width: wid / 7 });
+                //colunms.push({ field: "Control", title: "控制", width: wid / 7,formatter : ControlOPC });
+                break;
+
             case "TFGZ":
             case "TFDX":
-            case "PDST":
+        
             case "PDGZ":
             case "PDDX":
-            case "SPST":
+        
             case "SPGZ":
             case "SPDX":
-            case "GDST":
+          
             case "GDGZ":
             case "GDDX":
-            case "YFST":
+           
             case "YFGZ":
             case "YFDX":
-            case "WSCF":
+         
             case "WSGZ":
             case "WSDX":
                 colunms.push({ field: "SensorName", title: "测点名", width: wid / 7 });
@@ -1378,6 +1452,9 @@
                 colunms.push({ field: "UpdateTime", title: "检测时间", width: wid / 5 });
                 colunms.push({ field: "ValueState", title: "当前状态", formatter: ShowValueC, width: wid / 7 });
                 break;
+
+
+
             case "TFMNLHis":
             case "PDMNLHis":
 
@@ -1693,6 +1770,12 @@
         }
     }
 
+    function ControlOPC(val, obj)
+    {
+        $("#ControlOPC").window("open");
+
+    }
+                 
 
 
     //自动刷新换页方法
@@ -1842,6 +1925,72 @@
             return '<span style="color:black;">' + val + '</span>';
         }
        
+    }
+    function ShowValueBin(val, obj) {
+        var ThisState = "";
+        var ValueState = obj.ValueState;
+        if (ValueState.toString().substr(15, 1) == 1) {
+            ThisState += "报警、";
+        }
+        if (ValueState.toString().substr(14, 1) == 1) {
+            ThisState += "复电、";
+        }
+        if (ValueState.toString().substr(13, 1) == 1) {
+            ThisState += "断电、";
+        }
+        if (ValueState.toString().substr(12, 1) == 1) {
+            ThisState += "故障、";
+        }
+        if (ValueState.toString().substr(11, 1) == 1) {
+            ThisState += "馈电异常、";
+        }
+        if (ValueState.toString().substr(10, 1) == 1) {
+            ThisState += "工作异常、";
+        }
+        if (ValueState.toString().substr(9, 1) == 1) {
+            ThisState += "故障、";
+        }
+        if (ThisState == "") {
+            ThisState = "正常";
+        }
+        else {
+            ThisState = ThisState.substring(0, ThisState.length - 1)
+        }
+        var ThisValue = val;
+        if (val != obj.ShowValue) {
+            val = ThisState;
+        }
+
+
+        switch (ThisState) {
+            case "正常":
+            case "复电":
+                if (val != "网络中断" && val != "传输异常" && val != "通讯中断" && val != "网络故障" && val != "数据延时") {
+
+                    return '<span style="color:green;">' + val + '</span>';
+                }
+                else {
+                    return '<span style="color:red;">' + val + '</span>';
+                }
+            case "报警":
+            case "通讯中断":
+                return '<span style="color:red;">' + val + '</span>';
+            case "故障":
+            case "网络故障":
+                return '<span style="color:magenta;">' + val + '</span>';
+            case "馈电异常":
+            case "传输异常":
+                return '<span style="color:darkorange;">' + val + '</span>';
+            case "工作异常":
+            case "数据延时":
+                return '<span style="color:maroon;">' + val + '</span>';
+            case "分站故障":
+            case "网络中断":
+                return '<span style="color:orange;">' + val + '</span>';
+            default:
+                return '<span style="color:red;">' + val + '</span>';
+
+        }
     }
 
     //跳转实时曲线

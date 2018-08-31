@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache">
     <meta http-equiv="Expires" content="0">
 
-    <title>@ViewBag.Title</title>
+    <title>煤矿综合信息化管控平台</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/jquery")
@@ -529,7 +529,38 @@
                         for (var i2 = 0; i2 < data.length; i2++) {
                             var dataItem2 = data[i2];
                             if (dataItem2.SystemType == type) {
-                                switch (dataItem2.AlarmType) {
+                                var ValueState = dataItem2.AlarmType;
+                                var ThisState = "";
+                                if (ValueState.toString().substr(15, 1) == 1) {
+                                    ThisState += "报警、";
+                                }
+                                if (ValueState.toString().substr(14, 1) == 1) {
+                                    ThisState += "复电、";
+                                }
+                                if (ValueState.toString().substr(13, 1) == 1) {
+                                    ThisState += "断电、";
+                                }
+                                if (ValueState.toString().substr(12, 1) == 1) {
+                                    ThisState += "故障、";
+                                }
+                                if (ValueState.toString().substr(11, 1) == 1) {
+                                    ThisState += "馈电异常、";
+                                }
+                                if (ValueState.toString().substr(10, 1) == 1) {
+                                    ThisState += "工作异常、";
+                                }
+                                if (ValueState.toString().substr(9, 1) == 1) {
+                                    ThisState += "故障、";
+                                }
+                                if (ThisState == "") {
+                                    ThisState = "正常";
+                                }
+                                else {
+                                    ThisState = ThisState.substring(0, ThisState.length - 1)
+                                }
+
+
+                                switch (ThisState) {
                                     case "超限报警":
                                         {
                                             trow = document.createElement("tr");
@@ -538,7 +569,7 @@
                                                 trow.appendChild(CreatCell(80, "black", dataItem2.MineName));
                                                 trow.appendChild(CreatCell(80, "black", dataItem2.deviceName));
                                                 trow.appendChild(CreatCell(160, "black", dataItem2.Place));
-                                                trow.appendChild(CreatCell(80, "red", dataItem2.AlarmType));
+                                                trow.appendChild(CreatCell(80, "red", ThisState));
                                                 trow.appendChild(CreatCell(80, "red", dataItem2.ShowValue));
                                                 trow.appendChild(CreatCell(160, "black", "---"));
                                                 trow.appendChild(CreatCell(160, "black", dataItem2.PoliceDateTime));
@@ -547,10 +578,10 @@
                                             }
                                             else //有最大值，显示 最大值，最大值开始时间 ，报警开始时间，持续时间；
                                             {
-                                                 trow.appendChild(CreatCell(80, "black", dataItem2.MineName));
+                                                trow.appendChild(CreatCell(80, "black", dataItem2.MineName));
                                                 trow.appendChild(CreatCell(80, "black", dataItem2.deviceName));
                                                 trow.appendChild(CreatCell(160, "black", dataItem2.Place));
-                                                trow.appendChild(CreatCell(80, "red", dataItem2.AlarmType));
+                                                trow.appendChild(CreatCell(80, "red", ThisState));
                                                 trow.appendChild(CreatCell(80, "red", dataItem2.PoliceMaxValue));
                                                 trow.appendChild(CreatCell(160, "red", dataItem2.PoliceMaxDatetime));
                                                 trow.appendChild(CreatCell(160, "black", dataItem2.PoliceDateTime));
@@ -559,13 +590,13 @@
                                             break;
                                         }
 
-                                    case "断电报警":
+                                    case "断电":
                                         {
                                             trow = document.createElement("tr");
                                             trow.appendChild(CreatCell(80, "black", dataItem2.MineName));
                                             trow.appendChild(CreatCell(80, "black", dataItem2.deviceName));
                                             trow.appendChild(CreatCell(160, "black", dataItem2.Place));
-                                            trow.appendChild(CreatCell(80, "red", dataItem2.AlarmType));
+                                            trow.appendChild(CreatCell(80, "red", ThisState));
                                             trow.appendChild(CreatCell(80, "red", dataItem2.PowerMax));
                                             trow.appendChild(CreatCell(160, "red", dataItem2.PowerMaxDatetime));
                                             trow.appendChild(CreatCell(160, "black", dataItem2.PowerDateTime));
@@ -578,20 +609,20 @@
                                             trow.appendChild(CreatCell(80, "black", dataItem2.MineName));
                                             trow.appendChild(CreatCell(80, "black", dataItem2.deviceName));
                                             trow.appendChild(CreatCell(160, "black", dataItem2.Place));
-                                            trow.appendChild(CreatCell(80, "red", dataItem2.AlarmType));
+                                            trow.appendChild(CreatCell(80, "red", ThisState));
                                             trow.appendChild(CreatCell(80, "red", dataItem2.ShowValue));
                                             trow.appendChild(CreatCell(160, "red", dataItem2.PoliceMaxDatetime));
                                             trow.appendChild(CreatCell(160, "black", dataItem2.PoliceDateTime));
                                             trow.appendChild(CreatCell(150, "black", dataItem2.PoliceContinuoustime));
                                             break;
                                         }
-                                    case "故障报警":
+                                    case "故障":
                                         {
                                             trow = document.createElement("tr");
-                                             trow.appendChild(CreatCell(80, "black", dataItem2.MineName));
+                                            trow.appendChild(CreatCell(80, "black", dataItem2.MineName));
                                             trow.appendChild(CreatCell(80, "black", dataItem2.deviceName));
                                             trow.appendChild(CreatCell(160, "black", dataItem2.Place));
-                                            trow.appendChild(CreatCell(80, "red", dataItem2.AlarmType));
+                                            trow.appendChild(CreatCell(80, "red", ThisState));
                                             trow.appendChild(CreatCell(80, "black", "--"));
                                             trow.appendChild(CreatCell(160, "black", "--"));
                                             trow.appendChild(CreatCell(160, "black", dataItem2.PoliceDateTime));
@@ -602,10 +633,10 @@
                                     case "馈电异常":
                                         {
                                             trow = document.createElement("tr");
-                                             trow.appendChild(CreatCell(80, "black", dataItem2.MineName));
+                                            trow.appendChild(CreatCell(80, "black", dataItem2.MineName));
                                             trow.appendChild(CreatCell(80, "black", dataItem2.deviceName));
                                             trow.appendChild(CreatCell(160, "black", dataItem2.Place));
-                                            trow.appendChild(CreatCell(80, "red", dataItem2.AlarmType));
+                                            trow.appendChild(CreatCell(80, "red", ThisState));
                                             trow.appendChild(CreatCell(80, "red", dataItem2.ShowValue));
                                             trow.appendChild(CreatCell(160, "red", dataItem2.AbnormalDateTime));
                                             trow.appendChild(CreatCell(160, "black", dataItem2.PowerDateTime));
@@ -619,19 +650,47 @@
                                             trow.appendChild(CreatCell(80, "black", dataItem2.MineName));
                                             trow.appendChild(CreatCell(80, "black", dataItem2.deviceName));
                                             trow.appendChild(CreatCell(160, "black", dataItem2.Place));
-                                            trow.appendChild(CreatCell(80, "red", dataItem2.AlarmType));
+                                            trow.appendChild(CreatCell(80, "red", ThisState));
                                             trow.appendChild(CreatCell(80, "red", dataItem2.ShowValue));
                                             trow.appendChild(CreatCell(160, "red", dataItem2.AbnormalDateTime));
                                             trow.appendChild(CreatCell(160, "black", dataItem2.PowerDateTime));
                                             trow.appendChild(CreatCell(150, "black", dataItem2.AbnormalContinuoustime));
                                             break;
                                         }
+                                    default:
+                                        {
+                                            trow = document.createElement("tr");
+                                            if (dataItem2.PoliceMaxValue == null) //没有最大值，显示 值 报警开始时间，持续时间；
+                                            {
+                                                trow.appendChild(CreatCell(80, "black", dataItem2.MineName));
+                                                trow.appendChild(CreatCell(80, "black", dataItem2.deviceName));
+                                                trow.appendChild(CreatCell(160, "black", dataItem2.Place));
+                                                trow.appendChild(CreatCell(80, "red", ThisState));
+                                                trow.appendChild(CreatCell(80, "red", dataItem2.ShowValue));
+                                                trow.appendChild(CreatCell(160, "black", "---"));
+                                                trow.appendChild(CreatCell(160, "black", dataItem2.PoliceDateTime));
+                                                trow.appendChild(CreatCell(150, "black", dataItem2.PoliceContinuoustime));
+
+                                            }
+                                            else //有最大值，显示 最大值，最大值开始时间 ，报警开始时间，持续时间；
+                                            {
+                                                trow.appendChild(CreatCell(80, "black", dataItem2.MineName));
+                                                trow.appendChild(CreatCell(80, "black", dataItem2.deviceName));
+                                                trow.appendChild(CreatCell(160, "black", dataItem2.Place));
+                                                trow.appendChild(CreatCell(80, "red", ThisState));
+                                                trow.appendChild(CreatCell(80, "red", dataItem2.PoliceMaxValue));
+                                                trow.appendChild(CreatCell(160, "red", dataItem2.PoliceMaxDatetime));
+                                                trow.appendChild(CreatCell(160, "black", dataItem2.PoliceDateTime));
+                                                trow.appendChild(CreatCell(150, "black", dataItem2.PoliceContinuoustime));
+                                            }
+                                            break;
+
+                                        }
                                 }//SWITCH
                                 dan.appendChild(trow);
                             }
                         }//FOR
                     }//function
-
                     var AQJKcount = 0;
                     var KSYLcount = 0;
                     var HZSGcount = 0;

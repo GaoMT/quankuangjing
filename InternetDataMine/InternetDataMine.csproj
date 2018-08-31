@@ -1429,6 +1429,7 @@
     <Content Include="Views\test\testInput.cshtml" />
     <Content Include="Views\DH\ChildSysControl.cshtml" />
     <Content Include="Views\Center\ShowUserAQSS.cshtml" />
+    <Content Include="Views\Chart\SwitchState.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

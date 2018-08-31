@@ -111,14 +111,7 @@
                     if (dragObj) {
                         e = e || event;
                         var tr = document.elementFromPoint(e.clientX, e.clientY);
-                        var rows = document.getElementById(tr.parentNode.parentNode.parentNode.id).rows.length;
-                        if (rows == 2) {
-                            removeEvent(document, "mousemove", dragManager.draging);
-                            removeEvent(document, "mouseup", dragManager.dragEnd);
-                            alert("1");
-                            return false;
-                          
-                        }
+                    
                         if (window.getSelection) {//w3c
                             window.getSelection().removeAllRanges();
                         } else if (document.selection) {
@@ -151,6 +144,13 @@
                         if (!target.getAttribute("data-background")) {
                             var background = getStyle(target, "background-color");
                             target.setAttribute("data-background", background)
+                        }
+
+                        var rows = document.getElementById(target.parentNode.parentNode.id).rows.length;
+                        if (rows == 2) {
+                            alert("每列需至少有一行！");
+                            return false;
+
                         }
                         //显示为可移动的状态
                         target.style.backgroundColor = "#ccc";
@@ -223,15 +223,15 @@
         for (var i = 0 ; i < len ; i = i + 2) {
             
             if ($("#" + dataArray[i].SensorNum + "").length > 0 && count>0) {
-                document.getElementById(dataArray[i].SensorNum).innerHTML = dataArray[i].ShowValue;
+                document.getElementById(dataArray[i].SensorNum).innerHTML = ReturnValue(dataArray[i].ValueState, dataArray[i].ShowValue);
                 if (i + 1 != len) {
-                    document.getElementById(dataArray[i+1].SensorNum).innerHTML = dataArray[i+1].ShowValue;
+                    document.getElementById(dataArray[i + 1].SensorNum).innerHTML = ReturnValue(dataArray[i+1].ValueState, dataArray[i+1].ShowValue)
                 }
             }
             else {
-                TLeft += "<tr><td>" + dataArray[i].SensorNum + "</td>" + "<td>" + dataArray[i].Place + "</td>" + "<td id='" + dataArray[i].SensorNum + "'>" + dataArray[i].ShowValue + "</td>" + "</tr>";
+                TLeft += "<tr><td>" + dataArray[i].SensorNum + "</td>" + "<td>" + dataArray[i].Place + "</td>" + "<td id='" + dataArray[i].SensorNum + "'>" +ReturnValue(dataArray[i].ValueState, dataArray[i].ShowValue) + "</td>" + "</tr>";
                 if (i + 1 != len) {
-                    TRight += "<tr><td>" + dataArray[i + 1].SensorNum + "</td>" + "<td>" + dataArray[i + 1].Place + "</td>" + "<td id='" + dataArray[i+1].SensorNum + "'>" + dataArray[i + 1].ShowValue + "</td>" + "</tr>";;
+                    TRight += "<tr><td>" + dataArray[i + 1].SensorNum + "</td>" + "<td>" + dataArray[i + 1].Place + "</td>" + "<td id='" + dataArray[i + 1].SensorNum + "'>" + ReturnValue(dataArray[i+1].ValueState, dataArray[i+1].ShowValue) + "</td>" + "</tr>";;
                 }
                 TLeft += "</table>";
                 TRight += "</table>";
@@ -274,6 +274,58 @@
         SensorNum = $("#SenserList").combogrid("getValues");
         Count = 0;
         LoadSensor(SensorNum);
+
+    }
+
+
+
+    function ReturnValue(state, value)
+    {
+        var ThisState = "";
+        if (state.length > 4) {
+
+            if (state.toString().substr(15, 1) == 1) {
+                ThisState += "报警、";
+            }
+            if (state.toString().substr(14, 1) == 1) {
+                ThisState += "复电、";
+            }
+            if (state.toString().substr(13, 1) == 1) {
+                ThisState += "断电、";
+            }
+            if (state.toString().substr(12, 1) == 1) {
+                ThisState += "故障、";
+            }
+            if (state.toString().substr(11, 1) == 1) {
+                ThisState += "馈电异常、";
+            }
+            if (state.toString().substr(10, 1) == 1) {
+                ThisState += "工作异常、";
+            }
+            if (state.toString().substr(9, 1) == 1) {
+                ThisState += "故障、";
+            }
+            if (ThisState == "") {
+                ThisState = "正常";
+            }
+            else {
+                ThisState = ThisState.substring(0, ThisState.length - 1)
+            }
+        }
+        else {
+            ThisState = state;
+        }
+        if (ThisState.indexOf("正常") > -1 || ThisState.indexOf("复电") > -1) {
+            return "<span style='color:green'>"+value+"</span>";
+        }
+        else if (ThisState.indexOf("报警") > -1 || ThisState.indexOf("断电") > -1) {
+
+            return   "<span style='color:red'>"+value+"</span>";
+        }
+        else {
+
+            return "<span style='color:magenta'>" + ThisState + "</span>";
+        }
 
     }
 </script>
