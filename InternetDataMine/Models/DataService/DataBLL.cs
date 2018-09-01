@@ -1109,6 +1109,24 @@ delete [dbo].[DiskManage] Where Disk_ID ='{0}' Or PDiskID ='{0}'", id);
         }
 
 
+
+        public DataTableCollection ReturnSwitchData(string mineCode, string SensorCodes, string BeginTime, string EndTime)
+        {
+
+            string[] sensorCodes = SensorCodes.Split(new char[] { ',' });
+            string sql = "declare @BeginID bigint,@EndID bigint " +
+                    "select @EndID =max(ID),@BeginID = min(ID) from ShineView_His.dbo.AQKD where StateDateTime>='" + BeginTime + "' and StateDateTime<'" + EndTime + "' ";
+            foreach (string mysensorCode in sensorCodes)
+            {
+                sql += " select max(state) state," +
+                    " StateDateTime statisticTime,Place,sensorNum from (select * from ShineView_His.dbo.AQKD where ID>=@BeginID and ID<@EndID) as xx where MineCode='" + mineCode + "' and sensorNum='" + mysensorCode + "'" +
+                    " and StateDateTime>='" + BeginTime + "' and StateDateTime<'" + EndTime + "'" +
+                    "group by StateDateTime,sensorNum,Place order by StateDateTime";
+            }
+            return dal.ReturnDs(sql).Tables;
+        }
+
+
         public DataTableCollection ReturnSwitchDatas(string mineCode, string SensorCodes, string BeginTime, string EndTime)
         {
             string[] sensorCodes = SensorCodes.Split(new char[] { ',' });

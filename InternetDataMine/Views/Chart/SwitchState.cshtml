@@ -18,7 +18,7 @@
 </style>
 
 <div class="easyui-layout" data-options="fit:true">
-    <div data-options="region:'north',title:'模拟量历史曲线',split:false,collapsible:false,border:0" style="height:120px;">
+    <div data-options="region:'north',title:'开关量历史状态曲线',split:false,collapsible:false,border:0" style="height:120px;">
         <form id="myform" class="easyui-form" method="post" data-options="novalidate:true">
             @if (@UserMineCode == "" || @UserMineCode == null)
             {
@@ -59,7 +59,7 @@
 
 <script type="text/javascript">
     var MineCode = "";//煤矿名称
-    var DevType = "A";//设备类型
+    var DevType = "D";//设备类型
     var DevTypeName = "";
     var devTypeCodes = "";//传感器名称编码
     var SensorNames = "";
@@ -172,9 +172,10 @@
         { field: 'SensorNum', title: '测点编号', width: 60 },
         { field: 'TypeName', title: '测点类型', width: 100 },
         { field: 'Place', title: '测点位置', width: 200 },
-        { field: 'Unit', title: '单位', width: 60 },
-        { field: 'AlarmLower', title: '报警下限', width: 60 },
-        { field: 'AlarmHigh', title: '报警上限', width: 60 }
+         { field: 'ZeroMeaning', title: '0态含义', width: 60 },
+          { field: 'OneMeaning', title: '1态含义', width: 60 },
+           { field: 'TwoMeaning', title: '2态含义', width: 60 },
+
             ]],
             onCheck: function (rowIndex, rowData) {
                 if ($("#ddlSensor").combogrid("getValues").length > 6) {
@@ -182,7 +183,9 @@
                     $.messager.alert('错误提示', '最多只能选六个测点！', 'error');
                 }
                 else {
+                    //debugger;
                     IsSensorCountOverSix = false;
+                    Unit = "  0:" + rowData.ZeroMeaning + ",1: " + rowData.OneMeaning + ",2:" + rowData.TwoMeaning;
                 }
             },
             onUncheck: function (rowIndex, rowData) {
@@ -221,7 +224,7 @@
     function LoadDeviceTypeforCombobox(mineCode) {
         $("#ddlDevType").combogrid({
             url: '../Center/ReturnComboboxForDevType?mineCode=' + mineCode + '&Type=' + DevType,
-            panelWidth: 300,
+            panelWidth: 235,
             sortName: 'Typename',
             sortOrder: 'desc',
             idField: 'TypeCode',
@@ -230,7 +233,7 @@
             columns: [[
                { field: 'TypeCode', title: '设备编号', width: 60 },
                { field: 'TypeName', title: '设备名称', width: 100 },
-               { field: 'Unit', title: '单位', width: 60 },
+               //{ field: 'Unit', title: '单位', width: 60 },
                { field: 'Type', title: '类型', width: 60 }
             ]],
             onchange: function (newValue, oldValue) {
@@ -240,7 +243,6 @@
 
                 devTypeCodes = rowData.TypeCode;
                 DevTypeName = $("#ddlDevType").combogrid("getText");
-                Unit = "  单位：" + '(' + rowData.Unit + ')';
                 LoadSensorInfoFoCombogrid();
             },
         });
@@ -312,14 +314,20 @@
         calculable: true,
         xAxis: [
             {
+
                 type: 'category',
                 data: []
             }
         ],
         yAxis: [
             {
-                type: 'value',
-                splitArea: { show: true }
+                type: 'category',
+                data: ['0', '1', '2'],
+                splitArea: { show: true },
+                nameTextStyle: {
+
+
+                }
             }
         ],
         series: [],
@@ -337,7 +345,7 @@
     function showPlace(name) {
         var Legend;
         $.ajax({
-            url: '../Chart/FindPlace',
+            url: '../Chart/FindPlaceD',
             data: { mineCode: MineCode, sensorNum: name },
             method: 'post', async: false,
             type: 'json',
@@ -368,14 +376,15 @@
         //var BeginTime = $("#ddlBeginTime").datebox("getText")
 
         myoption.title.subtext = DevTypeName;
-        myoption.title.text = '模拟量日曲线' + Unit;
+        myoption.title.text = '开关量历史状态曲线  ' + Unit;
         var xAxisdataIndex = 0;
         myoption.xAxis[0].data = [];
         var mySensorNames = String($("#ddlSensor").combogrid("getText")).split(",");
         myoption.legend.data = [];
         myoption.series = [];
         $.ajax({
-            url: '../Chart/ReturnCurverDatas',// 把 取的数据 改为取每分钟
+            //ReturnCurverDatas
+            url: '../Chart/ReturnSwitchState',// 把 取的数据 改为取每分钟
             //data: { mineCode: MineCode, sensorCodes: SensorCodes.join(','), BeginTime: BeginTime },
             //******************
             data: { mineCode: MineCode, sensorCodes: SensorCodes.join(','), BeginTime: BeginTime ,EndTime:EndTime},
@@ -399,9 +408,7 @@
                             type: 'line',
                             data: [],
                             symbolSize: 0.01,
-                            markPoint: {
-                                data: [{ type: 'max', name: '最大值' }]
-                            },
+                          
                         };
                         //测点换行
                         myoption.legend.data.push(item[0].sensorNum);
@@ -417,7 +424,7 @@
                             });
                         }
                         $(item).each(function (myindex, myitem) {
-                            line.data.push(myitem.maxValue);
+                            line.data.push(myitem.state);
 
                         });
 

@@ -281,7 +281,8 @@
             text: '',
             subtext: ''
         },
-        grid: { y: '20%' },
+        grid: { y: '20%' ,
+        },
         tooltip: {
             trigger: 'axis'
         },
@@ -372,7 +373,6 @@
         var mySensorNames = String($("#ddlSensor").combogrid("getText")).split(",");
         myoption.legend.data = [];
         myoption.series = [];
-        myoption.legend.data = [];
         $.ajax({
             url: '../Chart/ReturnCurverDatas',// 把 取的数据 改为取每分钟
             //data: { mineCode: MineCode, sensorCodes: SensorCodes.join(','), BeginTime: BeginTime },
@@ -391,53 +391,36 @@
                 }
                 document.getElementById("MainTool").textContent = "";
                 $(sensorsOjbect).each(function (index, item) {
+
                     if (item.length > 0) {
                         var line = {
                             name: item[0].sensorNum,
                             type: 'line',
                             data: [],
                             symbolSize: 0.01,
-                            //markLine: {
-                            //    data: [{ type: 'max', name: '最大值', title: '最大值' },
-                            //        { type: 'min',name:'最小值' ,title: '最小值' },
-                            //        { type: 'average',name:'平均值' ,title: '平均值' }
-                            //    ]
-                            //},
                             markPoint: {
                                 data: [{ type: 'max', name: '最大值' }]
                             },
                         };
-
-
                         //测点换行
                         myoption.legend.data.push(item[0].sensorNum);
                         if ((index+1) % 2 == 0) {
                             myoption.legend.data.push("");
                         }
 
-                     
-                        //myoption.legend.formatter.a
-                        //if (myoption.legend.data.length == 5 || myoption.legend.data.length==11)
-                        //{
-                        //    myoption.legend.data.push('');
-                        //}
-                        //
-                        // TO DO 所有曲线信息
-                        //循环查出所有测点值
-                        var flag = 0;
-                        $(item).each(function (myindex, myitem) {
-                        //    if (myindex != 0 && !(myitem.statisticTime.substring(11, 16).replace(/:/g, "") - flag == 1 || ((myitem.statisticTime.substring(11, 16).replace(/:/g, "") - flag) == 41 && myitem.statisticTime.substring(14, 16) == "00" && flag.substring(2) == "59"))) {
-                        //        //myoption.xAxis[0].data.push("");  2017-03-09注释
-                        //        line.data.push("-");
-                        //    }
-                        //    if (i == 0) {
+                        if (myoption.xAxis[0].data.length == 0)
+                        {
+                            $(item).each(function (myindex, myitem) {
                                 myoption.xAxis[0].data.push(myitem.statisticTime);
-                        //    }
+                          
+                            });
+                        }
+                        $(item).each(function (myindex, myitem) {
                             line.data.push(myitem.maxValue);
-                        //    flag = myitem.statisticTime.substring(11, 16).replace(/:/g, "");
-                        });
-                            //i++;
 
+                        });
+                      
+                       
                         myoption.series.push(line);
                     }
                 });
@@ -454,6 +437,11 @@
                 }
                 myChart.clear();
                 myChart.setOption(myoption);
+                if (myoption.xAxis[0].data.length == 0)
+                {
+                    alert("无曲线")
+                }
+
                 $.messager.progress('close');
             },
             error: function (object) {

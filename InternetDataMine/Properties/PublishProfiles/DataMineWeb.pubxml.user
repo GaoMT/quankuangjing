@@ -12,10 +12,10 @@
       <publishTime>05/02/2017 10:28:52</publishTime>
     </File>
     <File Include="bin/App_global.asax.compiled">
-      <publishTime>08/30/2018 09:24:02</publishTime>
+      <publishTime>08/31/2018 14:10:15</publishTime>
     </File>
     <File Include="bin/App_global.asax.dll">
-      <publishTime>08/30/2018 09:24:02</publishTime>
+      <publishTime>08/31/2018 14:10:15</publishTime>
     </File>
     <File Include="bin/BruTile.Desktop.dll">
       <publishTime>05/02/2017 10:28:51</publishTime>
@@ -39,10 +39,10 @@
       <publishTime>05/02/2017 10:28:51</publishTime>
     </File>
     <File Include="bin/InternetDataMine.dll">
-      <publishTime>08/30/2018 09:22:55</publishTime>
+      <publishTime>08/31/2018 14:01:56</publishTime>
     </File>
     <File Include="bin/InternetDataMine.pdb">
-      <publishTime>08/30/2018 09:22:55</publishTime>
+      <publishTime>08/31/2018 14:01:56</publishTime>
     </File>
     <File Include="bin/Microsoft.Web.Infrastructure.dll">
       <publishTime>05/02/2017 10:28:52</publishTime>
@@ -3018,7 +3018,7 @@
       <publishTime>09/27/2016 14:08:06</publishTime>
     </File>
     <File Include="PrecompiledApp.config">
-      <publishTime>08/30/2018 09:23:58</publishTime>
+      <publishTime>08/31/2018 14:10:08</publishTime>
     </File>
     <File Include="Scripts/common.js">
       <publishTime>01/03/2018 12:26:46</publishTime>
@@ -3213,7 +3213,7 @@
       <publishTime>06/30/2016 08:37:08</publishTime>
     </File>
     <File Include="Views/Center/ShowUserAQSS.cshtml">
-      <publishTime>08/30/2018 08:39:16</publishTime>
+      <publishTime>08/30/2018 16:03:06</publishTime>
     </File>
     <File Include="Views/Center/Test.cshtml">
       <publishTime>01/03/2018 11:37:12</publishTime>
@@ -3222,7 +3222,7 @@
       <publishTime>06/30/2016 08:37:08</publishTime>
     </File>
     <File Include="Views/Chart/AnalogQantity.cshtml">
-      <publishTime>01/03/2018 11:37:12</publishTime>
+      <publishTime>08/31/2018 10:56:26</publishTime>
     </File>
     <File Include="Views/Chart/MCDay.cshtml">
       <publishTime>01/03/2018 11:37:12</publishTime>
@@ -3232,6 +3232,9 @@
     </File>
     <File Include="Views/Chart/SwitchQantity.cshtml">
       <publishTime>01/03/2018 11:37:12</publishTime>
+    </File>
+    <File Include="Views/Chart/SwitchState.cshtml">
+      <publishTime>08/31/2018 11:07:58</publishTime>
     </File>
     <File Include="Views/CompanyInfoManager/AQJG.cshtml">
       <publishTime>01/03/2018 11:37:12</publishTime>
@@ -3324,7 +3327,7 @@
       <publishTime>01/12/2018 15:01:10</publishTime>
     </File>
     <File Include="Views/GrapSystem/RealDistribute.cshtml">
-      <publishTime>01/12/2018 14:59:02</publishTime>
+      <publishTime>05/18/2018 10:51:57</publishTime>
     </File>
     <File Include="Views/GrapSystem/SetDT.cshtml">
       <publishTime>10/31/2017 10:39:20</publishTime>
@@ -3513,7 +3516,7 @@
       <publishTime>12/13/2017 16:31:16</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>08/30/2018 09:23:54</publishTime>
+      <publishTime>08/31/2018 14:10:01</publishTime>
     </File>
   </ItemGroup>
 </Project>

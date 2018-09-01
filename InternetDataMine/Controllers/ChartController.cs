@@ -139,6 +139,26 @@ namespace InternetDataMine.Controllers
                 Response.End();
         }
 
+
+        public void ReturnSwitchState(string mineCode, string sensorCodes, string BeginTime, string EndTime)
+        {
+            //****
+            //EndTime = Convert.ToDateTime(BeginTime).AddDays(1).AddSeconds(-1).ToString();
+            DataBLL bll = new DataBLL();
+            DataTableCollection dts = bll.ReturnSwitchData(mineCode, sensorCodes, BeginTime, EndTime);
+            string json = "[]";
+            //在对DATATABLE进行序列化的时候，规范日期格式
+            IsoDateTimeConverter timeConverter = new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd HH:mm:ss" };
+            if (dts != null && dts.Count > 0)
+            {
+                json = JsonConvert.SerializeObject(dts, Formatting.Indented, timeConverter);
+            }
+            Response.Write(json);
+
+            Response.End();
+
+        }
+
         public void AnalogQantityQuery(string MineCode,string SensorType,string SensorNum)
         {
             
@@ -151,6 +171,18 @@ namespace InternetDataMine.Controllers
         public void FindPlace(string mineCode, string sensorNum)
         {
             string sql = string.Format("select Place from AQMC where MineCode={0} and sensorNum='{1}'", mineCode, sensorNum);
+            var dal = new DataDAL();
+            var dt = dal.ReturnDs(sql);
+            var data = JsonConvert.SerializeObject(dt);
+            Response.Write(data);
+
+
+            Response.End();
+        }
+
+        public void FindPlaceD(string mineCode, string sensorNum)
+        {
+            string sql = string.Format("select Place from AQKC where MineCode={0} and sensorNum='{1}'", mineCode, sensorNum);
             var dal = new DataDAL();
             var dt = dal.ReturnDs(sql);
             var data = JsonConvert.SerializeObject(dt);
@@ -173,9 +205,12 @@ namespace InternetDataMine.Controllers
         /// 开关量状态曲线
         /// </summary>
         /// <returns></returns>
-        public ActionResult SwitchState()
+        public ActionResult SwitchState(string MineCode )
         {
-            return View();
+            LoadModel loadModel = new LoadModel();
+            loadModel.UserMineCode = MineCode;
+            return View(loadModel);
+            //return View();
         }
     }
 }
